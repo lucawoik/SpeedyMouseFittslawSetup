@@ -40,6 +40,8 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
     }
     int xDist = sqrt(pow(targetTemplate->d, 2) - pow(yDist, 2));
 
+    //printf("%d %d %d %d\n", x, y, xDist, yDist);
+
     //printf("pow: %f\n", pow(targetTemplate->d, 2));
     //printf("multi: %f\n", targetTemplate->d * targetTemplate->d);
     //printf("pythagoras: %f\n", sqrt(pow(targetTemplate->d, 2) - pow(yDist, 2)));
@@ -86,9 +88,19 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
             if(x > target.x) target.vX *= -1;
             break;
         case ANGLE_NONE:
+	    //printf("static\n");
+	    target.vX = 0;
+	    target.vY = 0;
             break;
         }
     }
+    else
+    {
+	target.vX = 0;
+	target.vY = 0;
+    }
+
+    //printf("template %f %f %d\n", target.vX, target.vY, targetTemplate->a);
 
     return target;
 }

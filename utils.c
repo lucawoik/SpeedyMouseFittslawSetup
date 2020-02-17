@@ -7,6 +7,13 @@ long millis()
     return time.tv_sec * 1000 + time.tv_usec / 1000;
 }
 
+long long micros()
+{
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    return (long long) time.tv_sec * 1000000l + (long long) time.tv_usec;
+}
+
 int min(int a, int b)
 {
     return a < b ? a : b;

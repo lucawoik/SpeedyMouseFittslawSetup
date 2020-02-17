@@ -33,6 +33,8 @@ int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERP
 // starting target
 Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
 
+int mouse_down = 0;
+
 
 
 void finish()
@@ -81,6 +83,8 @@ void handleInput()
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
+		mouse_down = 1;
+
                 int mouseX, mouseY;
 
                 SDL_GetMouseState(&mouseX, &mouseY);
@@ -114,7 +118,7 @@ void handleInput()
                 {
                     if(!isSetupTarget)
                     {
-                        printf("success\n");
+                        //printf("success\n");
                         current_trial.time = trial_time;
                         current_trial.clicks = click_count;
                         current_trial.travel_distance = travel_distance;
@@ -132,6 +136,8 @@ void handleInput()
                     isSetupTarget = 0;
 
                     target = createTarget(mouseX, mouseY, targetTemplates[iteration]);
+
+    		    //printf("main %f %f\n", target.x, target.y);
 
                     current_trial = (Trial) {iteration,
                                              millis(),
@@ -161,6 +167,15 @@ void handleInput()
             }
         }
 
+	// test
+        if (event.type == SDL_MOUSEBUTTONUP)
+        {
+            if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
+            {
+		mouse_down = 0;
+		}
+	}
+
         if(event.type == SDL_KEYDOWN)
         {
             switch(event.key.keysym.sym)
@@ -177,10 +192,22 @@ void handleInput()
 
 void render(SDL_Renderer* renderer)
 {
+    //int mouseX, mouseY;
+    //SDL_GetMouseState(&mouseX, &mouseY);
+
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
+    //printf("render %f %f\n", target.x, target.y);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
+    //filledCircleColor(renderer, mouseX, mouseY, 5, 0xFF0000FF);
+
+    // circle in bottom right corner used to measure end to end latency
+    //if(!mouse_down)
+    //{
+    //	filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
+
+    //}
 
     SDL_RenderPresent(renderer);
 }
@@ -197,15 +224,21 @@ void update(double deltaTime)
     lastX = mouseX;
     lastY = mouseY;
 
+    if(target.a == ANGLE_NONE) return;
+    //printf("before %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
+
     target.x += target.vX * deltaTime;
     target.y += target.vY * deltaTime;
+
+    //printf("%lf\n", deltaTime);
+    //printf("after %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
 
     if( target.x < -target.r * 2 ||
         target.x > WIDTH + (target.r * 2) ||
         target.y < -target.r * 2 ||
         target.y > HEIGHT + (target.r * 2))
     {
-        printf("failed\n");
+        //printf("failed\n");
         current_trial.time = 0;
         current_trial.clicks = click_count;
         current_trial.travel_distance = travel_distance;
@@ -249,16 +282,19 @@ int main(int argc, char** argv)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
+    system("xsetroot -cursor_name arrow");
+
     //thread inputThread(handleInput);
 
     while(1)
     {
-        deltaTime = (millis() - timer) / 1000;
-        timer = millis();
+        deltaTime = (micros() - timer) / 1000000.0;
+        timer = micros();
 
         update(deltaTime);
         handleInput();
         render(renderer);
+	//usleep(2000);
     }
 
     SDL_Quit();

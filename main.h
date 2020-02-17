@@ -30,7 +30,7 @@
 
 #define MAX_CLICKS 10000
 
-#define DEBUG 2
+#define DEBUG 0
 
 #define TARGET_COLOR 0xFF000000
 
@@ -125,6 +125,8 @@ void initTargetTemplates();
 void swap(TargetTemplate *a, TargetTemplate *b);
 
 long millis();
+
+long long micros();
 
 int min(int a, int b);
 
