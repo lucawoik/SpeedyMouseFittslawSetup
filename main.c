@@ -33,6 +33,8 @@ int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERP
 // starting target
 Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
 
+int mouse_down = 0;
+
 
 
 void finish()
@@ -81,6 +83,8 @@ void handleInput()
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
+		mouse_down = 1;
+
                 int mouseX, mouseY;
 
                 SDL_GetMouseState(&mouseX, &mouseY);
@@ -163,6 +167,15 @@ void handleInput()
             }
         }
 
+	// test
+        if (event.type == SDL_MOUSEBUTTONUP)
+        {
+            if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
+            {
+		mouse_down = 0;
+		}
+	}
+
         if(event.type == SDL_KEYDOWN)
         {
             switch(event.key.keysym.sym)
@@ -188,6 +201,13 @@ void render(SDL_Renderer* renderer)
     //printf("render %f %f\n", target.x, target.y);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
     //filledCircleColor(renderer, mouseX, mouseY, 5, 0xFF0000FF);
+
+    // circle in bottom right corner used to measure end to end latency
+    //if(!mouse_down)
+    //{
+    //	filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
+
+    //}
 
     SDL_RenderPresent(renderer);
 }
