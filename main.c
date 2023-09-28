@@ -27,13 +27,13 @@ Trial current_trial;
 
 int TARGET_RADIUS[NUM_RADIUS] = {50, 30};
 int TARGET_DISTANCE[NUM_DISTANCE] = {500};
-int TARGET_VELOCITY[NUM_VELOCITY] = {200, 300, 400};
+int TARGET_VELOCITY[NUM_VELOCITY] = {200, 300, 400}; 
 int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERPENDICULAR, ANGLE_DIAGONAL_AWAY, ANGLE_AWAY};
 
 // starting target
 Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
-
-int mouse_down = 0;
+/* 
+int mouse_down = 0; */
 
 
 
@@ -55,7 +55,7 @@ void handleInput()
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
-		mouse_down = 1;
+		/* mouse_down = 1; */
 
                 int mouseX, mouseY;
 
@@ -133,13 +133,13 @@ void handleInput()
         }
 
 	// test
-        if (event.type == SDL_MOUSEBUTTONUP)
+/*         if (event.type == SDL_MOUSEBUTTONUP)
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
 		mouse_down = 0;
 		}
-	}
+	    } */
 
         if(event.type == SDL_KEYDOWN)
         {
