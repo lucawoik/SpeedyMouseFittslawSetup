@@ -19,15 +19,10 @@ int isSetupTarget = 1;
 
 Trial current_trial;
 
-// too many permutations
-// throw something out or simply cut after randomizing?
-//int TARGET_RADIUS[3] = {75, 50, 25};
-//int TARGET_DISTANCE[3] = {500, 400, 300};
-//int TARGET_VELOCITY[3] = {200, 350, 500};
-
-int TARGET_RADIUS[NUM_RADIUS] = {50, 30};
+int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 80};
+// int TARGET_DISTANCE[NUM_DISTANCE] = {200, 400, 600};  ????
 int TARGET_DISTANCE[NUM_DISTANCE] = {500};
-int TARGET_VELOCITY[NUM_VELOCITY] = {200, 300, 400}; 
+int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400};
 int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERPENDICULAR, ANGLE_DIAGONAL_AWAY, ANGLE_AWAY};
 
 // starting target
@@ -95,9 +90,7 @@ void handleInput()
                         current_trial.clicks = click_count;
                         current_trial.travel_distance = travel_distance;
                         current_trial.success = 1;
-
                         trials[iteration] = current_trial;
-
                         iteration++;   
                         if(iteration >= NUM_ITERATIONS) finish();
                     }
@@ -171,7 +164,6 @@ void render(SDL_Renderer* renderer)
     //if(!mouse_down)
     //{
     //	filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
-
     //}
 
     SDL_RenderPresent(renderer);
