@@ -87,12 +87,13 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
             target.vY = 0;
             if(x > target.x) target.vX *= -1;
             break;
-        case ANGLE_NONE:
+        /* case ANGLE_NONE:
 	    //printf("static\n");
 	    target.vX = 0;
 	    target.vY = 0;
             break;
-        }
+            */
+        } 
     }
     else
     {
@@ -118,7 +119,7 @@ void initTargetTemplates()
             {
                 for(int a = 0; a < NUM_ANGLE; a++)
                 {
-                    staticTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], 0, 5);
+                    /* staticTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], 0, 5); */
                     movingTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], TARGET_VELOCITY[v], a);
                     i++;
                 }
@@ -137,14 +138,14 @@ void initTargetTemplates()
 	for(int j = 0; j < NUM_ITERATIONS / 2; j++)
 	{
         //printf("%d %f -> ", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
-        TargetTemplate *a = &staticTargetTemplates[j];
-        TargetTemplate *b = &staticTargetTemplates[rand() % (NUM_ITERATIONS / 2)];
+        /* TargetTemplate *a = &staticTargetTemplates[j];
+        TargetTemplate *b = &staticTargetTemplates[rand() % (NUM_ITERATIONS / 2)]; */
         //printf("before: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
-		swap(a, b);
+		/* swap(a, b); */
         //printf(" after: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
         //printf("%d %f\n", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
         TargetTemplate *c = &movingTargetTemplates[j];
-        TargetTemplate *d = &movingTargetTemplates[rand() % (NUM_ITERATIONS / 2)];
+        TargetTemplate *d = &movingTargetTemplates[rand() % (NUM_ITERATIONS)];
 		swap(c, d);
 		//swap(&movingTargetTemplates[j], &movingTargetTemplates[rand() % NUM_ITERATIONS]);
 	}
@@ -157,10 +158,12 @@ void initTargetTemplates()
 
     if(DEBUG > 1) printf("shuffled\n");
 
+
+    /* TODO: kann man dann auch einfach gleichsetzten ohne for?! */
     for(int j = 0; j < NUM_ITERATIONS / 2; j++)
     {
-        targetTemplates[j * 2] = &staticTargetTemplates[j];
-        targetTemplates[j * 2 + 1] = &movingTargetTemplates[j];
+        /* targetTemplates[j * 2] = &staticTargetTemplates[j]; */
+        targetTemplates[j] = &movingTargetTemplates[j];
     }
 
     //for(int j = 0; j < NUM_ITERATIONS; j++)

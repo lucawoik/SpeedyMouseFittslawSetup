@@ -26,7 +26,7 @@
 #define ANGLE_PERPENDICULAR 2
 #define ANGLE_DIAGONAL_AWAY 3
 #define ANGLE_AWAY 4
-#define ANGLE_NONE 5
+/* #define ANGLE_NONE 5 */
 
 #define MAX_CLICKS 10000
 
@@ -35,7 +35,8 @@
 #define TARGET_COLOR 0xFF000000
 // TODO: nur mal zwei wenn man auch sttic mmit drann hat
 // wenn man das rausnimmt, dann auch überall sonst nochmal kontrilieren und den teiler rausnehmen
-#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY * NUM_ANGLE * 2
+/* *2 */
+#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY * NUM_ANGLE 
 
 #define LOG_PATH "log"
 
@@ -108,8 +109,8 @@ typedef struct {
     int success;
 } Click;
 
-TargetTemplate staticTargetTemplates[NUM_ITERATIONS / 2];
-TargetTemplate movingTargetTemplates[NUM_ITERATIONS / 2];
+/* TargetTemplate staticTargetTemplates[NUM_ITERATIONS / 2]; */
+TargetTemplate movingTargetTemplates[NUM_ITERATIONS];
 TargetTemplate *targetTemplates[NUM_ITERATIONS];
 
 Trial trials[NUM_ITERATIONS];

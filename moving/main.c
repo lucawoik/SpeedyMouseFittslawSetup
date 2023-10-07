@@ -181,7 +181,7 @@ void update(double deltaTime)
     lastX = mouseX;
     lastY = mouseY;
 
-    if(target.a == ANGLE_NONE) return;
+    /* if(target.a == ANGLE_NONE) return; */
     //printf("before %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
 
     target.x += target.vX * deltaTime;

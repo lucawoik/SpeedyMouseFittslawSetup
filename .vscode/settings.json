@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "array": "c",
+        "*.tcc": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "memory": "c",
+        "optional": "c",
+        "string_view": "c",
+        "istream": "c",
+        "ostream": "c",
+        "sstream": "c",
+        "stop_token": "c",
+        "streambuf": "c",
+        "thread": "c",
+        "functional": "c",
+        "tuple": "c",
+        "chrono": "c"
+    }
+}
