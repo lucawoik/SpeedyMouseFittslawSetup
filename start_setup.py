@@ -87,7 +87,8 @@ while(True):
         print('next trial: {} {} {} {}'.format(latencies[trial][0], latencies[trial][1], latencies[trial][2], latencies[trial][3]))
         os.system('echo "{} {} {} {}" > /tmp/delaydaemon'.format(int(latencies[trial][0]), int(latencies[trial][1]), int(latencies[trial][2]), int(latencies[trial][3]))) 
         # os.system('echo "0 1500 0 1500" > /tmp/delaydaemon') 
-        os.system('./moving/FittsiM {} {} {} {} {} {}'.format(participant_id, trial, latencies[trial][0], latencies[trial][1], latencies[trial][2], latencies[trial][3]))
+        # os.system('./moving/FittsiM {} {} {} {} {} {}'.format(participant_id, trial, latencies[trial][0], latencies[trial][1], latencies[trial][2], latencies[trial][3]))
+        os.system('./static/FittsiS {} {} {} {} {} {}'.format(participant_id, trial, latencies[trial][0], latencies[trial][1], latencies[trial][2], latencies[trial][3]))
         os.system('echo "0 0 0 0" > /tmp/delaydaemon')
         #os.system('python3 nasa-tlx.py {} {} {} {} {} {}'.format(participant_id, trial, latencies[trial][0], latencies[trial][1], latencies[trial][2], latencies[trial][3]))
         trial = trial + 1

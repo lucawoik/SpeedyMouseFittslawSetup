@@ -19,13 +19,13 @@
 #define NUM_RADIUS 3
 #define NUM_DISTANCE 1
 #define NUM_VELOCITY 2
-#define NUM_ANGLE 5
+/* #define NUM_ANGLE 5 */
 
-#define ANGLE_TOWARDS 0
+/* #define ANGLE_TOWARDS 0
 #define ANGLE_DIAGONAL_TOWARDS 1
 #define ANGLE_PERPENDICULAR 2
 #define ANGLE_DIAGONAL_AWAY 3
-#define ANGLE_AWAY 4
+#define ANGLE_AWAY 4 */
 #define ANGLE_NONE 5
 
 #define MAX_CLICKS 10000
@@ -35,7 +35,8 @@
 #define TARGET_COLOR 0xFF000000
 // TODO: nur mal zwei wenn man auch sttic mmit drann hat
 // wenn man das rausnimmt, dann auch überall sonst nochmal kontrilieren und den teiler rausnehmen
-#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY * NUM_ANGLE * 2
+/* * NUM_ANGLE  */
+#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY 
 
 #define LOG_PATH "log"
 
@@ -49,7 +50,7 @@ extern int LATENCY_MOVE_MAX;
 extern int TARGET_RADIUS[NUM_RADIUS];
 extern int TARGET_DISTANCE[NUM_DISTANCE];
 extern int TARGET_VELOCITY[NUM_VELOCITY];
-extern int TARGET_ANGLE[NUM_ANGLE];
+// extern int TARGET_ANGLE[NUM_ANGLE];
 
 extern int isSetupTarget;
 extern int click_count_total;
@@ -108,8 +109,8 @@ typedef struct {
     int success;
 } Click;
 
-TargetTemplate staticTargetTemplates[NUM_ITERATIONS / 2];
-TargetTemplate movingTargetTemplates[NUM_ITERATIONS / 2];
+TargetTemplate staticTargetTemplates[NUM_ITERATIONS];
+/* TargetTemplate movingTargetTemplates[NUM_ITERATIONS / 2]; */
 TargetTemplate *targetTemplates[NUM_ITERATIONS];
 
 Trial trials[NUM_ITERATIONS];

@@ -23,12 +23,13 @@ int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 80};
 // int TARGET_DISTANCE[NUM_DISTANCE] = {200, 400, 600};  ????
 int TARGET_DISTANCE[NUM_DISTANCE] = {500};
 int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400};
-int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERPENDICULAR, ANGLE_DIAGONAL_AWAY, ANGLE_AWAY};
+// int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERPENDICULAR, ANGLE_DIAGONAL_AWAY, ANGLE_AWAY};
 
+/* TODO: anpassen an static! */
 // starting target
 Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
 
-int mouse_down = 0;
+/* int mouse_down = 0; */
 
 
 
@@ -50,7 +51,7 @@ void handleInput()
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
-		mouse_down = 1;
+		/* mouse_down = 1; */
 
                 int mouseX, mouseY;
 
@@ -126,13 +127,13 @@ void handleInput()
         }
 
 	// test
-        if (event.type == SDL_MOUSEBUTTONUP)
+/*         if (event.type == SDL_MOUSEBUTTONUP)
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
 		mouse_down = 0;
 		}
-	}
+	} */
 
         if(event.type == SDL_KEYDOWN)
         {
@@ -156,8 +157,12 @@ void render(SDL_Renderer* renderer)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
+    /* Todo: die kann man beide nicht sehen! */
     //printf("render %f %f\n", target.x, target.y);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
+    filledCircleColor(renderer, 150, 150, 40, 0x00FF0000);
+
+
     //filledCircleColor(renderer, mouseX, mouseY, 5, 0xFF0000FF);
 
     // circle in bottom right corner used to measure end to end latency
@@ -180,17 +185,17 @@ void update(double deltaTime)
 
     lastX = mouseX;
     lastY = mouseY;
-
+/* todo: vllt nur return einfach?! */
     if(target.a == ANGLE_NONE) return;
     //printf("before %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
 
-    target.x += target.vX * deltaTime;
-    target.y += target.vY * deltaTime;
+    /* target.x += target.vX * deltaTime;
+    target.y += target.vY * deltaTime; */
 
     //printf("%lf\n", deltaTime);
     //printf("after %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
 
-    if( target.x < -target.r * 2 ||
+    /* if( target.x < -target.r * 2 ||
         target.x > WIDTH + (target.r * 2) ||
         target.y < -target.r * 2 ||
         target.y > HEIGHT + (target.r * 2))
@@ -210,7 +215,7 @@ void update(double deltaTime)
         
         iteration++;
         if(iteration >= NUM_ITERATIONS) finish();
-    }
+    } */
 }
 
 int main(int argc, char** argv)

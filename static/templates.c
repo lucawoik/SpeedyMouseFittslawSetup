@@ -1,6 +1,7 @@
 #include "main.h"
 
 //// swap array elements
+/* Todo: ist vllt notwendig in initTargetTemplates */
 //void swap(TargetTemplate **a, TargetTemplate **b)
 //{
 //    //if(DEBUG > 1) printf("swap()\n");
@@ -9,7 +10,7 @@
 //    *b = temp;
 //}
 
-
+/* todo: verändert sich, weil es dann eigentlich nur noch den radus davon braucht! */
 TargetTemplate createTargetTemplate(int r, int d, int v, int a)
 {
     //if(DEBUG > 1) printf("createTargetTemplate()\n");
@@ -60,7 +61,7 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
     {
         switch(targetTemplate->a)
         {
-        case ANGLE_TOWARDS: // towards
+        /* case ANGLE_TOWARDS: // towards
             target.vX = targetTemplate->v;
             target.vY = 0;
             if(x < target.x) target.vX *= -1;
@@ -86,7 +87,7 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
             target.vX = targetTemplate->v;
             target.vY = 0;
             if(x > target.x) target.vX *= -1;
-            break;
+            break; */
         case ANGLE_NONE:
 	    //printf("static\n");
 	    target.vX = 0;
@@ -116,12 +117,9 @@ void initTargetTemplates()
         {
             for(int v = 0; v < NUM_VELOCITY; v++)
             {
-                for(int a = 0; a < NUM_ANGLE; a++)
-                {
                     staticTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], 0, 5);
-                    movingTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], TARGET_VELOCITY[v], a);
+                    /* movingTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], TARGET_VELOCITY[v], a); */
                     i++;
-                }
             }
         }
     }
@@ -143,9 +141,9 @@ void initTargetTemplates()
 		swap(a, b);
         //printf(" after: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
         //printf("%d %f\n", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
-        TargetTemplate *c = &movingTargetTemplates[j];
+        /* TargetTemplate *c = &movingTargetTemplates[j];
         TargetTemplate *d = &movingTargetTemplates[rand() % (NUM_ITERATIONS / 2)];
-		swap(c, d);
+		swap(c, d); */
 		//swap(&movingTargetTemplates[j], &movingTargetTemplates[rand() % NUM_ITERATIONS]);
 	}
 
@@ -159,8 +157,8 @@ void initTargetTemplates()
 
     for(int j = 0; j < NUM_ITERATIONS / 2; j++)
     {
-        targetTemplates[j * 2] = &staticTargetTemplates[j];
-        targetTemplates[j * 2 + 1] = &movingTargetTemplates[j];
+        targetTemplates[j] = &staticTargetTemplates[j];
+        /* targetTemplates[j * 2 + 1] = &movingTargetTemplates[j]; */
     }
 
     //for(int j = 0; j < NUM_ITERATIONS; j++)

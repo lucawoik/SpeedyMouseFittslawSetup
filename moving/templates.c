@@ -1,6 +1,7 @@
 #include "main.h"
 
 //// swap array elements
+/* Todo: ist vllt notwendig in initTargetTemplates */
 //void swap(TargetTemplate **a, TargetTemplate **b)
 //{
 //    //if(DEBUG > 1) printf("swap()\n");
