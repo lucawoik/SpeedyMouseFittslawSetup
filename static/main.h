@@ -66,6 +66,7 @@ typedef struct {
     int a;
 } TargetTemplate;
 
+
 typedef struct {
     double x;
     double y;
@@ -153,5 +154,9 @@ void render(SDL_Renderer* renderer);
 void update(double deltaTime);
 
 int main(int argc, char** argv);
+
+// Circle
+
+void circleDistribution();
 
 #endif

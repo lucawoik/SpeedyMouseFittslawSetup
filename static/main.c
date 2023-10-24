@@ -160,7 +160,7 @@ void render(SDL_Renderer* renderer)
     /* Todo: die kann man beide nicht sehen! */
     //printf("render %f %f\n", target.x, target.y);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
-    filledCircleColor(renderer, 150, 150, 40, 0x00FF0000);
+    filledCircleColor(renderer, 150, 150, 40, TARGET_COLOR);
 
 
     //filledCircleColor(renderer, mouseX, mouseY, 5, 0xFF0000FF);
