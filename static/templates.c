@@ -169,27 +169,38 @@ void initTargetTemplates()
     if(DEBUG > 1) printf("end initTargetTemplates()\n");
 }
 
-void circleDistribution(){
-    int radius = 200; 
-    
-    /* 
-    js radius
 
-    field = $(".field")
-    container = $("#container")
-    width = container.width
-    hight = container.hight
-    angle = 0
-    step = (2 * Math.PI) / fields.length;
+void circleDistribution(SDL_Renderer* renderer) {
+    int x = 0;
+    int y = 0;
+    int i = 0;
+    double angle = 0.0;
 
-    fields.each(function(){
-        var x = Math.round(
-            ...
-        )
-        .......
-    })
-     */
+    double radius = 200.0;
+    int numFields = 8;
+    double step = (2.0 * M_PI) / numFields;
+    int circles[numFields][2];
+    /* test !!! */
+    int fieldWidth = 50;
+    int fieldHeight = 50;
 
+    // Get the fields and container elements
+    // and calculate the width and height of the container
+
+    // Calculate the position of each field
+    for (i = 0; i < numFields; i++)
+    {
+        x = round(WIDTH / 2 + radius * cos(angle) - fieldWidth / 2);
+        y = round(HEIGHT / 2 + radius * sin(angle) - fieldHeight / 2);
+
+        // Set the position of the field
+        /* circles [i][0] = x;
+        circles [i][1] = y; */
+        filledCircleColor(renderer, x, y, 40, TARGET_COLOR);
+
+        angle += step;
+    }
+  printf("CircleArray: ", circles);
 }
 
 
@@ -225,3 +236,4 @@ int main()
    closegraph();
    return 0;
 } */
+

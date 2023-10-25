@@ -32,7 +32,6 @@ Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
 /* int mouse_down = 0; */
 
 
-
 void finish()
 {
     logClicks();
@@ -162,6 +161,8 @@ void render(SDL_Renderer* renderer)
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
     filledCircleColor(renderer, 150, 150, 40, TARGET_COLOR);
 
+    circleDistribution(renderer);
+
 
     //filledCircleColor(renderer, mouseX, mouseY, 5, 0xFF0000FF);
 
@@ -235,6 +236,8 @@ int main(int argc, char** argv)
     srand(time(0));
 
     SDL_Init(SDL_INIT_EVERYTHING);
+
+    // int *circles = circleDistribution();
 
     initTargetTemplates();
 
