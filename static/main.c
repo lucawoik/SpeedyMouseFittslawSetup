@@ -156,15 +156,11 @@ void render(SDL_Renderer* renderer)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
-    /* Todo: die kann man beide nicht sehen! */
+   
     //printf("render %f %f\n", target.x, target.y);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
-    filledCircleColor(renderer, 150, 150, 40, TARGET_COLOR);
 
-    circleDistribution(renderer);
-
-
-    //filledCircleColor(renderer, mouseX, mouseY, 5, 0xFF0000FF);
+    circleDistribution(renderer, 150, 8, target.r);
 
     // circle in bottom right corner used to measure end to end latency
     //if(!mouse_down)

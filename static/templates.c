@@ -2,18 +2,18 @@
 
 //// swap array elements
 /* Todo: ist vllt notwendig in initTargetTemplates */
-//void swap(TargetTemplate **a, TargetTemplate **b)
+// void swap(TargetTemplate **a, TargetTemplate **b)
 //{
-//    //if(DEBUG > 1) printf("swap()\n");
+//     //if(DEBUG > 1) printf("swap()\n");
 //	TargetTemplate *temp = *a;
-//    *a = *b;
-//    *b = temp;
-//}
+//     *a = *b;
+//     *b = temp;
+// }
 
 /* todo: verändert sich, weil es dann eigentlich nur noch den radus davon braucht! */
 TargetTemplate createTargetTemplate(int r, int d, int v, int a)
 {
-    //if(DEBUG > 1) printf("createTargetTemplate()\n");
+    // if(DEBUG > 1) printf("createTargetTemplate()\n");
 
     TargetTemplate targetTemplate;
     targetTemplate.r = r;
@@ -25,30 +25,30 @@ TargetTemplate createTargetTemplate(int r, int d, int v, int a)
 
 Target createTarget(int x, int y, TargetTemplate *targetTemplate)
 {
-    //if(DEBUG > 1) printf("createTarget()\n");
+    // if(DEBUG > 1) printf("createTarget()\n");
 
-    //TargetTemplate *targetTemplate = targetTemplates[iteration];
+    // TargetTemplate *targetTemplate = targetTemplates[iteration];
     Target target;
 
     int yDist = abs((HEIGHT / 2) - y);
 
     // if the mouse is too far away from the line, create a dummy target
-    if(yDist >= targetTemplate->d)
+    if (yDist >= targetTemplate->d)
     {
-        target = (Target) {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
+        target = (Target){WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
         isSetupTarget = 1;
         return target;
     }
     int xDist = sqrt(pow(targetTemplate->d, 2) - pow(yDist, 2));
 
-    //printf("%d %d %d %d\n", x, y, xDist, yDist);
+    // printf("%d %d %d %d\n", x, y, xDist, yDist);
 
-    //printf("pow: %f\n", pow(targetTemplate->d, 2));
-    //printf("multi: %f\n", targetTemplate->d * targetTemplate->d);
-    //printf("pythagoras: %f\n", sqrt(pow(targetTemplate->d, 2) - pow(yDist, 2)));
-    //printf("d: %d\n", targetTemplate->d);
-    //printf("yDist: %d\n", yDist);
-    //printf("xDist: %d\n", xDist);
+    // printf("pow: %f\n", pow(targetTemplate->d, 2));
+    // printf("multi: %f\n", targetTemplate->d * targetTemplate->d);
+    // printf("pythagoras: %f\n", sqrt(pow(targetTemplate->d, 2) - pow(yDist, 2)));
+    // printf("d: %d\n", targetTemplate->d);
+    // printf("yDist: %d\n", yDist);
+    // printf("xDist: %d\n", xDist);
 
     target.y = HEIGHT / 2;
     target.x = x < WIDTH / 2 ? x + xDist : x - xDist;
@@ -57,183 +57,109 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
     target.v = targetTemplate->v;
     target.a = targetTemplate->a;
 
-    if(targetTemplate->v > 0)
+    if (targetTemplate->v > 0)
     {
-        switch(targetTemplate->a)
+        switch (targetTemplate->a)
         {
-        /* case ANGLE_TOWARDS: // towards
-            target.vX = targetTemplate->v;
-            target.vY = 0;
-            if(x < target.x) target.vX *= -1;
-            break;
-        case ANGLE_DIAGONAL_TOWARDS: // diagonally towards
-            target.vX = sqrt(pow(targetTemplate->v, 2) / 2);
-            target.vY = target.vX;
-            if(x < target.x) target.vX *= -1;
-            if(rand() % 2 == 0) target.vY *= -1;
-            break;
-        case ANGLE_PERPENDICULAR: // perpendicular
-            target.vX = 0;
-            target.vY = targetTemplate->v;
-            if(rand() % 2 == 0) target.vY *= -1;
-            break;
-        case ANGLE_DIAGONAL_AWAY: // diagonally away
-            target.vX = sqrt(pow(targetTemplate->v, 2) / 2);
-            target.vY = target.vX;
-            if(x > target.x) target.vX *= -1;
-            if(rand() % 2 == 0) target.vY *= -1;
-            break;
-        case ANGLE_AWAY: // away
-            target.vX = targetTemplate->v;
-            target.vY = 0;
-            if(x > target.x) target.vX *= -1;
-            break; */
         case ANGLE_NONE:
-	    //printf("static\n");
-	    target.vX = 0;
-	    target.vY = 0;
+            // printf("static\n");
+            target.vX = 0;
+            target.vY = 0;
             break;
         }
     }
     else
     {
-	target.vX = 0;
-	target.vY = 0;
+        target.vX = 0;
+        target.vY = 0;
     }
 
-    //printf("template %f %f %d\n", target.vX, target.vY, targetTemplate->a);
+    // printf("template %f %f %d\n", target.vX, target.vY, targetTemplate->a);
 
     return target;
 }
 
 void initTargetTemplates()
 {
-    if(DEBUG > 1) printf("initTargetTemplates()\n");
+    if (DEBUG > 1)
+        printf("initTargetTemplates()\n");
 
     int i = 0;
-    for(int r = 0; r < NUM_RADIUS; r++)
+    for (int r = 0; r < NUM_RADIUS; r++)
     {
-        for(int d = 0; d < NUM_DISTANCE; d++)
+        for (int d = 0; d < NUM_DISTANCE; d++)
         {
-            for(int v = 0; v < NUM_VELOCITY; v++)
+            for (int v = 0; v < NUM_VELOCITY; v++)
             {
-                    staticTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], 0, 5);
-                    /* movingTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], TARGET_VELOCITY[v], a); */
-                    i++;
+                staticTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], 0, 5);
+                i++;
             }
         }
     }
 
-    if(DEBUG > 1) printf("templates created\n");
+    if (DEBUG > 1)
+        printf("templates created\n");
 
-    //for(int j = 0; j < 10; j++)
-    //{
-    //    TargetTemplate t = movingTargetTemplates[j];
-    //    printf("r %d d %d v %d a %d\n", t.r, t.d, t.v, t.a);
-    //}
+   // for(int j = 0; j < 10; j++)
+     //{
+    //     TargetTemplate t = movingTargetTemplates[j];
+    //     printf("r %d d %d v %d a %d\n", t.r, t.d, t.v, t.a);
+    // }
 
-	for(int j = 0; j < NUM_ITERATIONS / 2; j++)
-	{
-        //printf("%d %f -> ", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
+    for (int j = 0; j < NUM_ITERATIONS / 2; j++)
+    {
+        // printf("%d %f -> ", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
         TargetTemplate *a = &staticTargetTemplates[j];
         TargetTemplate *b = &staticTargetTemplates[rand() % (NUM_ITERATIONS / 2)];
-        //printf("before: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
-		swap(a, b);
-        //printf(" after: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
-        //printf("%d %f\n", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
+        // printf("before: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
+        swap(a, b);
+        // printf(" after: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
+        // printf("%d %f\n", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
         /* TargetTemplate *c = &movingTargetTemplates[j];
         TargetTemplate *d = &movingTargetTemplates[rand() % (NUM_ITERATIONS / 2)];
-		swap(c, d); */
-		//swap(&movingTargetTemplates[j], &movingTargetTemplates[rand() % NUM_ITERATIONS]);
-	}
+        swap(c, d); */
+        // swap(&movingTargetTemplates[j], &movingTargetTemplates[rand() % NUM_ITERATIONS]);
+    }
 
-    //for(int j = 0; j < NUM_ITERATIONS / 2; j++)
+    // for(int j = 0; j < NUM_ITERATIONS / 2; j++)
     //{
-    //    TargetTemplate t = movingTargetTemplates[j];
-    //    printf("r %d d %d v %d a %d\n", t.r, t.d, t.v, t.a);
-    //}
+    //     TargetTemplate t = movingTargetTemplates[j];
+    //     printf("r %d d %d v %d a %d\n", t.r, t.d, t.v, t.a);
+    // }
 
-    if(DEBUG > 1) printf("shuffled\n");
+    if (DEBUG > 1)
+        printf("shuffled\n");
 
-    for(int j = 0; j < NUM_ITERATIONS / 2; j++)
+    for (int j = 0; j < NUM_ITERATIONS / 2; j++)
     {
         targetTemplates[j] = &staticTargetTemplates[j];
         /* targetTemplates[j * 2 + 1] = &movingTargetTemplates[j]; */
     }
 
-    //for(int j = 0; j < NUM_ITERATIONS; j++)
+    // for(int j = 0; j < NUM_ITERATIONS; j++)
     //{
-    //    printf("%d %d\n", j, targetTemplates[j]->v);
-    //}
+    //     printf("%d %d\n", j, targetTemplates[j]->v);
+    // }
 
-    if(DEBUG > 1) printf("end initTargetTemplates()\n");
+    if (DEBUG > 1)
+        printf("end initTargetTemplates()\n");
 }
 
-
-void circleDistribution(SDL_Renderer* renderer) {
-    int x = 0;
-    int y = 0;
-    int i = 0;
-    double angle = 0.0;
-
-    double radius = 200.0;
-    int numFields = 8;
-    double step = (2.0 * M_PI) / numFields;
-    int circles[numFields][2];
-    /* test !!! */
-    int fieldWidth = 50;
-    int fieldHeight = 50;
-
-    // Get the fields and container elements
-    // and calculate the width and height of the container
-
-    // Calculate the position of each field
-    for (i = 0; i < numFields; i++)
-    {
-        x = round(WIDTH / 2 + radius * cos(angle) - fieldWidth / 2);
-        y = round(HEIGHT / 2 + radius * sin(angle) - fieldHeight / 2);
-
-        // Set the position of the field
-        /* circles [i][0] = x;
-        circles [i][1] = y; */
-        filledCircleColor(renderer, x, y, 40, TARGET_COLOR);
-
-        angle += step;
-    }
-  printf("CircleArray: ", circles);
-}
-
-
-/* #include<graphics.h>
-#include<conio.h>
-#include<dos.h>
-
-int main()
+void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius)
 {
-   int gd = DETECT, gm, x, y, color, angle = 0;
-   struct arccoordstype a, b;
+    float angle, step;
+    int cx = WIDTH / 2;
+    int cy = HEIGHT / 2;
 
-   initgraph(&gd, &gm, "C:\\TC\\BGI");
-   delay(2000);
+    step = (2 * M_PI) / numCircles;
 
-   while (angle <= 360)
-   {
-      setcolor(BLACK);
-      arc(getmaxx()/2, getmaxy()/2, angle, angle + 2, 100);
-      setcolor(RED);
-      getarccoords(&a);
-      circle(a.xstart, a.ystart, 25);
-      setcolor(BLACK);
-      arc(getmaxx()/2, getmaxy()/2, angle, angle + 2, 150);
-      getarccoords(&a);
-      setcolor(GREEN);
-      circle(a.xstart, a.ystart, 25);
-      angle = angle+5;
-      delay(50);
-   }
+    for (int i = 0; i < numCircles; i++)
+    {
+        angle = step * i;
 
-   getch();
-   closegraph();
-   return 0;
-} */
-
+        int x = cx + radius * cos(angle);
+        int y = cy + radius * sin(angle);
+        /* TODO: Könnte man noch mit "filledCircleColor" ersetzten, dann könnte man die Farbe als konstante festlegen */
+        filledCircleRGBA(renderer, x, y, circleRadius, 169, 169, 169, 255);
+    }
+}
