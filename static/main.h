@@ -12,13 +12,14 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
-#define EASY 0
+/* #define EASY 0
 #define MEDIUM 1
-#define HARD 2
+#define HARD 2 */
 
 #define NUM_RADIUS 3
-#define NUM_DISTANCE 1
-#define NUM_VELOCITY 2
+/* todo: nicht mehr notwenid */
+/* #define NUM_DISTANCE 1
+#define NUM_VELOCITY 2 */
 /* #define NUM_ANGLE 5 */
 
 /* #define ANGLE_TOWARDS 0
@@ -33,10 +34,9 @@
 #define DEBUG 0
 
 #define TARGET_COLOR 0xFF000000
-// TODO: nur mal zwei wenn man auch sttic mmit drann hat
-// wenn man das rausnimmt, dann auch überall sonst nochmal kontrilieren und den teiler rausnehmen
-/* * NUM_ANGLE  */
-#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY 
+/* todo: NUM_DISTANCE nicht mehr notwenid */
+/* * NUM_DISTANCE * NUM_VELOCITY  */
+#define NUM_ITERATIONS NUM_RADIUS 
 
 #define LOG_PATH "log"
 
@@ -48,8 +48,9 @@ extern int LATENCY_MOVE_MIN;
 extern int LATENCY_MOVE_MAX;
 
 extern int TARGET_RADIUS[NUM_RADIUS];
-extern int TARGET_DISTANCE[NUM_DISTANCE];
-extern int TARGET_VELOCITY[NUM_VELOCITY];
+// TODO: brauch ich später nicht mehr (ziel wird ja anders positioniert)
+/* extern int TARGET_DISTANCE[NUM_DISTANCE];
+extern int TARGET_VELOCITY[NUM_VELOCITY]; */
 // extern int TARGET_ANGLE[NUM_ANGLE];
 
 extern int isSetupTarget;
@@ -66,16 +67,16 @@ typedef struct {
     int a;
 } TargetTemplate;
 
-
+/*     int d;
+    int v;
+    int a; */
+    /*     double vX;
+    double vY; */
 typedef struct {
     double x;
     double y;
     int r;
-    int d;
-    int v;
-    int a;
-    double vX;
-    double vY;
+
 } Target;
 
 typedef struct {
@@ -118,7 +119,8 @@ Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
 
 // templates
-TargetTemplate createTargetTemplate(int r, int d, int v, int a);
+/* , int d, int v, int a */
+TargetTemplate createTargetTemplate(int r);
 
 Target createTarget(int x, int y, TargetTemplate *targetTemplate);
 

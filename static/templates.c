@@ -11,15 +11,16 @@
 // }
 
 /* todo: verändert sich, weil es dann eigentlich nur noch den radus davon braucht! */
-TargetTemplate createTargetTemplate(int r, int d, int v, int a)
+/* , int d, int v, int a */
+TargetTemplate createTargetTemplate(int r)
 {
     // if(DEBUG > 1) printf("createTargetTemplate()\n");
 
     TargetTemplate targetTemplate;
     targetTemplate.r = r;
-    targetTemplate.d = d;
+    /* targetTemplate.d = d;
     targetTemplate.v = v;
-    targetTemplate.a = a;
+    targetTemplate.a = a; */
     return targetTemplate;
 }
 
@@ -33,9 +34,10 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
     int yDist = abs((HEIGHT / 2) - y);
 
     // if the mouse is too far away from the line, create a dummy target
+    /* TODO: Später nicht mehr notwendig */
     if (yDist >= targetTemplate->d)
     {
-        target = (Target){WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
+        target = (Target){WIDTH / 2 - 50, HEIGHT / 2 - 50, 100};
         isSetupTarget = 1;
         return target;
     }
@@ -53,11 +55,11 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
     target.y = HEIGHT / 2;
     target.x = x < WIDTH / 2 ? x + xDist : x - xDist;
     target.r = targetTemplate->r;
-    target.d = targetTemplate->d;
+/*     target.d = targetTemplate->d;
     target.v = targetTemplate->v;
-    target.a = targetTemplate->a;
+    target.a = targetTemplate->a; */
 
-    if (targetTemplate->v > 0)
+/*     if (targetTemplate->v > 0)
     {
         switch (targetTemplate->a)
         {
@@ -72,7 +74,7 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
     {
         target.vX = 0;
         target.vY = 0;
-    }
+    } */
 
     // printf("template %f %f %d\n", target.vX, target.vY, targetTemplate->a);
 
@@ -87,14 +89,15 @@ void initTargetTemplates()
     int i = 0;
     for (int r = 0; r < NUM_RADIUS; r++)
     {
-        for (int d = 0; d < NUM_DISTANCE; d++)
+       /*  for (int d = 0; d < NUM_DISTANCE; d++)
         {
             for (int v = 0; v < NUM_VELOCITY; v++)
-            {
-                staticTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], 0, 5);
+            { */
+            /* , TARGET_DISTANCE[d], 0, 5 */
+                staticTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r]);
                 i++;
-            }
-        }
+ /*            }
+        } */
     }
 
     if (DEBUG > 1)
@@ -106,6 +109,8 @@ void initTargetTemplates()
     //     printf("r %d d %d v %d a %d\n", t.r, t.d, t.v, t.a);
     // }
 
+/* TODO: wahrschienlihc auch nicht notwendig, da ja eine feste reihenfolge der orte besteht. 
+Man könnte höchstend  die Radiie und */
     for (int j = 0; j < NUM_ITERATIONS / 2; j++)
     {
         // printf("%d %f -> ", staticTargetTemplates[j].r, staticTargetTemplates[j].d);

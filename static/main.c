@@ -14,23 +14,23 @@ double trial_time;
 int travel_distance;
 int lastX;
 int lastY;
-
+/* TODO: unnötig */
 int isSetupTarget = 1;
 
 Trial current_trial;
 
 int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 80};
-// int TARGET_DISTANCE[NUM_DISTANCE] = {200, 400, 600};  ????
-int TARGET_DISTANCE[NUM_DISTANCE] = {500};
-int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400};
+// TODO: brauch ich später nicht mehr (ziel wird ja anders positioniert)
+/* int TARGET_DISTANCE[NUM_DISTANCE] = {500};
+int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400}; */
 // int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERPENDICULAR, ANGLE_DIAGONAL_AWAY, ANGLE_AWAY};
 
 /* TODO: anpassen an static! */
 // starting target
-Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
+// Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
+Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100};
 
 /* int mouse_down = 0; */
-
 
 void finish()
 {
@@ -39,7 +39,7 @@ void finish()
     SDL_Quit();
     exit(1);
 }
-
+/*TODO: noch mal anschaun ob das mit den rausgenommenen Werten wie distanc eund velocity immernoch die richtigen sachen berechnet */
 void handleInput()
 {
     SDL_Event event;
@@ -50,7 +50,7 @@ void handleInput()
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
-		/* mouse_down = 1; */
+                /* mouse_down = 1; */
 
                 int mouseX, mouseY;
 
@@ -58,41 +58,41 @@ void handleInput()
 
                 int success = checkCollision(mouseX, mouseY, &target);
 
-                if(!isSetupTarget)
+                if (!isSetupTarget)
                 {
                     // handle click
-                    Click click = { click_count_total,
-                                    millis(),
-                                    target.r * 2,
-                                    target.d,
-                                    target.v,
-                                    target.a,
-                                    target.x,
-                                    target.y,
-                                    mouseX,
-                                    mouseY,
-                                    max(calculateDistance(target.x, target.y, mouseX, mouseY) - target.r, 0),
-                                    success};
+                    /*                                    target.d,
+                                   target.v,
+                                   target.a, */
+                    Click click = {click_count_total,
+                                   millis(),
+                                   target.r * 2,
+
+                                   target.x,
+                                   target.y,
+                                   mouseX,
+                                   mouseY,
+                                   max(calculateDistance(target.x, target.y, mouseX, mouseY) - target.r, 0),
+                                   success};
 
                     clicks[click_count_total] = click;
                     click_count_total++;
                 }
 
-
                 click_count++;
 
-                if(success)
+                if (success)
                 {
-                    if(!isSetupTarget)
+                    if (!isSetupTarget)
                     {
-                        //printf("success\n");
+                        // printf("success\n");
                         current_trial.time = trial_time;
                         current_trial.clicks = click_count;
                         current_trial.travel_distance = travel_distance;
                         current_trial.success = 1;
                         trials[iteration] = current_trial;
-                        iteration++;   
-                        if(iteration >= NUM_ITERATIONS) finish();
+                        iteration++;
+                        if (iteration >= NUM_ITERATIONS) finish();
                     }
 
                     click_count = 0;
@@ -102,41 +102,41 @@ void handleInput()
 
                     target = createTarget(mouseX, mouseY, targetTemplates[iteration]);
 
-    		    //printf("main %f %f\n", target.x, target.y);
+                    // printf("main %f %f\n", target.x, target.y);
+                    /*  target.d,
+                         target.v,
+                         target.a, */
+                    current_trial = (Trial){iteration,
+                                            millis(),
+                                            target.r * 2,
+                                            target.x,
+                                            target.y,
+                                            mouseX,
+                                            mouseY,
+                                            0,
+                                            0,
+                                            0,
+                                            0};
 
-                    current_trial = (Trial) {iteration,
-                                             millis(),
-                                             target.r * 2,
-                                             target.d,
-                                             target.v,
-                                             target.a,
-                                             target.x,
-                                             target.y,
-                                             mouseX,
-                                             mouseY,
-                                             0,
-                                             0,
-                                             0,
-                                             0};
-
-                    if(DEBUG > 1) printf("target created: x %f y %f r %d vX %f vY %f\n", target.x, target.y, target.r, target.vX, target.vY);
-
+                    /* if (DEBUG > 1)
+                        printf("target created: x %f y %f r %d vX %f vY %f\n", target.x, target.y, target.r, target.vX, target.vY);
+                */
                 }
             }
         }
 
-	// test
-/*         if (event.type == SDL_MOUSEBUTTONUP)
-        {
-            if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
-            {
-		mouse_down = 0;
-		}
-	} */
+        // test
+        /*         if (event.type == SDL_MOUSEBUTTONUP)
+                {
+                    if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
+                    {
+                mouse_down = 0;
+                }
+            } */
 
-        if(event.type == SDL_KEYDOWN)
+        if (event.type == SDL_KEYDOWN)
         {
-            switch(event.key.keysym.sym)
+            switch (event.key.keysym.sym)
             {
             case SDLK_q:
                 finish();
@@ -150,20 +150,19 @@ void handleInput()
 
 void render(SDL_Renderer* renderer)
 {
-    //int mouseX, mouseY;
-    //SDL_GetMouseState(&mouseX, &mouseY);
+    // int mouseX, mouseY;
+    // SDL_GetMouseState(&mouseX, &mouseY);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
-   
-    //printf("render %f %f\n", target.x, target.y);
+    // printf("render %f %f\n", target.x, target.y);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
 
     circleDistribution(renderer, 150, 8, target.r);
 
     // circle in bottom right corner used to measure end to end latency
-    //if(!mouse_down)
+    // if(!mouse_down)
     //{
     //	filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
     //}
@@ -182,15 +181,16 @@ void update(double deltaTime)
 
     lastX = mouseX;
     lastY = mouseY;
-/* todo: vllt nur return einfach?! */
-    if(target.a == ANGLE_NONE) return;
-    //printf("before %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
+    /* todo: vllt nur return einfach?! */
+    /* if (target.a == ANGLE_NONE)
+        return; */
+    // printf("before %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
 
     /* target.x += target.vX * deltaTime;
     target.y += target.vY * deltaTime; */
 
-    //printf("%lf\n", deltaTime);
-    //printf("after %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
+    // printf("%lf\n", deltaTime);
+    // printf("after %f %f %f %f\n", target.x, target.y, target.vX, targe/*  */t.vX * deltaTime);
 
     /* if( target.x < -target.r * 2 ||
         target.x > WIDTH + (target.r * 2) ||
@@ -209,25 +209,31 @@ void update(double deltaTime)
         travel_distance = 0;
         trial_time = 0;
         isSetupTarget = 1;
-        
+
         iteration++;
         if(iteration >= NUM_ITERATIONS) finish();
     } */
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    if(sscanf(argv[1], "%d", &PARTICIPANT_ID) == EOF) printf("incorrect partcipant id");
-    if(sscanf(argv[2], "%d", &EXPERIMENT) == EOF) printf("incorrect trial id");
-    if(sscanf(argv[3], "%d", &LATENCY_CLICK_MIN) == EOF) printf("incorrect latency click min");
-    if(sscanf(argv[4], "%d", &LATENCY_CLICK_MAX) == EOF) printf("incorrect latency click max");
-    if(sscanf(argv[5], "%d", &LATENCY_MOVE_MIN) == EOF) printf("incorrect latency move min");
-    if(sscanf(argv[6], "%d", &LATENCY_MOVE_MAX) == EOF) printf("incorrect latency move max");
+    if (sscanf(argv[1], "%d", &PARTICIPANT_ID) == EOF)
+        printf("incorrect partcipant id");
+    if (sscanf(argv[2], "%d", &EXPERIMENT) == EOF)
+        printf("incorrect trial id");
+    if (sscanf(argv[3], "%d", &LATENCY_CLICK_MIN) == EOF)
+        printf("incorrect latency click min");
+    if (sscanf(argv[4], "%d", &LATENCY_CLICK_MAX) == EOF)
+        printf("incorrect latency click max");
+    if (sscanf(argv[5], "%d", &LATENCY_MOVE_MIN) == EOF)
+        printf("incorrect latency move min");
+    if (sscanf(argv[6], "%d", &LATENCY_MOVE_MAX) == EOF)
+        printf("incorrect latency move max");
 
     double timer;
     double deltaTime;
-    SDL_Window* window;
-    SDL_Renderer* renderer;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
 
     srand(time(0));
 
@@ -245,9 +251,9 @@ int main(int argc, char** argv)
 
     system("xsetroot -cursor_name arrow");
 
-    //thread inputThread(handleInput);
+    // thread inputThread(handleInput);
 
-    while(1)
+    while (1)
     {
         deltaTime = (micros() - timer) / 1000000.0;
         timer = micros();
@@ -255,7 +261,7 @@ int main(int argc, char** argv)
         update(deltaTime);
         handleInput();
         render(renderer);
-	//usleep(2000);
+        // usleep(2000);
     }
 
     SDL_Quit();

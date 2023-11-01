@@ -19,8 +19,9 @@ void logClicks()
 		printf("Error opening log file\n");
 		return;
 	}
-
-    fprintf(logFile, "id,timestamp_ms,participant_id,trial,latency_click_min,latency_click_max,latency_move_min,latency_move_max,target_width,target_distance,target_velocity,target_direction,target_x,target_y,cursor_x,cursor_y,distance_cursor_target,success\n");
+/* TODO: Alles rausnehmen was nicht mehr vorhanden oder wichitg!
+target_distance,,target_velocity */
+    fprintf(logFile, "id,timestamp_ms,participant_id,trial,latency_click_min,latency_click_max,latency_move_min,latency_move_max,target_width,target_direction,target_x,target_y,cursor_x,cursor_y,distance_cursor_target,success\n");
 
     // print clicks
     for(int i = 0; i < click_count_total; i++)
@@ -87,7 +88,9 @@ void logTrials()
 		return;
 	}
 
-    fprintf(logFile, "id,timestamp_ms,participant_id,trial,latency_click_min,latency_click_max,latency_move_min,latency_move_max,target_width,target_distance,target_velocity,target_direction,target_x,target_y,cursor_x,cursor_y,task_time_ms,clicks_needed,travel_distance,success\n");
+/* TODO: Alles rausnehmen was nicht mehr vorhanden oder wichitg!
+ target_distance,target_velocity, */
+    fprintf(logFile, "id,timestamp_ms,participant_id,trial,latency_click_min,latency_click_max,latency_move_min,latency_move_max,target_width,target_direction,target_x,target_y,cursor_x,cursor_y,task_time_ms,clicks_needed,travel_distance,success\n");
 
     // print clicks
     for(int i = 0; i < NUM_ITERATIONS; i++)
