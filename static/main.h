@@ -36,7 +36,7 @@
 #define TARGET_COLOR 0xFF000000
 /* todo: NUM_DISTANCE nicht mehr notwenid */
 /* * NUM_DISTANCE * NUM_VELOCITY  */
-#define NUM_ITERATIONS NUM_RADIUS 
+#define NUM_ITERATIONS NUM_RADIUS
 
 #define LOG_PATH "log"
 
@@ -56,15 +56,16 @@ extern int TARGET_VELOCITY[NUM_VELOCITY]; */
 extern int isSetupTarget;
 extern int click_count_total;
 
+/* nicht mehr notwendig, aber noch in den Logs drin */
 static const char *ANGLE_STRING[] = {
     "towards", "towards_diagonal", "perpendicular", "away_diagonal", "away", "none",
 };
-
+/*     int d;
+    int v;
+    int a; */
 typedef struct {
     int r;
-    int d;
-    int v;
-    int a;
+
 } TargetTemplate;
 
 /*     int d;
@@ -72,6 +73,7 @@ typedef struct {
     int a; */
     /*     double vX;
     double vY; */
+
 typedef struct {
     double x;
     double y;
@@ -79,6 +81,7 @@ typedef struct {
 
 } Target;
 
+/* Anpassen! */
 typedef struct {
     int id;
     long timestamp;
@@ -120,9 +123,15 @@ Click clicks[MAX_CLICKS];
 
 // templates
 /* , int d, int v, int a */
-TargetTemplate createTargetTemplate(int r);
+/* TargetTemplate createTargetTemplate(int r); */
 
-Target createTarget(int x, int y, TargetTemplate *targetTemplate);
+/* x und y waren bisher immer Mous x und y; 
+aber für ein Target braucht man die ja jetzt eigenltich nicht mehr */
+/* man könnte jetzt eigentlich create createTargetTemplate und create target zusammen ziehen
+weil das erste setzt ja nur den radius  um*/
+/* die radiie wären dann immer in der gleichen reihenfolge!!! */
+/* Target createTarget(int x, int y, TargetTemplate *targetTemplate); */
+Target createTarget(int x, int y, int r);
 
 void initTargetTemplates();
 

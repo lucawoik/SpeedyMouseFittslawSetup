@@ -19,7 +19,7 @@ int isSetupTarget = 1;
 
 Trial current_trial;
 
-int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 80};
+int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60};
 // TODO: brauch ich später nicht mehr (ziel wird ja anders positioniert)
 /* int TARGET_DISTANCE[NUM_DISTANCE] = {500};
 int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400}; */
@@ -28,7 +28,7 @@ int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400}; */
 /* TODO: anpassen an static! */
 // starting target
 // Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
-Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100};
+Target target = {WIDTH / 2, HEIGHT / 2, 100};
 
 /* int mouse_down = 0; */
 
@@ -92,15 +92,17 @@ void handleInput()
                         current_trial.success = 1;
                         trials[iteration] = current_trial;
                         iteration++;
-                        if (iteration >= NUM_ITERATIONS) finish();
+                        if (iteration >= NUM_ITERATIONS)
+                            finish();
                     }
 
                     click_count = 0;
                     travel_distance = 0;
                     trial_time = 0;
                     isSetupTarget = 0;
-
-                    target = createTarget(mouseX, mouseY, targetTemplates[iteration]);
+                    /* TODO: funktioniert nur wenn TARGET_RADIUS.length = NUM_ITERATIONS */
+                    /* neue belegung: x,y(der des ziels), radius */
+                    target = createTarget(150, 150, TARGET_RADIUS[iteration]);
 
                     // printf("main %f %f\n", target.x, target.y);
                     /*  target.d,
@@ -148,7 +150,7 @@ void handleInput()
     }
 }
 
-void render(SDL_Renderer* renderer)
+void render(SDL_Renderer *renderer)
 {
     // int mouseX, mouseY;
     // SDL_GetMouseState(&mouseX, &mouseY);
@@ -157,9 +159,9 @@ void render(SDL_Renderer* renderer)
     SDL_RenderClear(renderer);
 
     // printf("render %f %f\n", target.x, target.y);
+    /* SDL_Renderer *renderer, int radius, int numCircles, int circleRadius */
+    circleDistribution(renderer, 250, 7, target.r);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
-
-    circleDistribution(renderer, 150, 8, target.r);
 
     // circle in bottom right corner used to measure end to end latency
     // if(!mouse_down)
@@ -191,28 +193,29 @@ void update(double deltaTime)
 
     // printf("%lf\n", deltaTime);
     // printf("after %f %f %f %f\n", target.x, target.y, target.vX, targe/*  */t.vX * deltaTime);
-
-    /* if( target.x < -target.r * 2 ||
+    /* TODO: was ist das? */
+    if (target.x < -target.r * 2 ||
         target.x > WIDTH + (target.r * 2) ||
         target.y < -target.r * 2 ||
         target.y > HEIGHT + (target.r * 2))
     {
-        //printf("failed\n");
+        // printf("failed\n");
         current_trial.time = 0;
         current_trial.clicks = click_count;
         current_trial.travel_distance = travel_distance;
         current_trial.success = 0;
         trials[iteration] = current_trial;
 
-        target = (Target) {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
+        target = (Target){WIDTH / 2 - 50, HEIGHT / 2 - 50, 100};
         click_count = 0;
         travel_distance = 0;
         trial_time = 0;
         isSetupTarget = 1;
 
         iteration++;
-        if(iteration >= NUM_ITERATIONS) finish();
-    } */
+        if (iteration >= NUM_ITERATIONS)
+            finish();
+    }
 }
 
 int main(int argc, char **argv)
@@ -241,7 +244,7 @@ int main(int argc, char **argv)
 
     // int *circles = circleDistribution();
 
-    initTargetTemplates();
+    /* initTargetTemplates(); */
 
     window = SDL_CreateWindow(__FILE__, 0, 0, WIDTH, HEIGHT, SDL_WINDOW_FULLSCREEN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
