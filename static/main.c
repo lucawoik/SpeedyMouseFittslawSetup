@@ -19,7 +19,7 @@ int isSetupTarget = 1;
 
 Trial current_trial;
 
-int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60};
+int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100};
 // TODO: brauch ich später nicht mehr (ziel wird ja anders positioniert)
 /* int TARGET_DISTANCE[NUM_DISTANCE] = {500};
 int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400}; */
@@ -27,8 +27,8 @@ int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400}; */
 
 /* TODO: anpassen an static! */
 // starting target
-// Target target = {WIDTH / 2 - 50, HEIGHT / 2 - 50, 100, 0, 0};
-Target target = {WIDTH / 2, HEIGHT / 2, 100};
+/* TODO: erstes TArget, das wird also nicht dynamisch gesetzt! */
+Target target = {150, 150, 100};
 
 /* int mouse_down = 0; */
 
@@ -58,16 +58,13 @@ void handleInput()
 
                 int success = checkCollision(mouseX, mouseY, &target);
 
+                /* TODO: setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
                 {
                     // handle click
-                    /*                                    target.d,
-                                   target.v,
-                                   target.a, */
                     Click click = {click_count_total,
                                    millis(),
                                    target.r * 2,
-
                                    target.x,
                                    target.y,
                                    mouseX,
@@ -83,6 +80,8 @@ void handleInput()
 
                 if (success)
                 {
+
+                    /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                     if (!isSetupTarget)
                     {
                         // printf("success\n");
@@ -100,6 +99,7 @@ void handleInput()
                     travel_distance = 0;
                     trial_time = 0;
                     isSetupTarget = 0;
+                    /* TODO: hier werden die neuen targets generiert */
                     /* TODO: funktioniert nur wenn TARGET_RADIUS.length = NUM_ITERATIONS */
                     /* neue belegung: x,y(der des ziels), radius */
                     target = createTarget(150, 150, TARGET_RADIUS[iteration]);
@@ -160,7 +160,7 @@ void render(SDL_Renderer *renderer)
 
     // printf("render %f %f\n", target.x, target.y);
     /* SDL_Renderer *renderer, int radius, int numCircles, int circleRadius */
-    circleDistribution(renderer, 250, 7, target.r);
+    circleDistribution(renderer, 250, NUM_CIRCLES, target.r);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
 
     // circle in bottom right corner used to measure end to end latency
@@ -193,29 +193,29 @@ void update(double deltaTime)
 
     // printf("%lf\n", deltaTime);
     // printf("after %f %f %f %f\n", target.x, target.y, target.vX, targe/*  */t.vX * deltaTime);
-    /* TODO: was ist das? */
-    if (target.x < -target.r * 2 ||
-        target.x > WIDTH + (target.r * 2) ||
-        target.y < -target.r * 2 ||
-        target.y > HEIGHT + (target.r * 2))
-    {
-        // printf("failed\n");
-        current_trial.time = 0;
-        current_trial.clicks = click_count;
-        current_trial.travel_distance = travel_distance;
-        current_trial.success = 0;
-        trials[iteration] = current_trial;
 
-        target = (Target){WIDTH / 2 - 50, HEIGHT / 2 - 50, 100};
-        click_count = 0;
-        travel_distance = 0;
-        trial_time = 0;
-        isSetupTarget = 1;
+    /*     if (target.x < -target.r * 2 ||
+            target.x > WIDTH + (target.r * 2) ||
+            target.y < -target.r * 2 ||
+            target.y > HEIGHT + (target.r * 2))
+        {
+            // printf("failed\n");
+            current_trial.time = 0;
+            current_trial.clicks = click_count;
+            current_trial.travel_distance = travel_distance;
+            current_trial.success = 0;
+            trials[iteration] = current_trial;
+            TODO: ANPASSES!!!!!!!
+            target = (Target){400, 400, 100};
+            click_count = 0;
+            travel_distance = 0;
+            trial_time = 0;
+            isSetupTarget = 1;
 
-        iteration++;
-        if (iteration >= NUM_ITERATIONS)
-            finish();
-    }
+            iteration++;
+            if (iteration >= NUM_ITERATIONS)
+                finish();
+        } */
 }
 
 int main(int argc, char **argv)

@@ -16,7 +16,7 @@
 #define MEDIUM 1
 #define HARD 2 */
 
-#define NUM_RADIUS 3
+#define NUM_RADIUS 4
 /* todo: nicht mehr notwenid */
 /* #define NUM_DISTANCE 1
 #define NUM_VELOCITY 2 */
@@ -29,6 +29,9 @@
 #define ANGLE_AWAY 4 */
 #define ANGLE_NONE 5
 
+/* number of circles in the circle */
+#define NUM_CIRCLES 7
+
 #define MAX_CLICKS 10000
 
 #define DEBUG 0
@@ -36,6 +39,7 @@
 #define TARGET_COLOR 0xFF000000
 /* todo: NUM_DISTANCE nicht mehr notwenid */
 /* * NUM_DISTANCE * NUM_VELOCITY  */
+/* TODO: neu wäre: Num_Radius * NUM_distances * NUM_CIRCLES */
 #define NUM_ITERATIONS NUM_RADIUS
 
 #define LOG_PATH "log"
