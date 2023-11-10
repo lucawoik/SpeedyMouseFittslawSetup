@@ -16,10 +16,10 @@
 #define MEDIUM 1
 #define HARD 2 */
 
-#define NUM_RADIUS 4
+#define NUM_RADIUS 2
+#define NUM_DISTANCE 2
 /* todo: nicht mehr notwenid */
-/* #define NUM_DISTANCE 1
-#define NUM_VELOCITY 2 */
+/* #define NUM_VELOCITY 2 */
 /* #define NUM_ANGLE 5 */
 
 /* #define ANGLE_TOWARDS 0
@@ -30,6 +30,8 @@
 #define ANGLE_NONE 5
 
 /* number of circles in the circle */
+// #define NUM_CIRCLES 7
+/* to test */
 #define NUM_CIRCLES 7
 
 #define MAX_CLICKS 10000
@@ -40,9 +42,14 @@
 /* todo: NUM_DISTANCE nicht mehr notwenid */
 /* * NUM_DISTANCE * NUM_VELOCITY  */
 /* TODO: neu wäre: Num_Radius * NUM_distances * NUM_CIRCLES */
-#define NUM_ITERATIONS NUM_RADIUS
+#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_CIRCLES
 
 #define LOG_PATH "log"
+
+
+#define centerX WIDTH/2
+#define centerY HEIGHT/2
+
 
 extern int PARTICIPANT_ID;
 extern int EXPERIMENT;
@@ -52,6 +59,7 @@ extern int LATENCY_MOVE_MIN;
 extern int LATENCY_MOVE_MAX;
 
 extern int TARGET_RADIUS[NUM_RADIUS];
+extern int TARGET_DISTANCE[NUM_DISTANCE];
 // TODO: brauch ich später nicht mehr (ziel wird ja anders positioniert)
 /* extern int TARGET_DISTANCE[NUM_DISTANCE];
 extern int TARGET_VELOCITY[NUM_VELOCITY]; */
@@ -82,6 +90,7 @@ typedef struct {
     double x;
     double y;
     int r;
+    int d;
 
 } Target;
 
@@ -118,6 +127,32 @@ typedef struct {
     int success;
 } Click;
 
+
+/* TEST */
+
+/* typedef struct {
+    int radius;
+    int distance;
+    int x;
+    int y;
+} TargetArray; */
+
+typedef struct 
+{
+    int radius;
+    int distance;
+} Tupel;
+
+
+/* TargetArray TARGET_ARRAY[NUM_ITERATIONS]; */
+/* Besser das! 
+Dann muss man aber alle  TARGET_ARRAY[x].radius/.distance ändern in .r und .d  !!*/
+Target targetArray[NUM_ITERATIONS];
+
+
+/* TEST ende */
+
+
 TargetTemplate staticTargetTemplates[NUM_ITERATIONS];
 /* TargetTemplate movingTargetTemplates[NUM_ITERATIONS / 2]; */
 TargetTemplate *targetTemplates[NUM_ITERATIONS];
@@ -135,7 +170,9 @@ aber für ein Target braucht man die ja jetzt eigenltich nicht mehr */
 weil das erste setzt ja nur den radius  um*/
 /* die radiie wären dann immer in der gleichen reihenfolge!!! */
 /* Target createTarget(int x, int y, TargetTemplate *targetTemplate); */
-Target createTarget(int x, int y, int r);
+/* target X, target Y, target radius, target distenc form the center  */
+/* Target createTarget(int x, int y, int r, int d); */
+Target createTarget(Target t);
 
 void initTargetTemplates();
 

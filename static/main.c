@@ -19,9 +19,11 @@ int isSetupTarget = 1;
 
 Trial current_trial;
 
-int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100};
+/* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
+int TARGET_RADIUS[NUM_RADIUS] = {20, 100};
+int TARGET_DISTANCE[NUM_DISTANCE] = {250, 400};
 // TODO: brauch ich später nicht mehr (ziel wird ja anders positioniert)
-/* int TARGET_DISTANCE[NUM_DISTANCE] = {500};
+/* 
 int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400}; */
 // int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERPENDICULAR, ANGLE_DIAGONAL_AWAY, ANGLE_AWAY};
 
@@ -101,8 +103,9 @@ void handleInput()
                     isSetupTarget = 0;
                     /* TODO: hier werden die neuen targets generiert */
                     /* TODO: funktioniert nur wenn TARGET_RADIUS.length = NUM_ITERATIONS */
-                    /* neue belegung: x,y(der des ziels), radius */
-                    target = createTarget(150, 150, TARGET_RADIUS[iteration]);
+                    /* neue belegung: x,y(der des ziels), radius, distance */
+/*                     target = createTarget(TARGET_ARRAY[iteration].x, TARGET_ARRAY[iteration].y, TARGET_ARRAY[iteration].r,  TARGET_ARRAY[iteration].d);*/
+                    target = createTarget(targetArray[iteration]);
 
                     // printf("main %f %f\n", target.x, target.y);
                     /*  target.d,
@@ -160,7 +163,7 @@ void render(SDL_Renderer *renderer)
 
     // printf("render %f %f\n", target.x, target.y);
     /* SDL_Renderer *renderer, int radius, int numCircles, int circleRadius */
-    circleDistribution(renderer, 250, NUM_CIRCLES, target.r);
+    circleDistribution(renderer, target.d, NUM_CIRCLES, target.r);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
 
     // circle in bottom right corner used to measure end to end latency
@@ -245,6 +248,7 @@ int main(int argc, char **argv)
     // int *circles = circleDistribution();
 
     /* initTargetTemplates(); */
+    createTargetArray();
 
     window = SDL_CreateWindow(__FILE__, 0, 0, WIDTH, HEIGHT, SDL_WINDOW_FULLSCREEN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);

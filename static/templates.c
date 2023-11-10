@@ -10,27 +10,63 @@
 //     *b = temp;
 // }
 
-
-/* neue belegung: x,y(der des ziels), radius */
-Target createTarget(int x, int y, int r)
+/* neue belegung: x,y(der des ziels), radius, distance to the center */
+/* Target createTarget(int x, int y, int r, int d) */
+/* ??? ist das so richtig? da weiter probieren und dann mal bilden lassen! */
+Target createTarget(Target t)
 {
     // if(DEBUG > 1) printf("createTarget()\n");
     Target target;
 
-    target.r = r;
-    target.y = HEIGHT / 2;
-    target.x = WIDTH / 2;
+    target.r = t.r;
+    target.y = t.y;
+    target.x = t.x;
+    target.d = t.d;
 
     return target;
 }
 
+/* test */
 
+/* TARGET_RADIUS, TARGET_DISTANCE */
+void createTargetArray()
+{
+/* toBeRandomized */
+    Tupel TO_BE_RANDOMIZED[NUM_DISTANCE * NUM_RADIUS];
+
+    for (int i = 0; i < NUM_DISTANCE; i++)
+    {
+        for (int j = 0; j < NUM_RADIUS; j++)
+        {
+            TO_BE_RANDOMIZED[NUM_RADIUS * i + j].radius = TARGET_RADIUS[j];
+            TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance = TARGET_DISTANCE[i];
+        }
+    }
+    
+    /* TODO: randiómisieren des  toBeRandomized[] !!! */
+
+    float angle, step;
+    step = (2 * M_PI) / NUM_CIRCLES;
+
+    for (int k = 0; k < sizeof(TO_BE_RANDOMIZED); k++)
+    {
+        for (int l = 0; l < NUM_CIRCLES; l++)
+        {
+            int currentPosition = k * NUM_CIRCLES + l;
+            targetArray[currentPosition].r = TO_BE_RANDOMIZED[k].radius;
+            targetArray[currentPosition].d = TO_BE_RANDOMIZED[k].distance;
+            angle = step * l - M_PI / 2;
+            targetArray[currentPosition].x = centerX + TARGET_DISTANCE[k] * cos(angle);
+            targetArray[currentPosition].y = centerY + TARGET_DISTANCE[k] * sin(angle);
+        }
+    }
+}
+
+/* test ende */
 
 void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius)
 {
     float angle, step;
-    int cx = WIDTH / 2;
-    int cy = HEIGHT / 2;
 
     step = (2 * M_PI) / numCircles;
 
@@ -40,8 +76,8 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
         /* das wchselt die richtung: */
         /* angle = -step * i - M_PI /2; */
 
-        int x = cx + radius * cos(angle);
-        int y = cy + radius * sin(angle);
+        int x = centerX + radius * cos(angle);
+        int y = centerY + radius * sin(angle);
         /* TODO: Könnte man noch mit "filledCircleColor" ersetzten, dann könnte man die Farbe als konstante festlegen */
         filledCircleRGBA(renderer, x, y, circleRadius, 200 - i * 15, 200 - i * 15, 200 - i * 15, 255);
     }
