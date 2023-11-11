@@ -2,13 +2,13 @@
 
 //// swap array elements
 /* Todo: ist vllt notwendig in initTargetTemplates */
-// void swap(TargetTemplate **a, TargetTemplate **b)
-//{
-//     //if(DEBUG > 1) printf("swap()\n");
-//	TargetTemplate *temp = *a;
-//     *a = *b;
-//     *b = temp;
-// }
+/* void swap(Tupel **a, Tupel **b)
+{
+    //if(DEBUG > 1) printf("swap()\n");
+	Tupel *temp = *a;
+    *a = *b;
+    *b = temp;
+} */
 
 /* neue belegung: x,y(der des ziels), radius, distance to the center */
 /* Target createTarget(int x, int y, int r, int d) */
@@ -26,46 +26,65 @@ Target createTarget(Target t)
     return target;
 }
 
-/* test */
 
-/* TARGET_RADIUS, TARGET_DISTANCE */
 void createTargetArray()
 {
-/* toBeRandomized */
-    Tupel TO_BE_RANDOMIZED[NUM_DISTANCE * NUM_RADIUS];
-
+    int NUM_TUPELS = NUM_DISTANCE * NUM_RADIUS;
+    Tupel TO_BE_RANDOMIZED[NUM_TUPELS];
     for (int i = 0; i < NUM_DISTANCE; i++)
     {
         for (int j = 0; j < NUM_RADIUS; j++)
         {
             TO_BE_RANDOMIZED[NUM_RADIUS * i + j].radius = TARGET_RADIUS[j];
             TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance = TARGET_DISTANCE[i];
+            // printf("radius: %d, durchmesser: %d\n", TO_BE_RANDOMIZED[NUM_RADIUS * i + j].radius, TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance);
         }
+        // printf("\n");
+    }
+    /* printf("------- \n"); */
+    for (int m = 0; m < NUM_TUPELS; m++)
+    {
+        Tupel *a = &TO_BE_RANDOMIZED[m];
+        Tupel *b = &TO_BE_RANDOMIZED[rand()%(NUM_TUPELS)];
+        swap(a, b);
     }
 
-    /* TODO: randiómisieren des  toBeRandomized[] !!! */
+    /* for (int i = 0; i < NUM_DISTANCE; i++)
+    {
+        for (int j = 0; j < NUM_RADIUS; j++)
+        {
+            printf("radius: %d, durchmesser: %d\n", TO_BE_RANDOMIZED[NUM_RADIUS * i + j].radius, TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance);
+        }
+        printf("\n");
+    } */
 
     float angle, step;
     step = (2 * M_PI) / NUM_CIRCLES;
+    int stepNum = floor(NUM_CIRCLES/2);
 
-    for (int k = 0; k < sizeof(TO_BE_RANDOMIZED)/sizeof(TO_BE_RANDOMIZED[0]); k++)
+    for (int k = 0; k < NUM_TUPELS; k++)
     {
+        /* where in the circle is the current target. (0 - (NUM_CIRCLES-1)) */
+        int currentTarget = 0;
+        printf(" erster currentTarget: %d \n", currentTarget);
         for (int l = 0; l < NUM_CIRCLES; l++)
         {
             int currentPosition = k * NUM_CIRCLES + l;
             targetArray[currentPosition].r = TO_BE_RANDOMIZED[k].radius;
             targetArray[currentPosition].d = TO_BE_RANDOMIZED[k].distance;
-            angle = step * l - M_PI / 2;
+            /* angle = step * l - M_PI / 2; */
+            angle = step * currentTarget - M_PI / 2;
             targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k].distance * cos(angle);
             targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k].distance * sin(angle);
+            currentTarget = (currentTarget + (int)floor(stepNum))%(NUM_CIRCLES);
             // printf("x: %f, y: %f, radius: %d, durchmesser: %d \n", targetArray[currentPosition].x, targetArray[currentPosition].y, targetArray[currentPosition].r, targetArray[currentPosition].d);
-            
+            // printf("currentTarget: %d, l: %d \n", currentTarget, l);
         }
         // printf(" \n");
     }
 }  
 
-/* test ende */
+
 
 void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius)
 {

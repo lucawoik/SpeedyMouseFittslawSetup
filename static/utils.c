@@ -35,9 +35,9 @@ int calculateDistance(int x1, int y1, int x2, int y2)
 }
 
 // swap array elements
-void swap(TargetTemplate *a, TargetTemplate *b)
+void swap(Tupel *a, Tupel *b)
 {
-	TargetTemplate temp = *a;
+	Tupel temp = *a;
     *a = *b;
     *b = temp;
 }

@@ -177,7 +177,7 @@ Target createTarget(Target t);
 void initTargetTemplates();
 
 // utils
-void swap(TargetTemplate *a, TargetTemplate *b);
+void swap(Tupel *a, Tupel *b);
 
 long millis();
 
