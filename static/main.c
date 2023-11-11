@@ -30,7 +30,7 @@ int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400}; */
 /* TODO: anpassen an static! */
 // starting target
 /* TODO: erstes TArget, das wird also nicht dynamisch gesetzt! */
-Target target = {150, 150, 100};
+Target target = {150, 150, 100, 200};
 
 /* int mouse_down = 0; */
 

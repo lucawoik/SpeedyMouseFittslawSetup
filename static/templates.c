@@ -42,13 +42,13 @@ void createTargetArray()
             TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance = TARGET_DISTANCE[i];
         }
     }
-    
+
     /* TODO: randiómisieren des  toBeRandomized[] !!! */
 
     float angle, step;
     step = (2 * M_PI) / NUM_CIRCLES;
 
-    for (int k = 0; k < sizeof(TO_BE_RANDOMIZED); k++)
+    for (int k = 0; k < sizeof(TO_BE_RANDOMIZED)/sizeof(TO_BE_RANDOMIZED[0]); k++)
     {
         for (int l = 0; l < NUM_CIRCLES; l++)
         {
@@ -56,11 +56,14 @@ void createTargetArray()
             targetArray[currentPosition].r = TO_BE_RANDOMIZED[k].radius;
             targetArray[currentPosition].d = TO_BE_RANDOMIZED[k].distance;
             angle = step * l - M_PI / 2;
-            targetArray[currentPosition].x = centerX + TARGET_DISTANCE[k] * cos(angle);
-            targetArray[currentPosition].y = centerY + TARGET_DISTANCE[k] * sin(angle);
+            targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k].distance * cos(angle);
+            targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k].distance * sin(angle);
+            // printf("x: %f, y: %f, radius: %d, durchmesser: %d \n", targetArray[currentPosition].x, targetArray[currentPosition].y, targetArray[currentPosition].r, targetArray[currentPosition].d);
+            
         }
+        // printf(" \n");
     }
-}
+}  
 
 /* test ende */
 
