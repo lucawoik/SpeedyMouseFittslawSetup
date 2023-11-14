@@ -1,6 +1,5 @@
 #include "main.h"
 
-// TODO
 
 void logClicks()
 {

@@ -12,9 +12,9 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
-#define EASY 0
+/* #define EASY 0
 #define MEDIUM 1
-#define HARD 2
+#define HARD 2 */
 
 #define NUM_RADIUS 3
 #define NUM_DISTANCE 1
@@ -33,7 +33,7 @@
 #define DEBUG 0
 
 #define TARGET_COLOR 0xFF000000
-// TODO: nur mal zwei wenn man auch sttic mmit drann hat
+// TODO: nur mal zwei wenn man auch sttic mit drann hat
 // wenn man das rausnimmt, dann auch überall sonst nochmal kontrilieren und den teiler rausnehmen
 /* *2 */
 #define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY * NUM_ANGLE 

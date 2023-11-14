@@ -1,15 +1,5 @@
 #include "main.h"
 
-//// swap array elements
-/* Todo: ist vllt notwendig in initTargetTemplates */
-//void swap(TargetTemplate **a, TargetTemplate **b)
-//{
-//    //if(DEBUG > 1) printf("swap()\n");
-//	TargetTemplate *temp = *a;
-//    *a = *b;
-//    *b = temp;
-//}
-
 
 TargetTemplate createTargetTemplate(int r, int d, int v, int a)
 {
@@ -88,12 +78,6 @@ Target createTarget(int x, int y, TargetTemplate *targetTemplate)
             target.vY = 0;
             if(x > target.x) target.vX *= -1;
             break;
-        /* case ANGLE_NONE:
-	    //printf("static\n");
-	    target.vX = 0;
-	    target.vY = 0;
-            break;
-            */
         } 
     }
     else
@@ -120,7 +104,6 @@ void initTargetTemplates()
             {
                 for(int a = 0; a < NUM_ANGLE; a++)
                 {
-                    /* staticTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], 0, 5); */
                     movingTargetTemplates[i] = createTargetTemplate(TARGET_RADIUS[r], TARGET_DISTANCE[d], TARGET_VELOCITY[v], a);
                     i++;
                 }
@@ -128,7 +111,7 @@ void initTargetTemplates()
         }
     }
 
-    if(DEBUG > 1) printf("templates created\n");
+    /* if(DEBUG > 1) printf("templates created\n"); */
 
     //for(int j = 0; j < 10; j++)
     //{
@@ -138,26 +121,19 @@ void initTargetTemplates()
 
 	for(int j = 0; j < NUM_ITERATIONS / 2; j++)
 	{
-        //printf("%d %f -> ", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
-        /* TargetTemplate *a = &staticTargetTemplates[j];
-        TargetTemplate *b = &staticTargetTemplates[rand() % (NUM_ITERATIONS / 2)]; */
-        //printf("before: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
-		/* swap(a, b); */
-        //printf(" after: a: %d %d, b: %d %d, r: %d %d, d: %f %f\n", a, &a, b, &b, a->r, b->r, a->d, b->d);
-        //printf("%d %f\n", staticTargetTemplates[j].r, staticTargetTemplates[j].d);
         TargetTemplate *c = &movingTargetTemplates[j];
         TargetTemplate *d = &movingTargetTemplates[rand() % (NUM_ITERATIONS)];
 		swap(c, d);
 		//swap(&movingTargetTemplates[j], &movingTargetTemplates[rand() % NUM_ITERATIONS]);
 	}
 
-    //for(int j = 0; j < NUM_ITERATIONS / 2; j++)
+    //for(int j = 0; j < NUM_ITERATIONS; j++)
     //{
     //    TargetTemplate t = movingTargetTemplates[j];
     //    printf("r %d d %d v %d a %d\n", t.r, t.d, t.v, t.a);
     //}
 
-    if(DEBUG > 1) printf("shuffled\n");
+    /* if(DEBUG > 1) printf("shuffled\n"); */
 
 
     /* TODO: kann man dann auch einfach gleichsetzten ohne for?! */
@@ -172,5 +148,5 @@ void initTargetTemplates()
     //    printf("%d %d\n", j, targetTemplates[j]->v);
     //}
 
-    if(DEBUG > 1) printf("end initTargetTemplates()\n");
+    /* if(DEBUG > 1) printf("end initTargetTemplates()\n"); */
 }

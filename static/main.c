@@ -22,14 +22,9 @@ Trial current_trial;
 /* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
 int TARGET_RADIUS[NUM_RADIUS] = {20, 100};
 int TARGET_DISTANCE[NUM_DISTANCE] = {250, 400};
-// TODO: brauch ich später nicht mehr (ziel wird ja anders positioniert)
-/* 
-int TARGET_VELOCITY[NUM_VELOCITY] = {200, 400}; */
-// int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERPENDICULAR, ANGLE_DIAGONAL_AWAY, ANGLE_AWAY};
 
-/* TODO: anpassen an static! */
 // starting target
-/* TODO: erstes TArget, das wird also nicht dynamisch gesetzt! */
+/* TODO: Wo soll erstes probetarget sein? */
 Target target = {150, 150, 100, 200};
 
 /* int mouse_down = 0; */
@@ -41,7 +36,8 @@ void finish()
     SDL_Quit();
     exit(1);
 }
-/*TODO: noch mal anschaun ob das mit den rausgenommenen Werten wie distanc eund velocity immernoch die richtigen sachen berechnet */
+/* TODO: noch mal anschaun ob das mit den rausgenommenen Werten wie distanc und velocity 
+immernoch die richtigen sachen berechnet */
 void handleInput()
 {
     SDL_Event event;
@@ -101,16 +97,14 @@ void handleInput()
                     travel_distance = 0;
                     trial_time = 0;
                     isSetupTarget = 0;
-                    /* TODO: hier werden die neuen targets generiert */
-                    /* TODO: funktioniert nur wenn TARGET_RADIUS.length = NUM_ITERATIONS */
-                    /* neue belegung: x,y(der des ziels), radius, distance */
-/*                     target = createTarget(TARGET_ARRAY[iteration].x, TARGET_ARRAY[iteration].y, TARGET_ARRAY[iteration].r,  TARGET_ARRAY[iteration].d);*/
+                    /* TODO: hier werden die neuen targets generiert 
+                    könnte man da also nicht einfach das machen:
+                    target = targetArray[iteration]; 
+                    ?
+                    */
                     target = createTarget(targetArray[iteration]);
 
                     // printf("main %f %f\n", target.x, target.y);
-                    /*  target.d,
-                         target.v,
-                         target.a, */
                     current_trial = (Trial){iteration,
                                             millis(),
                                             target.r * 2,
@@ -130,7 +124,7 @@ void handleInput()
             }
         }
 
-        // test
+
         /*         if (event.type == SDL_MOUSEBUTTONUP)
                 {
                     if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
@@ -155,9 +149,6 @@ void handleInput()
 
 void render(SDL_Renderer *renderer)
 {
-    // int mouseX, mouseY;
-    // SDL_GetMouseState(&mouseX, &mouseY);
-
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
@@ -186,39 +177,6 @@ void update(double deltaTime)
 
     lastX = mouseX;
     lastY = mouseY;
-    /* todo: vllt nur return einfach?! */
-    /* if (target.a == ANGLE_NONE)
-        return; */
-    // printf("before %f %f %f %f\n", target.x, target.y, target.vX, target.vX * deltaTime);
-
-    /* target.x += target.vX * deltaTime;
-    target.y += target.vY * deltaTime; */
-
-    // printf("%lf\n", deltaTime);
-    // printf("after %f %f %f %f\n", target.x, target.y, target.vX, targe/*  */t.vX * deltaTime);
-
-    /*     if (target.x < -target.r * 2 ||
-            target.x > WIDTH + (target.r * 2) ||
-            target.y < -target.r * 2 ||
-            target.y > HEIGHT + (target.r * 2))
-        {
-            // printf("failed\n");
-            current_trial.time = 0;
-            current_trial.clicks = click_count;
-            current_trial.travel_distance = travel_distance;
-            current_trial.success = 0;
-            trials[iteration] = current_trial;
-            TODO: ANPASSES!!!!!!!
-            target = (Target){400, 400, 100};
-            click_count = 0;
-            travel_distance = 0;
-            trial_time = 0;
-            isSetupTarget = 1;
-
-            iteration++;
-            if (iteration >= NUM_ITERATIONS)
-                finish();
-        } */
 }
 
 int main(int argc, char **argv)
@@ -245,9 +203,7 @@ int main(int argc, char **argv)
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    // int *circles = circleDistribution();
-
-    /* initTargetTemplates(); */
+     /* initTargetTemplates(); */
     createTargetArray();
 
     window = SDL_CreateWindow(__FILE__, 0, 0, WIDTH, HEIGHT, SDL_WINDOW_FULLSCREEN);
@@ -257,8 +213,6 @@ int main(int argc, char **argv)
     SDL_RenderClear(renderer);
 
     system("xsetroot -cursor_name arrow");
-
-    // thread inputThread(handleInput);
 
     while (1)
     {
