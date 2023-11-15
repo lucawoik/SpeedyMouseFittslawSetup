@@ -20,8 +20,8 @@ int isSetupTarget = 1;
 Trial current_trial;
 
 /* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
-int TARGET_RADIUS[NUM_RADIUS] = {20, 100};
-int TARGET_DISTANCE[NUM_DISTANCE] = {250, 400};
+int TARGET_RADIUS[NUM_RADIUS] = {40, 60, 80};
+int TARGET_DISTANCE[NUM_DISTANCE] = {200, 300, 400};
 
 // starting target
 /* TODO: Wo soll erstes probetarget sein? */

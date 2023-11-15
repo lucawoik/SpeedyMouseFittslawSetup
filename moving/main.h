@@ -17,8 +17,8 @@
 #define HARD 2 */
 
 #define NUM_RADIUS 3
-#define NUM_DISTANCE 1
-#define NUM_VELOCITY 2
+#define NUM_DISTANCE 2
+#define NUM_VELOCITY 3
 #define NUM_ANGLE 5
 
 #define ANGLE_TOWARDS 0
@@ -38,6 +38,7 @@
 /* *2 */
 #define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY * NUM_ANGLE 
 
+/* TODO: hier könnte man noch nach static und mooving unterscheiden */
 #define LOG_PATH "log"
 
 extern int PARTICIPANT_ID;

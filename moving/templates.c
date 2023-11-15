@@ -119,7 +119,7 @@ void initTargetTemplates()
     //    printf("r %d d %d v %d a %d\n", t.r, t.d, t.v, t.a);
     //}
 
-	for(int j = 0; j < NUM_ITERATIONS / 2; j++)
+	for(int j = 0; j < NUM_ITERATIONS ; j++)
 	{
         TargetTemplate *c = &movingTargetTemplates[j];
         TargetTemplate *d = &movingTargetTemplates[rand() % (NUM_ITERATIONS)];
@@ -137,7 +137,7 @@ void initTargetTemplates()
 
 
     /* TODO: kann man dann auch einfach gleichsetzten ohne for?! */
-    for(int j = 0; j < NUM_ITERATIONS / 2; j++)
+    for(int j = 0; j < NUM_ITERATIONS ; j++)
     {
         /* targetTemplates[j * 2] = &staticTargetTemplates[j]; */
         targetTemplates[j] = &movingTargetTemplates[j];

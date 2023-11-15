@@ -83,7 +83,8 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
         /* TODO: Könnte man noch mit "filledCircleColor" ersetzten, dann könnte man die Farbe als konstante festlegen */
-        filledCircleRGBA(renderer, x, y, circleRadius, 200 - i * 15, 200 - i * 15, 200 - i * 15, 255);
+        // filledCircleRGBA(renderer, x, y, circleRadius, 200 - i * 15, 200 - i * 15, 200 - i * 15, 255);
+        filledCircleRGBA(renderer, x, y, circleRadius, 170 , 170 , 170 , 255);
     }
 }
 

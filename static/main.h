@@ -13,13 +13,13 @@
 #define HEIGHT 1080
 
 
-#define NUM_RADIUS 2
-#define NUM_DISTANCE 2
+#define NUM_RADIUS 3
+#define NUM_DISTANCE 3
 
 /* #define ANGLE_NONE 5 */
 
 /* number of circles in the circle */
-#define NUM_CIRCLES 7
+#define NUM_CIRCLES 9
 
 #define MAX_CLICKS 10000
 
@@ -29,6 +29,7 @@
 
 #define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_CIRCLES
 
+/* TODO: hier könnte man noch nach static und mooving unterscheiden */
 #define LOG_PATH "log"
 
 
@@ -64,13 +65,14 @@ typedef struct {
 } Target;
 
 /* TODO: Anpassen! */
+/*     int a; */
 typedef struct {
     int id;
     long timestamp;
     int w;
     int d;
     int v;
-    int a;
+
     int x_target;
     int y_target;
     int x_cursor;
@@ -81,13 +83,14 @@ typedef struct {
     int success;
 } Trial;
 
+/*   int a;*/
 typedef struct {
     int id;
     long timestamp;
     int w;
     int d;
     int v;
-    int a;
+
     int x_target;
     int y_target;
     int x_cursor;
