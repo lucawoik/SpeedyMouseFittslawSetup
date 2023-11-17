@@ -51,9 +51,9 @@ extern int isSetupTarget;
 extern int click_count_total;
 
 /* TODO: nicht mehr notwendig, aber noch in den Logs drin */
-static const char *ANGLE_STRING[] = {
+/* static const char *ANGLE_STRING[] = {
     "towards", "towards_diagonal", "perpendicular", "away_diagonal", "away", "none",
-};
+}; */
 
 
 typedef struct {
@@ -66,12 +66,12 @@ typedef struct {
 
 /* TODO: Anpassen! */
 /*     int a; */
+/*     int v; */
 typedef struct {
     int id;
     long timestamp;
     int w;
     int d;
-    int v;
 
     int x_target;
     int y_target;
@@ -84,12 +84,12 @@ typedef struct {
 } Trial;
 
 /*   int a;*/
+// int v;
 typedef struct {
     int id;
     long timestamp;
     int w;
     int d;
-    int v;
 
     int x_target;
     int y_target;
@@ -151,5 +151,7 @@ int main(int argc, char** argv);
 // Circle
 
 void circleDistribution();
+
+void createTargetArray();
 
 #endif
