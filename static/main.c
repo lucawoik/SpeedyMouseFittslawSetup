@@ -38,7 +38,7 @@ void finish()
 }
 /* TODO: noch mal anschaun ob das mit den rausgenommenen Werten wie distanc und velocity 
 immernoch die richtigen sachen berechnet */
-void handleInput()
+void handleInput(SDL_Renderer *renderer)
 {
     SDL_Event event;
 
@@ -55,6 +55,17 @@ void handleInput()
                 SDL_GetMouseState(&mouseX, &mouseY);
 
                 int success = checkCollision(mouseX, mouseY, &target);
+                if (success)
+                {
+                    filledCircleRGBA(renderer, target.x, target.y, target.r, 0, 200, 0, 200);
+                }
+                else
+                {
+
+                    filledCircleRGBA(renderer, target.x, target.y, target.r, 200, 0, 0, 200);
+                }
+                SDL_RenderPresent(renderer);
+                SDL_Delay(200);
 
                 /* TODO: setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
@@ -222,7 +233,7 @@ int main(int argc, char **argv)
         timer = micros();
 
         update(deltaTime);
-        handleInput();
+        handleInput(renderer);
         render(renderer);
         // usleep(2000);
     }
