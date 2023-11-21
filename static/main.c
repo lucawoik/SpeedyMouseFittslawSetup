@@ -61,7 +61,6 @@ void handleInput(SDL_Renderer *renderer)
                 }
                 else
                 {
-
                     filledCircleRGBA(renderer, target.x, target.y, target.r, 200, 0, 0, 200);
                 }
                 SDL_RenderPresent(renderer);
@@ -88,8 +87,7 @@ void handleInput(SDL_Renderer *renderer)
 
                 click_count++;
 
-                if (success)
-                {
+                
 
                     /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                     if (!isSetupTarget)
@@ -133,7 +131,7 @@ void handleInput(SDL_Renderer *renderer)
                     /* if (DEBUG > 1)
                         printf("target created: x %f y %f r %d vX %f vY %f\n", target.x, target.y, target.r, target.vX, target.vY);
                 */
-                }
+                
             }
         }
 
@@ -169,6 +167,10 @@ void render(SDL_Renderer *renderer)
     /* SDL_Renderer *renderer, int radius, int numCircles, int circleRadius */
     circleDistribution(renderer, target.d, NUM_CIRCLES, target.r);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
+    /* funktion die feedbackcircle mahlt
+        - nur wenn nicht seit dem letzt click 200ms vergangen sind
+            (timpstam beim klick speichern  => !(currentTime>= lastTime+200ms) )
+      */
 
     // circle in bottom right corner used to measure end to end latency
     // if(!mouse_down)

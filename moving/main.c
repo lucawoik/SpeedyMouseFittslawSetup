@@ -90,8 +90,7 @@ void handleInput(SDL_Renderer *renderer)
 
                 click_count++;
 
-                if (success)
-                {
+                
                     if (!isSetupTarget)
                     {
                         // printf("success\n");
@@ -136,7 +135,7 @@ void handleInput(SDL_Renderer *renderer)
 
                     if (DEBUG > 1)
                         printf("target created: x %f y %f r %d vX %f vY %f\n", target.x, target.y, target.r, target.vX, target.vY);
-                }
+                
             }
         }
 
