@@ -12,12 +12,12 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
-#define EASY 0
+/* #define EASY 0
 #define MEDIUM 1
-#define HARD 2
+#define HARD 2 */
 
-#define NUM_RADIUS 2
-#define NUM_DISTANCE 1
+#define NUM_RADIUS 3
+#define NUM_DISTANCE 2
 #define NUM_VELOCITY 3
 #define NUM_ANGLE 5
 
@@ -26,16 +26,19 @@
 #define ANGLE_PERPENDICULAR 2
 #define ANGLE_DIAGONAL_AWAY 3
 #define ANGLE_AWAY 4
-#define ANGLE_NONE 5
+/* #define ANGLE_NONE 5 */
 
 #define MAX_CLICKS 10000
 
 #define DEBUG 0
 
 #define TARGET_COLOR 0xFF000000
+// TODO: nur mal zwei wenn man auch sttic mit drann hat
+// wenn man das rausnimmt, dann auch überall sonst nochmal kontrilieren und den teiler rausnehmen
+/* *2 */
+#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY * NUM_ANGLE 
 
-#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_VELOCITY * NUM_ANGLE * 2
-
+/* TODO: hier könnte man noch nach static und mooving unterscheiden */
 #define LOG_PATH "log"
 
 extern int PARTICIPANT_ID;
@@ -107,8 +110,8 @@ typedef struct {
     int success;
 } Click;
 
-TargetTemplate staticTargetTemplates[NUM_ITERATIONS / 2];
-TargetTemplate movingTargetTemplates[NUM_ITERATIONS / 2];
+/* TargetTemplate staticTargetTemplates[NUM_ITERATIONS / 2]; */
+TargetTemplate movingTargetTemplates[NUM_ITERATIONS];
 TargetTemplate *targetTemplates[NUM_ITERATIONS];
 
 Trial trials[NUM_ITERATIONS];
