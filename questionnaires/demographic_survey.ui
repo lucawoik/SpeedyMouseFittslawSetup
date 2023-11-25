@@ -57,7 +57,7 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>880</y>
+     <y>950</y>
      <width>881</width>
      <height>61</height>
     </rect>
@@ -71,7 +71,7 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>730</y>
+     <y>840</y>
      <width>521</width>
      <height>91</height>
     </rect>
@@ -157,11 +157,52 @@ häufig: regelmäßig, quasi täglich</string>
    <zorder>radio_button_gender_male</zorder>
    <zorder>gender_2</zorder>
   </widget>
+   <widget class="QGroupBox" name="color_blindness">
+      <property name="geometry">
+         <rect>
+            <x>80</x>
+            <y>430</y>
+            <width>1151</width>
+            <height>80</height>
+         </rect>
+      </property>
+      <property name="title">
+         <string>Haben Sie eine Farbsehschwäche?</string>
+      </property>
+
+      <widget class="QRadioButton" name="color_blindness_yes">
+         <property name="geometry">
+            <rect>
+            <x>120</x>
+            <y>40</y>
+            <width>128</width>
+            <height>31</height>
+            </rect>
+         </property>
+         <property name="text">
+            <string>ja</string>
+         </property>
+      </widget>
+
+      <widget class="QRadioButton" name="color_blindness_no">
+         <property name="geometry">
+            <rect>
+            <x>30</x>
+            <y>40</y>
+            <width>71</width>
+            <height>31</height>
+            </rect>
+         </property>
+         <property name="text">
+            <string>nein</string>
+         </property>
+      </widget>
+   </widget>
   <widget class="QGroupBox" name="constraints">
    <property name="geometry">
     <rect>
      <x>79</x>
-     <y>430</y>
+     <y>540</y>
      <width>1151</width>
      <height>80</height>
     </rect>
@@ -200,7 +241,7 @@ häufig: regelmäßig, quasi täglich</string>
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>540</y>
+     <y>640</y>
      <width>1151</width>
      <height>80</height>
     </rect>
@@ -265,7 +306,7 @@ häufig: regelmäßig, quasi täglich</string>
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>650</y>
+     <y>760</y>
      <width>1151</width>
      <height>80</height>
     </rect>

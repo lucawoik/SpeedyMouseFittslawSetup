@@ -5,7 +5,7 @@
 void logClicks()
 {
     char path[256];
-    sprintf(path, "%s/clicks_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
+    sprintf(path, "%s/moving_clicks_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
 
 	struct stat st_directory = {0};
 
@@ -72,7 +72,7 @@ void logClicks()
 void logTrials()
 {
     char path[256];
-    sprintf(path, "%s/iterations_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
+    sprintf(path, "%s/moving_iterations_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
 
 	struct stat st_directory = {0};
 
