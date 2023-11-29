@@ -79,6 +79,15 @@ class DemographicSurvey(QtWidgets.QDialog):
         else:
             # TODO: Handling nothing selected
             return False
+    
+    def get_selected_color_blindness(self):
+        if self.ui.radio_button_color_blindness_no.isChecked():
+            return False
+        elif self.ui.radio_button_color_blindness_yes.isChecked():
+            return True
+        else:
+            # TODO: Handling nothing selected
+            return False
 
     def get_selected_answer_action_games(self):
         if self.ui.radio_button_action_games_never.isChecked():
@@ -106,6 +115,7 @@ class DemographicSurvey(QtWidgets.QDialog):
             # TODO: Error handling nothing selected
             return 'no_answer'
 
+# todo: hier auch einfügen
     def write_to_csv(self):
         if not os.path.exists(LOG_DIRECTORY):
             os.makedirs(LOG_DIRECTORY)
@@ -118,6 +128,7 @@ class DemographicSurvey(QtWidgets.QDialog):
                              'age',
                              'gender',
                              'hand',
+                             'color_blindness',
                              'constraints',
                              'action_games',
                              'strategy_games'])
@@ -126,6 +137,7 @@ class DemographicSurvey(QtWidgets.QDialog):
                              self.ui.comboBox_age.currentText(),
                              self.get_selected_gender(),
                              self.get_selected_hand(),
+                             self.get_selected_color_blindness(),
                              self.get_selected_constraints(),
                              self.get_selected_answer_action_games(),
                              self.get_selected_answer_strategy_games()])

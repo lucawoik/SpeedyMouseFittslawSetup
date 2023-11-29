@@ -19,10 +19,10 @@ int isSetupTarget = 1;
 
 Trial current_trial;
 
-int TARGET_RADIUS[NUM_RADIUS] = {40, 60 ,80};
+int TARGET_RADIUS[NUM_RADIUS] = {40, 60, 80};
 // int TARGET_DISTANCE[NUM_DISTANCE] = {400, 600};  ????
 int TARGET_DISTANCE[NUM_DISTANCE] = {400, 600};
-int TARGET_VELOCITY[NUM_VELOCITY] = {200,300 ,400};
+int TARGET_VELOCITY[NUM_VELOCITY] = {200, 300, 400};
 int TARGET_ANGLE[NUM_ANGLE] = {ANGLE_TOWARDS, ANGLE_DIAGONAL_TOWARDS, ANGLE_PERPENDICULAR, ANGLE_DIAGONAL_AWAY, ANGLE_AWAY};
 
 // starting target
@@ -39,7 +39,7 @@ void finish()
     exit(1);
 }
 
-void handleInput()
+void handleInput(SDL_Renderer *renderer)
 {
     SDL_Event event;
 
@@ -56,6 +56,17 @@ void handleInput()
                 SDL_GetMouseState(&mouseX, &mouseY);
 
                 int success = checkCollision(mouseX, mouseY, &target);
+
+                if (success)
+                {
+                    filledCircleRGBA(renderer, target.x, target.y, target.r, 0, 200, 0, 200);
+                }
+                else
+                {
+                    filledCircleRGBA(renderer, target.x, target.y, target.r, 200, 0, 0, 200);
+                }
+                SDL_RenderPresent(renderer);
+                SDL_Delay(200);
 
                 if (!isSetupTarget)
                 {
@@ -79,8 +90,7 @@ void handleInput()
 
                 click_count++;
 
-                if (success)
-                {
+                
                     if (!isSetupTarget)
                     {
                         // printf("success\n");
@@ -93,6 +103,11 @@ void handleInput()
                         if (iteration >= NUM_ITERATIONS)
                             finish();
                     }
+
+                    /* SDL_SetRenderDrawColor(renderer, 0, 255, 0,255);
+                    SDL_RenderFillRect(renderer, &target);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(500); */
 
                     click_count = 0;
                     travel_distance = 0;
@@ -120,7 +135,7 @@ void handleInput()
 
                     if (DEBUG > 1)
                         printf("target created: x %f y %f r %d vX %f vY %f\n", target.x, target.y, target.r, target.vX, target.vY);
-                }
+                
             }
         }
 
@@ -241,14 +256,13 @@ int main(int argc, char **argv)
 
     system("xsetroot -cursor_name arrow");
 
-
     while (1)
     {
         deltaTime = (micros() - timer) / 1000000.0;
         timer = micros();
 
         update(deltaTime);
-        handleInput();
+        handleInput(renderer);
         render(renderer);
         // usleep(2000);
     }
