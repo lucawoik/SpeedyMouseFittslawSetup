@@ -159,23 +159,23 @@ void handleInput(SDL_Renderer *renderer)
 }
 
 
-void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
-        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
-    int text_width;
-    int text_height;
-    SDL_Surface *surface;
-    SDL_Color textColor = {255, 255, 255, 0};
+// void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
+//         TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+//     int text_width;
+//     int text_height;
+//     SDL_Surface *surface;
+//     SDL_Color textColor = {255, 255, 255, 0};
 
-    surface = TTF_RenderText_Solid(font, text, textColor);
-    *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    text_width = surface->w;
-    text_height = surface->h;
-    SDL_FreeSurface(surface);
-    rect->x = x;
-    rect->y = y;
-    rect->w = text_width;
-    rect->h = text_height;
-}
+//     surface = TTF_RenderText_Solid(font, text, textColor);
+//     *texture = SDL_CreateTextureFromSurface(renderer, surface);
+//     text_width = surface->w;
+//     text_height = surface->h;
+//     SDL_FreeSurface(surface);
+//     rect->x = x;
+//     rect->y = y;
+//     rect->w = text_width;
+//     rect->h = text_height;
+// }
 
 
 
@@ -189,8 +189,8 @@ void render(SDL_Renderer *renderer, TTF_Font *font, SDL_Rect *rect1, SDL_Texture
     circleDistribution(renderer, target.d, NUM_CIRCLES, target.r, font, texture1, rect1);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
 
-    get_text_and_rect(renderer, target.x - target.r/4, target.y - target.r/2, "1", font, texture1, rect1);
-    // get_text_and_rect(renderer, 0, rect1.y + rect1.h, "world", font, &texture2, &rect2);
+    // get_text_and_rect(renderer, target.x - target.r/4, target.y - target.r/2, "1", font, texture1, rect1);
+
     /* funktion die feedbackcircle mahlt
         - nur wenn nicht seit dem letzt click 200ms vergangen sind
             (timpstam beim klick speichern  => !(currentTime>= lastTime+200ms) )
