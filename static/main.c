@@ -187,7 +187,7 @@ void render(SDL_Renderer *renderer, TTF_Font *font, SDL_Rect *rect1, SDL_Texture
 
     /* SDL_Renderer *renderer, int radius, int numCircles, int circleRadius */
     circleDistribution(renderer, target.d, NUM_CIRCLES, target.r, font, texture1, rect1);
-    filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
+    // filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
 
     // get_text_and_rect(renderer, target.x - target.r/4, target.y - target.r/2, "1", font, texture1, rect1);
 
