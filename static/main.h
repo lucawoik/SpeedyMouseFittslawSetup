@@ -8,6 +8,10 @@
 #include <math.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include <SDL2/SDL_ttf.h>
+#include <stdbool.h>
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -142,16 +146,23 @@ void finish();
 
 void handleInput();
 
-void render(SDL_Renderer* renderer);
+void render(SDL_Renderer* renderer, TTF_Font *font, SDL_Rect *rect1, SDL_Texture **texture1);
 
 void update(double deltaTime);
 
+void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect);
+
 int main(int argc, char** argv);
+
 
 // Circle
 
 void circleDistribution();
 
 void createTargetArray();
+
+// Strings
+
+int renderStrings(void);
 
 #endif

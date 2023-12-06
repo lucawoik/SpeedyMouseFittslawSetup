@@ -158,15 +158,39 @@ void handleInput(SDL_Renderer *renderer)
     }
 }
 
-void render(SDL_Renderer *renderer)
+
+void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
+        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+    int text_width;
+    int text_height;
+    SDL_Surface *surface;
+    SDL_Color textColor = {255, 255, 255, 0};
+
+    surface = TTF_RenderText_Solid(font, text, textColor);
+    *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    text_width = surface->w;
+    text_height = surface->h;
+    SDL_FreeSurface(surface);
+    rect->x = x;
+    rect->y = y;
+    rect->w = text_width;
+    rect->h = text_height;
+}
+
+
+
+void render(SDL_Renderer *renderer, TTF_Font *font, SDL_Rect *rect1, SDL_Texture **texture1)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, &texture1, NULL, rect1);
 
-    // printf("render %f %f\n", target.x, target.y);
     /* SDL_Renderer *renderer, int radius, int numCircles, int circleRadius */
-    circleDistribution(renderer, target.d, NUM_CIRCLES, target.r);
+    circleDistribution(renderer, target.d, NUM_CIRCLES, target.r, font, texture1, rect1);
     filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
+
+    get_text_and_rect(renderer, target.x - target.r/4, target.y - target.r/2, "1", font, texture1, rect1);
+    // get_text_and_rect(renderer, 0, rect1.y + rect1.h, "world", font, &texture2, &rect2);
     /* funktion die feedbackcircle mahlt
         - nur wenn nicht seit dem letzt click 200ms vergangen sind
             (timpstam beim klick speichern  => !(currentTime>= lastTime+200ms) )
@@ -213,6 +237,9 @@ int main(int argc, char **argv)
     double deltaTime;
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_Rect rect1;
+    SDL_Texture *texture1;
+    char *font_path;
 
     srand(time(0));
 
@@ -223,6 +250,18 @@ int main(int argc, char **argv)
 
     window = SDL_CreateWindow(__FILE__, 0, 0, WIDTH, HEIGHT, SDL_WINDOW_FULLSCREEN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    font_path = "font/arial.ttf";
+
+    /* Inint TTF. */
+    SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
+    TTF_Init();
+    TTF_Font *font = TTF_OpenFont(font_path, 48);
+    if (font == NULL) {
+        fprintf(stderr, "error: font not found\n");
+        exit(EXIT_FAILURE);
+    }
+
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
@@ -236,11 +275,29 @@ int main(int argc, char **argv)
 
         update(deltaTime);
         handleInput(renderer);
-        render(renderer);
+        render(renderer, font, &rect1, &texture1);
         // usleep(2000);
+        SDL_RenderCopy(renderer, texture1, NULL, &rect1);
+
+        SDL_RenderPresent(renderer);
     }
+
+    /* Deinit TTF. */
+    // SDL_DestroyTexture(texture1);
+    // SDL_DestroyTexture(texture2);
+    TTF_Quit();
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
 
     SDL_Quit();
 
     return 0;
 }
+
+
+/*
+- x, y: upper left corner.
+- texture, rect: outputs.
+*/
+
