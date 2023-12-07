@@ -55,14 +55,14 @@ void handleInput(SDL_Renderer *renderer)
                 SDL_GetMouseState(&mouseX, &mouseY);
 
                 int success = checkCollision(mouseX, mouseY, &target);
-                if (success)
-                {
-                    filledCircleRGBA(renderer, target.x, target.y, target.r, 0, 200, 0, 200);
-                }
-                else
-                {
-                    filledCircleRGBA(renderer, target.x, target.y, target.r, 200, 0, 0, 200);
-                }
+                // if (success)
+                // {
+                //     filledCircleRGBA(renderer, target.x, target.y, target.r, 0, 200, 0, 200);
+                // }
+                // else
+                // {
+                //     filledCircleRGBA(renderer, target.x, target.y, target.r, 200, 0, 0, 200);
+                // }
                 SDL_RenderPresent(renderer);
                 SDL_Delay(200);
 
