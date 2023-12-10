@@ -4,6 +4,8 @@ import sys
 import random
 import time
 
+#TODO: Adjust the start_setup.py file to the new repository structure
+
 participant_id = int(sys.argv[1])
 
 LATENCY_CLICK_LOW = 50
