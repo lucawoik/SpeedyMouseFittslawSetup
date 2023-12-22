@@ -70,13 +70,22 @@ void createTargetArray()
     }
 }
 
+char *intToString(int value)
+{
+    char buffer[20];
+    sprintf(buffer, "%d", value);
+    char *result = malloc(strlen(buffer) + 1);
+    strcpy(result, buffer);
+
+    return result;
+}
+
 void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font)
 {
     float angle, step;
 
     // do not hardcode later
-    char order[] = {'1', '3', '5', '7', '9', '2', '4', '6', '8'};
-    // int order[] = {1, 3, 5, 7, 9, 2, 4, 6, 8};
+    int order[] = {1, 3, 5, 7, 9, 2, 4, 6, 8};
 
     step = (2 * M_PI) / numCircles;
 
@@ -90,16 +99,12 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
         // filledCircleRGBA(renderer, x, y, circleRadius, 200 - i * 15, 200 - i * 15, 200 - i * 15, 255);
         filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
 
-        char text = (char)order[i];
-        // printf("%text", text);
-        // std::string text = std::to_string(order[i]);
-        // char text = (char)(order[i]);
-
-        render_numbers(renderer, x, y, text, font); 
+        char *text = intToString(order[i]);
+        render_numbers(renderer, x, y, text, font);
     }
 }
 
-void render_numbers(SDL_Renderer *renderer, int x, int y, char text, TTF_Font *font)
+void render_numbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
 {
     int text_width;
     int text_height;
@@ -107,7 +112,7 @@ void render_numbers(SDL_Renderer *renderer, int x, int y, char text, TTF_Font *f
     SDL_Texture *texture;
     SDL_Color textColor = {255, 255, 255, 0};
 
-    surface = TTF_RenderText_Solid(font, &text, textColor);
+    surface = TTF_RenderText_Solid(font, text, textColor);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     text_width = surface->w;
     text_height = surface->h;
@@ -115,5 +120,4 @@ void render_numbers(SDL_Renderer *renderer, int x, int y, char text, TTF_Font *f
     SDL_Rect rect = {x, y, text_width, text_height};
 
     SDL_RenderCopy(renderer, texture, NULL, &rect);
-
 }

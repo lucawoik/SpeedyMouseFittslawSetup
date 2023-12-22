@@ -150,7 +150,7 @@ void render(SDL_Renderer* renderer, TTF_Font *font, SDL_Rect *rect1, SDL_Texture
 
 void update(double deltaTime);
 
-void render_numbers(SDL_Renderer *renderer, int x, int y, char text, TTF_Font *font);
+void render_numbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font);
 
 int main(int argc, char** argv);
 
