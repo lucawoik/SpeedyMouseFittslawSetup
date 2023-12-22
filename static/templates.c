@@ -70,9 +70,13 @@ void createTargetArray()
     }
 }
 
-void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font, SDL_Texture **texture1, SDL_Rect *rect1)
+void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font)
 {
     float angle, step;
+
+    // do not hardcode later
+    char order[] = {'1', '3', '5', '7', '9', '2', '4', '6', '8'};
+    // int order[] = {1, 3, 5, 7, 9, 2, 4, 6, 8};
 
     step = (2 * M_PI) / numCircles;
 
@@ -84,28 +88,32 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
         int y = centerY + radius * sin(angle);
         /* TODO: Könnte man noch mit "filledCircleColor" ersetzten, dann könnte man die Farbe als konstante festlegen */
         // filledCircleRGBA(renderer, x, y, circleRadius, 200 - i * 15, 200 - i * 15, 200 - i * 15, 255);
-        filledCircleRGBA(renderer, x, y, circleRadius, 170 , 170 , 170 , 255);
-        get_text_and_rect(renderer, x, y, "1", font, texture1, rect1);
+        filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
+
+        char text = (char)order[i];
+        // printf("%text", text);
+        // std::string text = std::to_string(order[i]);
+        // char text = (char)(order[i]);
+
+        render_numbers(renderer, x, y, text, font); 
     }
-
-
 }
 
-void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
-        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+void render_numbers(SDL_Renderer *renderer, int x, int y, char text, TTF_Font *font)
+{
     int text_width;
     int text_height;
     SDL_Surface *surface;
+    SDL_Texture *texture;
     SDL_Color textColor = {255, 255, 255, 0};
 
-    surface = TTF_RenderText_Solid(font, text, textColor);
-    *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    surface = TTF_RenderText_Solid(font, &text, textColor);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
     text_width = surface->w;
     text_height = surface->h;
     SDL_FreeSurface(surface);
-    rect->x = x;
-    rect->y = y;
-    rect->w = text_width;
-    rect->h = text_height;
-}
+    SDL_Rect rect = {x, y, text_width, text_height};
 
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+
+}

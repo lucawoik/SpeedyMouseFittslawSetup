@@ -20,8 +20,8 @@ int isSetupTarget = 1;
 Trial current_trial;
 
 /* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
-int TARGET_RADIUS[NUM_RADIUS] = {40, 60, 80};
-int TARGET_DISTANCE[NUM_DISTANCE] = {200, 300, 400};
+int TARGET_RADIUS[NUM_RADIUS] = {40, 60, 80}; //{30, 50, 70};
+int TARGET_DISTANCE[NUM_DISTANCE] = {200, 300, 400}; //{400, 500, 600};
 
 // starting target
 /* TODO: Wo soll erstes probetarget sein? */
@@ -183,10 +183,10 @@ void render(SDL_Renderer *renderer, TTF_Font *font, SDL_Rect *rect1, SDL_Texture
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, &texture1, NULL, rect1);
+    // SDL_RenderCopy(renderer, &texture1, NULL, rect1);
 
     /* SDL_Renderer *renderer, int radius, int numCircles, int circleRadius */
-    circleDistribution(renderer, target.d, NUM_CIRCLES, target.r, font, texture1, rect1);
+    circleDistribution(renderer, target.d, NUM_CIRCLES, target.r, font); //, texture1, rect1);
     // filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
 
     // get_text_and_rect(renderer, target.x - target.r/4, target.y - target.r/2, "1", font, texture1, rect1);
