@@ -65,7 +65,7 @@ typedef struct {
     double y;
     int r;
     int d;
-
+    bool success;
 } Target;
 
 /* TODO: Anpassen! */

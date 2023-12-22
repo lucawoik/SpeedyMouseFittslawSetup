@@ -20,14 +20,14 @@ int isSetupTarget = 1;
 Trial current_trial;
 
 /* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
-int TARGET_RADIUS[NUM_RADIUS] = {40, 60, 80}; //{30, 50, 70};
+int TARGET_RADIUS[NUM_RADIUS] = {40, 60, 80};        //{30, 50, 70};
 int TARGET_DISTANCE[NUM_DISTANCE] = {200, 300, 400}; //{400, 500, 600};
 
 // starting target
 /* TODO: Wo soll erstes probetarget sein? */
 Target target = {150, 150, 100, 200};
 
-/* int mouse_down = 0; */
+int mouse_down = 0;
 
 void finish()
 {
@@ -36,7 +36,7 @@ void finish()
     SDL_Quit();
     exit(1);
 }
-/* TODO: noch mal anschaun ob das mit den rausgenommenen Werten wie distanc und velocity 
+/* TODO: noch mal anschaun ob das mit den rausgenommenen Werten wie distanc und velocity
 immernoch die richtigen sachen berechnet */
 void handleInput(SDL_Renderer *renderer)
 {
@@ -48,22 +48,24 @@ void handleInput(SDL_Renderer *renderer)
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
-                /* mouse_down = 1; */
+                mouse_down = 1;
 
                 int mouseX, mouseY;
 
                 SDL_GetMouseState(&mouseX, &mouseY);
 
                 int success = checkCollision(mouseX, mouseY, &target);
-                // if (success)
-                // {
-                //     filledCircleRGBA(renderer, target.x, target.y, target.r, 0, 200, 0, 200);
-                // }
-                // else
-                // {
-                //     filledCircleRGBA(renderer, target.x, target.y, target.r, 200, 0, 0, 200);
-                // }
-                SDL_RenderPresent(renderer);
+                target.success = success;
+                    // if (success)
+                    // {
+                    //     filledCircleRGBA(renderer, target.x, target.y, target.r, 0, 200, 0, 200);
+                    //     target.success = true;
+                    // }
+                    // else
+                    // {
+                    //     filledCircleRGBA(renderer, target.x, target.y, target.r, 200, 0, 0, 200);
+                    // }
+                    SDL_RenderPresent(renderer);
                 SDL_Delay(200);
 
                 /* TODO: setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
@@ -87,54 +89,50 @@ void handleInput(SDL_Renderer *renderer)
 
                 click_count++;
 
-                
+                /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
+                if (!isSetupTarget)
+                {
+                    // printf("success\n");
+                    current_trial.time = trial_time;
+                    current_trial.clicks = click_count;
+                    current_trial.travel_distance = travel_distance;
+                    current_trial.success = 1;
+                    trials[iteration] = current_trial;
+                    iteration++;
+                    if (iteration >= NUM_ITERATIONS)
+                        finish();
+                }
 
-                    /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
-                    if (!isSetupTarget)
-                    {
-                        // printf("success\n");
-                        current_trial.time = trial_time;
-                        current_trial.clicks = click_count;
-                        current_trial.travel_distance = travel_distance;
-                        current_trial.success = 1;
-                        trials[iteration] = current_trial;
-                        iteration++;
-                        if (iteration >= NUM_ITERATIONS)
-                            finish();
-                    }
-
-                    click_count = 0;
-                    travel_distance = 0;
-                    trial_time = 0;
-                    isSetupTarget = 0;
-                    /* TODO: hier werden die neuen targets generiert 
-                    könnte man da also nicht einfach das machen:
-                    target = targetArray[iteration]; 
-                    ?
-                    */
-                    target = createTarget(targetArray[iteration]);
-
-                    // printf("main %f %f\n", target.x, target.y);
-                    current_trial = (Trial){iteration,
-                                            millis(),
-                                            target.r * 2,
-                                            target.d,
-                                            target.x,
-                                            target.y,
-                                            mouseX,
-                                            mouseY,
-                                            0,
-                                            0,
-                                            0,
-                                            0};
-
-                    /* if (DEBUG > 1)
-                        printf("target created: x %f y %f r %d vX %f vY %f\n", target.x, target.y, target.r, target.vX, target.vY);
+                click_count = 0;
+                travel_distance = 0;
+                trial_time = 0;
+                isSetupTarget = 0;
+                /* TODO: hier werden die neuen targets generiert
+                könnte man da also nicht einfach das machen:
+                target = targetArray[iteration];
+                ?
                 */
-                
+                target = createTarget(targetArray[iteration]);
+
+                // printf("main %f %f\n", target.x, target.y);
+                current_trial = (Trial){iteration,
+                                        millis(),
+                                        target.r * 2,
+                                        target.d,
+                                        target.x,
+                                        target.y,
+                                        mouseX,
+                                        mouseY,
+                                        0,
+                                        0,
+                                        0,
+                                        0};
+
+                /* if (DEBUG > 1)
+                    printf("target created: x %f y %f r %d vX %f vY %f\n", target.x, target.y, target.r, target.vX, target.vY);
+            */
             }
         }
-
 
         /*         if (event.type == SDL_MOUSEBUTTONUP)
                 {
@@ -158,23 +156,22 @@ void handleInput(SDL_Renderer *renderer)
     }
 }
 
-
 void render(SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     circleDistribution(renderer, target.d, NUM_CIRCLES, target.r, font);
 
-    /* funktion die feedbackcircle mahlt
+    /* funktion die feedbackcircle malt
         - nur wenn nicht seit dem letzt click 200ms vergangen sind
             (timpstam beim klick speichern  => !(currentTime>= lastTime+200ms) )
       */
 
     // circle in bottom right corner used to measure end to end latency
-    // if(!mouse_down)
-    //{
-    //	filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
-    //}
+    if(!mouse_down)
+    {
+    	filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
+    }
 
     SDL_RenderPresent(renderer);
 }
@@ -227,7 +224,8 @@ int main(int argc, char **argv)
     font_path = "font/arial.ttf";
     TTF_Init();
     TTF_Font *font = TTF_OpenFont(font_path, 48);
-    if (font == NULL) {
+    if (font == NULL)
+    {
         fprintf(stderr, "error: font not found\n");
         exit(EXIT_FAILURE);
     }

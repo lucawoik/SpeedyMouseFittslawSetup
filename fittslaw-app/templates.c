@@ -10,6 +10,7 @@ Target createTarget(Target t)
     target.y = t.y;
     target.x = t.x;
     target.d = t.d;
+    target.success = false;
 
     return target;
 }
@@ -85,7 +86,7 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
     float angle, step;
 
     // do not hardcode later
-    int order[] = {1, 3, 5, 7, 9, 2, 4, 6, 8};
+    int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
 
     step = (2 * M_PI) / numCircles;
 
