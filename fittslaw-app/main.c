@@ -159,7 +159,7 @@ void handleInput(SDL_Renderer *renderer)
 }
 
 
-void render(SDL_Renderer *renderer, TTF_Font *font, SDL_Rect *rect1, SDL_Texture **texture1)
+void render(SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
@@ -211,31 +211,26 @@ int main(int argc, char **argv)
     double deltaTime;
     SDL_Window *window;
     SDL_Renderer *renderer;
-    SDL_Rect rect1;
-    SDL_Texture *texture1;
     char *font_path;
 
     srand(time(0));
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
-     /* initTargetTemplates(); */
     createTargetArray();
 
     window = SDL_CreateWindow(__FILE__, 0, 0, WIDTH, HEIGHT, SDL_WINDOW_FULLSCREEN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    font_path = "font/arial.ttf";
-
-    /* Inint TTF. */
+    // Init TTF.
     SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
+    font_path = "font/arial.ttf";
     TTF_Init();
     TTF_Font *font = TTF_OpenFont(font_path, 48);
     if (font == NULL) {
         fprintf(stderr, "error: font not found\n");
         exit(EXIT_FAILURE);
     }
-
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
@@ -249,16 +244,11 @@ int main(int argc, char **argv)
 
         update(deltaTime);
         handleInput(renderer);
-        render(renderer, font, &rect1, &texture1);
+        render(renderer, font);
         // usleep(2000);
-        SDL_RenderCopy(renderer, texture1, NULL, &rect1);
 
         SDL_RenderPresent(renderer);
     }
-
-    /* Deinit TTF. */
-    // SDL_DestroyTexture(texture1);
-    // SDL_DestroyTexture(texture2);
     TTF_Quit();
 
     SDL_DestroyRenderer(renderer);

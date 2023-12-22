@@ -117,7 +117,7 @@ void render_numbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *
     text_width = surface->w;
     text_height = surface->h;
     SDL_FreeSurface(surface);
-    SDL_Rect rect = {x, y, text_width, text_height};
+    SDL_Rect rect = {x-text_width/2, y-text_height/2, text_width, text_height};
 
     SDL_RenderCopy(renderer, texture, NULL, &rect);
 }
