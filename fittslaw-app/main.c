@@ -16,6 +16,8 @@ int lastX;
 int lastY;
 /* TODO: unnötig */
 int isSetupTarget = 1;
+int successInCircle[9] = {0};
+
 
 Trial current_trial;
 
@@ -38,7 +40,7 @@ void finish()
 }
 /* TODO: noch mal anschaun ob das mit den rausgenommenen Werten wie distanc und velocity
 immernoch die richtigen sachen berechnet */
-void handleInput(SDL_Renderer *renderer)
+void handleInput(SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_Event event;
 
@@ -55,17 +57,18 @@ void handleInput(SDL_Renderer *renderer)
                 SDL_GetMouseState(&mouseX, &mouseY);
 
                 int success = checkCollision(mouseX, mouseY, &target);
-                target.success = success;
-                    // if (success)
-                    // {
-                    //     filledCircleRGBA(renderer, target.x, target.y, target.r, 0, 200, 0, 200);
-                    //     target.success = true;
-                    // }
-                    // else
-                    // {
-                    //     filledCircleRGBA(renderer, target.x, target.y, target.r, 200, 0, 0, 200);
-                    // }
-                    SDL_RenderPresent(renderer);
+                if (!isSetupTarget)
+                {
+                    int circleNumber = iteration%9;
+                    successInCircle[circleNumber] = success;
+
+                    if (circleNumber == 8)
+                    {
+                        renderFeedback(renderer, target.d, NUM_CIRCLES, target.r, successInCircle);
+                    } 
+                }
+                
+                SDL_RenderPresent(renderer);
                 SDL_Delay(200);
 
                 /* TODO: setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
@@ -85,9 +88,12 @@ void handleInput(SDL_Renderer *renderer)
 
                     clicks[click_count_total] = click;
                     click_count_total++;
+
                 }
 
                 click_count++;
+
+                
 
                 /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
@@ -100,7 +106,10 @@ void handleInput(SDL_Renderer *renderer)
                     trials[iteration] = current_trial;
                     iteration++;
                     if (iteration >= NUM_ITERATIONS)
+                    {
+                        // target = createTarget(targetArray[iteration - 1]);
                         finish();
+                    }
                 }
 
                 click_count = 0;
@@ -241,7 +250,7 @@ int main(int argc, char **argv)
         timer = micros();
 
         update(deltaTime);
-        handleInput(renderer);
+        handleInput(renderer, font);
         render(renderer, font);
         // usleep(2000);
 
