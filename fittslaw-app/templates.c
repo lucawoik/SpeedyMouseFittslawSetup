@@ -10,7 +10,6 @@ Target createTarget(Target t)
     target.y = t.y;
     target.x = t.x;
     target.d = t.d;
-
     return target;
 }
 
@@ -85,7 +84,7 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
     float angle, step;
 
     // do not hardcode later
-    int order[] = {1, 3, 5, 7, 9, 2, 4, 6, 8};
+    int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
 
     step = (2 * M_PI) / numCircles;
 
@@ -100,11 +99,36 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
         filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
 
         char *text = intToString(order[i]);
-        render_numbers(renderer, x, y, text, font);
+        renderNumbers(renderer, x, y, text, font);
+
     }
 }
 
-void render_numbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
+void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, int successInCircle[])
+{
+    float angle, step;
+    int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
+
+    step = (2 * M_PI) / numCircles;
+
+    for (int i = 0; i < numCircles; i++)
+    {
+        angle = step * i - M_PI / 2;
+
+        int x = centerX + radius * cos(angle);
+        int y = centerY + radius * sin(angle);
+
+        if (successInCircle[order[i] - 1]){
+            filledCircleRGBA(renderer, x, y, circleRadius, 0, 250, 0, 255);
+        } else {
+            filledCircleRGBA(renderer, x, y, circleRadius, 250, 0, 0, 255);
+
+        }
+        
+    }
+}
+
+void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
 {
     int text_width;
     int text_height;
