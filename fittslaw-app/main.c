@@ -18,7 +18,6 @@ int lastY;
 int isSetupTarget = 1;
 int successInCircle[9] = {0};
 
-
 Trial current_trial;
 
 /* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
@@ -59,15 +58,15 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 int success = checkCollision(mouseX, mouseY, &target);
                 if (!isSetupTarget)
                 {
-                    int circleNumber = iteration%9;
+                    int circleNumber = iteration % 9;
                     successInCircle[circleNumber] = success;
 
                     if (circleNumber == 8)
                     {
-                        renderFeedback(renderer, target.d, NUM_CIRCLES, target.r, successInCircle);
-                    } 
+                        renderFeedback(renderer, target.d, NUM_CIRCLES, target.r, font, successInCircle);
+                    }
                 }
-                
+
                 SDL_RenderPresent(renderer);
                 SDL_Delay(200);
 
@@ -88,12 +87,9 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
 
                     clicks[click_count_total] = click;
                     click_count_total++;
-
                 }
 
                 click_count++;
-
-                
 
                 /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
@@ -177,9 +173,9 @@ void render(SDL_Renderer *renderer, TTF_Font *font)
       */
 
     // circle in bottom right corner used to measure end to end latency
-    if(!mouse_down)
+    if (!mouse_down)
     {
-    	filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
+        filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
     }
 
     SDL_RenderPresent(renderer);
@@ -232,8 +228,10 @@ int main(int argc, char **argv)
     SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
     font_path = "font/arial.ttf";
     TTF_Init();
-    TTF_Font *font = TTF_OpenFont(font_path, 48);
-    if (font == NULL)
+    TTF_Font *fontNumbers = TTF_OpenFont(font_path, 48);
+    TTF_Font *fontFeedback = TTF_OpenFont(font_path, 28);
+
+    if (fontNumbers == NULL || fontFeedback == NULL)
     {
         fprintf(stderr, "error: font not found\n");
         exit(EXIT_FAILURE);
@@ -250,8 +248,8 @@ int main(int argc, char **argv)
         timer = micros();
 
         update(deltaTime);
-        handleInput(renderer, font);
-        render(renderer, font);
+        handleInput(renderer, fontFeedback);
+        render(renderer, fontNumbers);
         // usleep(2000);
 
         SDL_RenderPresent(renderer);

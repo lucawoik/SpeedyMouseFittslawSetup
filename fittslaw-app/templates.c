@@ -104,7 +104,7 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
     }
 }
 
-void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, int successInCircle[])
+void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font, int successInCircle[])
 {
     float angle, step;
     int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
@@ -122,10 +122,15 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circ
             filledCircleRGBA(renderer, x, y, circleRadius, 0, 250, 0, 255);
         } else {
             filledCircleRGBA(renderer, x, y, circleRadius, 250, 0, 0, 255);
-
         }
-        
     }
+    // 9te kreis nie erfolgreich?
+    int checksum = calculateChecksum(successInCircle, sizeof(&successInCircle));
+    char *text = strcat(intToString(checksum), "out of 9 hit.");
+    printf("\n checksum: %d", checksum);
+
+    renderNumbers(renderer, 1000, 500, text, font);
+
 }
 
 void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
@@ -134,7 +139,7 @@ void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *f
     int text_height;
     SDL_Surface *surface;
     SDL_Texture *texture;
-    SDL_Color textColor = {255, 255, 255, 0};
+    SDL_Color textColor = {0, 0, 0, 0};
 
     surface = TTF_RenderText_Solid(font, text, textColor);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
