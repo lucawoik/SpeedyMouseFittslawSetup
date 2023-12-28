@@ -11,7 +11,7 @@ long long micros()
 {
     struct timeval time;
     gettimeofday(&time, NULL);
-    return (long long) time.tv_sec * 1000000l + (long long) time.tv_usec;
+    return (long long)time.tv_sec * 1000000l + (long long)time.tv_usec;
 }
 
 int min(int a, int b)
@@ -31,23 +31,23 @@ int checkCollision(int x, int y, Target *t)
 
 int calculateDistance(int x1, int y1, int x2, int y2)
 {
-    return sqrt(pow(x1 - x2, 2) + pow(y1 - y2 , 2));
+    return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 }
 
 // swap array elements
 void swap(Tupel *a, Tupel *b)
 {
-	Tupel temp = *a;
+    Tupel temp = *a;
     *a = *b;
     *b = temp;
 }
 
-
-int calculateChecksum(int array[], size_t size) 
+int calculateChecksum(int array[], size_t size)
 {
     int checksum = 0;
 
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = 0; i <= size; ++i)
+    {
         checksum += array[i];
     }
 

@@ -23,27 +23,15 @@ void createTargetArray()
         {
             TO_BE_RANDOMIZED[NUM_RADIUS * i + j].radius = TARGET_RADIUS[j];
             TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance = TARGET_DISTANCE[i];
-            // printf("radius: %d, durchmesser: %d\n", TO_BE_RANDOMIZED[NUM_RADIUS * i + j].radius, TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance);
         }
-        // printf("\n");
     }
-    /* printf("------- \n"); */
+
     for (int m = 0; m < NUM_TUPELS; m++)
     {
         Tupel *a = &TO_BE_RANDOMIZED[m];
         Tupel *b = &TO_BE_RANDOMIZED[rand() % (NUM_TUPELS)];
         swap(a, b);
     }
-
-    /* for debug */
-    /* for (int i = 0; i < NUM_DISTANCE; i++)
-    {
-        for (int j = 0; j < NUM_RADIUS; j++)
-        {
-            printf("radius: %d, durchmesser: %d\n", TO_BE_RANDOMIZED[NUM_RADIUS * i + j].radius, TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance);
-        }
-        printf("\n");
-    } */
 
     float angle, step;
     step = (2 * M_PI) / NUM_CIRCLES;
@@ -52,7 +40,7 @@ void createTargetArray()
     for (int k = 0; k < NUM_TUPELS; k++)
     {
         int currentTarget = 0;
-        /*  printf(" erster currentTarget: %d \n", currentTarget); */
+
         for (int l = 0; l < NUM_CIRCLES; l++)
         {
             int currentPosition = k * NUM_CIRCLES + l;
@@ -62,10 +50,7 @@ void createTargetArray()
             targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k].distance * cos(angle);
             targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k].distance * sin(angle);
             currentTarget = (currentTarget + (int)floor(stepNum)) % (NUM_CIRCLES);
-            // printf("x: %f, y: %f, radius: %d, durchmesser: %d \n", targetArray[currentPosition].x, targetArray[currentPosition].y, targetArray[currentPosition].r, targetArray[currentPosition].d);
-            // printf("currentTarget: %d, l: %d \n", currentTarget, l);
         }
-        // printf(" \n");
     }
 }
 
@@ -94,13 +79,10 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
 
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
-        /* TODO: Könnte man noch mit "filledCircleColor" ersetzten, dann könnte man die Farbe als konstante festlegen */
-        // filledCircleRGBA(renderer, x, y, circleRadius, 200 - i * 15, 200 - i * 15, 200 - i * 15, 255);
         filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
 
         char *text = intToString(order[i]);
         renderNumbers(renderer, x, y, text, font);
-
     }
 }
 
@@ -118,19 +100,19 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circ
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
 
-        if (successInCircle[order[i] - 1]){
+        if (successInCircle[order[i] - 1])
+        {
             filledCircleRGBA(renderer, x, y, circleRadius, 0, 250, 0, 255);
-        } else {
+        }
+        else
+        {
             filledCircleRGBA(renderer, x, y, circleRadius, 250, 0, 0, 255);
         }
     }
-    // 9te kreis nie erfolgreich?
+
     int checksum = calculateChecksum(successInCircle, sizeof(&successInCircle));
-    char *text = strcat(intToString(checksum), "out of 9 hit.");
-    printf("\n checksum: %d", checksum);
-
-    renderNumbers(renderer, 1000, 500, text, font);
-
+    char *text = strcat(intToString(checksum), " von 9 Zielen getroffen.");
+    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2, text, font);
 }
 
 void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
@@ -146,7 +128,7 @@ void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *f
     text_width = surface->w;
     text_height = surface->h;
     SDL_FreeSurface(surface);
-    SDL_Rect rect = {x-text_width/2, y-text_height/2, text_width, text_height};
+    SDL_Rect rect = {x - text_width / 2, y - text_height / 2, text_width, text_height};
 
     SDL_RenderCopy(renderer, texture, NULL, &rect);
 }
