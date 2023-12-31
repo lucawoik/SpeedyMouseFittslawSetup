@@ -42,11 +42,11 @@ void swap(Tupel *a, Tupel *b)
     *b = temp;
 }
 
-int calculateChecksum(int array[], size_t size)
+int calculateChecksum(int array[])
 {
     int checksum = 0;
 
-    for (size_t i = 0; i <= size; ++i)
+    for (int i = 0; i < NUM_CIRCLES; i++)
     {
         checksum += array[i];
     }

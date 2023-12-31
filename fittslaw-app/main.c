@@ -94,7 +94,6 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
                 {
-                    // printf("success\n");
                     current_trial.time = trial_time;
                     current_trial.clicks = click_count;
                     current_trial.travel_distance = travel_distance;
@@ -103,7 +102,6 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                     iteration++;
                     if (iteration >= NUM_ITERATIONS)
                     {
-                        // target = createTarget(targetArray[iteration - 1]);
                         finish();
                     }
                 }

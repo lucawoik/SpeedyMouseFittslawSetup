@@ -135,7 +135,7 @@ int checkCollision(int x, int y, Target *t);
 
 int calculateDistance(int x1, int y1, int x2, int y2);
 
-int calculateChecksum(int array[], size_t size);
+int calculateChecksum(int array[]);
 
 // log
 void logClicks();

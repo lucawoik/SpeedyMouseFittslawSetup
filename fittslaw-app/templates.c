@@ -56,7 +56,7 @@ void createTargetArray()
 
 char *intToString(int value)
 {
-    char buffer[20];
+    char buffer[12];
     sprintf(buffer, "%d", value);
     char *result = malloc(strlen(buffer) + 1);
     strcpy(result, buffer);
@@ -64,6 +64,7 @@ char *intToString(int value)
     return result;
 }
 
+// to-do: combine next methods
 void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font)
 {
     float angle, step;
@@ -83,11 +84,13 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
 
         char *text = intToString(order[i]);
         renderNumbers(renderer, x, y, text, font);
+        free(text);
     }
 }
 
 void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font, int successInCircle[])
 {
+    // render colored circles (based on success)
     float angle, step;
     int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
 
@@ -110,9 +113,17 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circ
         }
     }
 
-    int checksum = calculateChecksum(successInCircle, sizeof(&successInCircle));
-    char *text = strcat(intToString(checksum), " von 9 Zielen getroffen.");
-    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2, text, font);
+    // render feedback text based on success
+    char resultText[26];
+    char partResultText[] = " von 9 Zielen getroffen.";
+
+    int checksum = calculateChecksum(successInCircle);
+    char *checksumText = intToString(checksum);
+    strcpy(resultText, checksumText);
+    strcat(resultText, partResultText);
+    free(checksumText);
+
+    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2, resultText, font);
 }
 
 void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
