@@ -56,16 +56,6 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 SDL_GetMouseState(&mouseX, &mouseY);
 
                 int success = checkCollision(mouseX, mouseY, &target);
-                if (!isSetupTarget)
-                {
-                    int circleNumber = iteration % 9;
-                    successInCircle[circleNumber] = success;
-
-                    if (circleNumber == 8)
-                    {
-                        renderFeedback(renderer, target.d, NUM_CIRCLES, target.r, font, successInCircle);
-                    }
-                }
 
                 SDL_RenderPresent(renderer);
                 SDL_Delay(200);
@@ -94,6 +84,18 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
                 {
+                    int circleNumber = iteration % 9;
+                    successInCircle[circleNumber] = success;
+
+                    // present feedback after ninth circle
+                    if (circleNumber == 8)
+                    {
+                        renderFeedback(renderer, target.d, NUM_CIRCLES, target.r, font, successInCircle);
+                        SDL_RenderPresent(renderer);
+                        // implement with delay or is a new circle presented by clicking somewhere?
+                        SDL_Delay(800);
+                    }
+
                     current_trial.time = trial_time;
                     current_trial.clicks = click_count;
                     current_trial.travel_distance = travel_distance;
