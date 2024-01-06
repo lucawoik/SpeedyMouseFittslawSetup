@@ -67,11 +67,8 @@ char *intToString(int value)
 // to-do: combine next methods
 void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font)
 {
+    int currentTarget = 0;
     float angle, step;
-
-    // do not hardcode later
-    int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
-
     step = (2 * M_PI) / numCircles;
 
     for (int i = 0; i < numCircles; i++)
@@ -82,18 +79,18 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
         int y = centerY + radius * sin(angle);
         filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
 
-        char *text = intToString(order[i]);
+        char *text = intToString(currentTarget + 1);
         renderNumbers(renderer, x, y, text, font);
         free(text);
+        currentTarget = (currentTarget + NUM_CIRCLES-2) % (NUM_CIRCLES);
     }
 }
 
 void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font, int successInCircle[])
 {
     // render colored circles (based on success)
+    int currentTarget = 0;
     float angle, step;
-    int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
-
     step = (2 * M_PI) / numCircles;
 
     for (int i = 0; i < numCircles; i++)
@@ -103,7 +100,7 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circ
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
 
-        if (successInCircle[order[i] - 1])
+        if (successInCircle[currentTarget])
         {
             filledCircleRGBA(renderer, x, y, circleRadius, 0, 250, 0, 255);
         }
@@ -111,6 +108,9 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circ
         {
             filledCircleRGBA(renderer, x, y, circleRadius, 250, 0, 0, 255);
         }
+
+        currentTarget = (currentTarget + NUM_CIRCLES-2) % (NUM_CIRCLES);
+
     }
 
     // render feedback text based on success

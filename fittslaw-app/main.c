@@ -16,13 +16,13 @@ int lastX;
 int lastY;
 /* TODO: unnötig */
 int isSetupTarget = 1;
-int successInCircle[9] = {0};
+int successInCircle[NUM_CIRCLES] = {0};
 
 Trial current_trial;
 
 /* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
-int TARGET_RADIUS[NUM_RADIUS] = {40, 60, 80};        //{30, 50, 70};
-int TARGET_DISTANCE[NUM_DISTANCE] = {200, 300, 400}; //{400, 500, 600};
+int TARGET_RADIUS[NUM_RADIUS] = {30, 50, 70}; //{40, 60, 80};
+int TARGET_DISTANCE[NUM_DISTANCE] = {400, 500, 600}; //{200, 300, 400};
 
 // starting target
 /* TODO: Wo soll erstes probetarget sein? */
@@ -84,11 +84,11 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
                 {
-                    int circleNumber = iteration % 9;
+                    int circleNumber = iteration % NUM_CIRCLES;
                     successInCircle[circleNumber] = success;
 
                     // present feedback after ninth circle
-                    if (circleNumber == 8)
+                    if (circleNumber == NUM_CIRCLES - 1)
                     {
                         renderFeedback(renderer, target.d, NUM_CIRCLES, target.r, font, successInCircle);
                         SDL_RenderPresent(renderer);

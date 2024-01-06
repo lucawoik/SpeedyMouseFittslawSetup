@@ -23,7 +23,7 @@
 /* #define ANGLE_NONE 5 */
 
 /* number of circles in the circle */
-#define NUM_CIRCLES 9
+#define NUM_CIRCLES 19
 
 #define MAX_CLICKS 10000
 
