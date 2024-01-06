@@ -31,6 +31,7 @@
 #define NUM_CIRCLES 9
 
 #define MAX_CLICKS 10000
+#define MAX_EVENTS 100000
 
 #define DEBUG 0
 
@@ -46,6 +47,7 @@
 #define centerY HEIGHT/2
 
 
+extern char *EVENT_PATH;
 extern int PARTICIPANT_ID;
 extern int EXPERIMENT;
 extern int LATENCY_CLICK_MIN;
@@ -120,6 +122,7 @@ Target targetArray[NUM_ITERATIONS];
 
 Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
+struct input_event events[MAX_EVENTS];
 
 /* TODO: macht das so noch Sinn odr kann man einfach die Targets direkt aus dem Array nehmen?! */
 Target createTarget(Target t);
