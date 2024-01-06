@@ -90,7 +90,7 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                     // present feedback after ninth circle
                     if (circleNumber == NUM_CIRCLES - 1)
                     {
-                        renderFeedback(renderer, target.d, NUM_CIRCLES, target.r, font, successInCircle);
+                        renderFeedback(renderer, target.d, target.r, font, successInCircle);
                         SDL_RenderPresent(renderer);
                         // implement with delay or is a new circle presented by clicking somewhere?
                         SDL_Delay(800);
@@ -165,7 +165,7 @@ void render(SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
-    circleDistribution(renderer, target.d, NUM_CIRCLES, target.r, font);
+    circleDistribution(renderer, target.d, target.r, font);
 
     /* funktion die feedbackcircle malt
         - nur wenn nicht seit dem letzt click 200ms vergangen sind

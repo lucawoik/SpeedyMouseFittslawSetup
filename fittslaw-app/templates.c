@@ -65,13 +65,13 @@ char *intToString(int value)
 }
 
 // to-do: combine next methods
-void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font)
+void circleDistribution(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Font *font)
 {
     int currentTarget = 0;
     float angle, step;
-    step = (2 * M_PI) / numCircles;
+    step = (2 * M_PI) / NUM_CIRCLES;
 
-    for (int i = 0; i < numCircles; i++)
+    for (int i = 0; i < NUM_CIRCLES; i++)
     {
         angle = step * i - M_PI / 2;
 
@@ -86,14 +86,14 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int 
     }
 }
 
-void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font, int successInCircle[])
+void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Font *font, int successInCircle[])
 {
     // render colored circles (based on success)
     int currentTarget = 0;
     float angle, step;
-    step = (2 * M_PI) / numCircles;
+    step = (2 * M_PI) / NUM_CIRCLES;
 
-    for (int i = 0; i < numCircles; i++)
+    for (int i = 0; i < NUM_CIRCLES; i++)
     {
         angle = step * i - M_PI / 2;
 
@@ -115,13 +115,18 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circ
 
     // render feedback text based on success
     char resultText[26];
-    char partResultText[] = " von 9 Zielen getroffen.";
-
     int checksum = calculateChecksum(successInCircle);
     char *checksumText = intToString(checksum);
+    char partResultText[] = " von ";
+    char *numCirclesText = intToString(NUM_CIRCLES);
+    char endOfFeedbackText[] = " Zielen getroffen.";
+
     strcpy(resultText, checksumText);
-    strcat(resultText, partResultText);
+    strcat(resultText, partResultText, numCirclesText);
+    strcat(resultText, numCirclesText);
+    strcat(resultText, endOfFeedbackText);
     free(checksumText);
+    free(numCirclesText);
 
     renderNumbers(renderer, WIDTH / 2, HEIGHT / 2, resultText, font);
 }
