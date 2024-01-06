@@ -12,6 +12,11 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <linux/input.h>
+#include <time.h>
 
 #define WIDTH 1920
 #define HEIGHT 1080
