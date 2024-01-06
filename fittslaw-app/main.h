@@ -46,8 +46,9 @@
 #define centerX WIDTH/2
 #define centerY HEIGHT/2
 
+#define MAX_PATH_LENGTH 256
 
-extern char *EVENT_PATH;
+extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;
 extern int EXPERIMENT;
 extern int LATENCY_CLICK_MIN;

@@ -1,5 +1,6 @@
 #include "main.h"
 
+char EVENT_PATH[MAX_PATH_LENGTH] = "";
 int PARTICIPANT_ID = 0;
 int EXPERIMENT = 0;
 int LATENCY_CLICK_MIN = 0;
@@ -196,17 +197,20 @@ void update(double deltaTime)
 
 int main(int argc, char **argv)
 {
-    if (sscanf(argv[1], "%d", &PARTICIPANT_ID) == EOF)
+    if (strlen(argv[1]) <= MAX_PATH_LENGTH)    
+        if (sscanf(argv[1], "%255s", EVENT_PATH) == EOF)
+            printf("incorrect event handle");
+    if (sscanf(argv[2], "%d", &PARTICIPANT_ID) == EOF)
         printf("incorrect partcipant id");
-    if (sscanf(argv[2], "%d", &EXPERIMENT) == EOF)
+    if (sscanf(argv[3], "%d", &EXPERIMENT) == EOF)
         printf("incorrect trial id");
-    if (sscanf(argv[3], "%d", &LATENCY_CLICK_MIN) == EOF)
+    if (sscanf(argv[4], "%d", &LATENCY_CLICK_MIN) == EOF)
         printf("incorrect latency click min");
-    if (sscanf(argv[4], "%d", &LATENCY_CLICK_MAX) == EOF)
+    if (sscanf(argv[5], "%d", &LATENCY_CLICK_MAX) == EOF)
         printf("incorrect latency click max");
-    if (sscanf(argv[5], "%d", &LATENCY_MOVE_MIN) == EOF)
+    if (sscanf(argv[6], "%d", &LATENCY_MOVE_MIN) == EOF)
         printf("incorrect latency move min");
-    if (sscanf(argv[6], "%d", &LATENCY_MOVE_MAX) == EOF)
+    if (sscanf(argv[7], "%d", &LATENCY_MOVE_MAX) == EOF)
         printf("incorrect latency move max");
 
     double timer;
