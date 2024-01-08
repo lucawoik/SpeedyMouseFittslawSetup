@@ -61,6 +61,7 @@ extern int TARGET_DISTANCE[NUM_DISTANCE];
 
 extern int isSetupTarget;
 extern int click_count_total;
+extern void *startEventLogging(void *arg);
 
 /* TODO: nicht mehr notwendig, aber noch in den Logs drin */
 /* static const char *ANGLE_STRING[] = {
@@ -120,10 +121,14 @@ typedef struct
 
 Target targetArray[NUM_ITERATIONS];
 
+int fd;
+int currently_logging;
 
 Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
 struct input_event events[MAX_EVENTS];
+
+int eventCount;
 
 /* TODO: macht das so noch Sinn odr kann man einfach die Targets direkt aus dem Array nehmen?! */
 Target createTarget(Target t);

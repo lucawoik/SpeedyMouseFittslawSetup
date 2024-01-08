@@ -145,3 +145,77 @@ void logTrials()
         printf("Error closing log file\n");
     }
 }
+
+void initEventLogging()
+{
+    fd = open(EVENT_PATH, O_RDONLY);
+    if (fd == -1)
+    {
+        perror("Error opening evdev device");
+        return;
+    }
+    printf("Event Logging Initialized\n");
+}
+
+void *startEventLogging(void *arg)
+{
+
+    while (1)
+    {
+        ssize_t bytesRead = read(fd, &events[eventCount], sizeof(struct input_event));
+
+        if (bytesRead == -1)
+        {
+            perror("Error reading from evdev device");
+            close(fd);
+            return;
+        }
+
+        if (bytesRead == sizeof(struct input_event))
+        {
+            eventCount++;
+        }
+    }
+
+    // End the thread
+    pthread_exit(NULL);
+}
+
+void stopEventLogging()
+{
+    char path[256];
+    sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
+
+    struct stat st_directory = {0};
+
+    // create log directory if it doesn't exist
+    if (stat(LOG_PATH, &st_directory) == -1)
+    {
+        mkdir(LOG_PATH, 0777);
+    }
+
+    FILE *logFile = fopen(path, "w");
+
+    if (logFile == NULL)
+    {
+        printf("Error opening log file\n");
+        return;
+    }
+
+    fprintf(logFile, "Timestamp,Type,Code,Value\n");
+
+    for (int i = 0; i < eventCount; i++)
+    {
+        fprintf(logFile, "%ld,%u,%u,%d\n",
+                events[i].time.tv_usec,
+                events[i].type,
+                events[i].code,
+                events[i].value);
+    }
+
+    fclose(logFile);
+    printf("Mouse events saved to mouse_events.csv\n");
+
+    // Reset for the next logging interval
+    eventCount = 0;
+}
