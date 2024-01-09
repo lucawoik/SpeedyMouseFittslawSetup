@@ -148,6 +148,7 @@ void logTrials()
 
 void initEventLogging()
 {
+    // open the event handler
     fd = open(EVENT_PATH, O_RDONLY);
     if (fd == -1)
     {
@@ -162,27 +163,30 @@ void *startEventLogging(void *arg)
 
     while (1)
     {
+        // Reading the current event-struct and saving it to the events array
         ssize_t bytesRead = read(fd, &events[eventCount], sizeof(struct input_event));
 
         if (bytesRead == -1)
         {
             perror("Error reading from evdev device");
             close(fd);
-            return;
+            return NULL;
         }
 
+        // Counting events to keep track of the number of events already saved
         if (bytesRead == sizeof(struct input_event))
         {
             eventCount++;
         }
     }
 
-    // End the thread
+    // TODO: properly end the thread... currently this line of code is never executed
     pthread_exit(NULL);
 }
 
 void stopEventLogging()
 {
+    // creating file to save logs to
     char path[256];
     sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
 
@@ -212,9 +216,10 @@ void stopEventLogging()
                 events[i].code,
                 events[i].value);
     }
+    fprintf(logFile, "%ld,%u,%u,%d\n", (long)0, 0, 0, 0);
 
     fclose(logFile);
-    printf("Mouse events saved to mouse_events.csv\n");
+    printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
 
     // Reset for the next logging interval
     eventCount = 0;
