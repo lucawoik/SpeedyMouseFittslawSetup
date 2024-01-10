@@ -149,7 +149,7 @@ void logTrials()
 void initEventLogging()
 {
     // open the event handler
-    fd = open(EVENT_PATH, O_RDONLY);
+    fd = open(EVENT_PATH, O_RDONLY); // | NONBLOCk in oder to make the read non-blocking
     if (fd == -1)
     {
         perror("Error opening evdev device");
@@ -212,7 +212,7 @@ void stopEventLogging()
 
     for (int i = 0; i < eventCount; i++)
     {
-        fprintf(logFile, "%ld,%u,%u,%d\n",
+        fprintf(logFile, "%ld,%u,%u,%d\n", // TODO: also log sec
                 events[i].time.tv_usec,
                 events[i].type,
                 events[i].code,
