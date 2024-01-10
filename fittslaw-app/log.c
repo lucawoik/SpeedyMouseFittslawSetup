@@ -208,11 +208,12 @@ void stopEventLogging()
     }
 
     // Write table head for each round
-    fprintf(logFile, "Relative timestamp (tv_usec),Type,Code,Value\n");
+    fprintf(logFile, "tv_sec, tv_usec, type, code, value\n");
 
     for (int i = 0; i < eventCount; i++)
     {
-        fprintf(logFile, "%ld,%u,%u,%d\n", // TODO: also log sec
+        fprintf(logFile, "%ld,%ld,%u,%u,%d\n",
+                events[i].time.tv_sec,
                 events[i].time.tv_usec,
                 events[i].type,
                 events[i].code,
