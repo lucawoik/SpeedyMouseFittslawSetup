@@ -198,7 +198,8 @@ void stopEventLogging()
         mkdir(LOG_PATH, 0777);
     }
 
-    FILE *logFile = fopen(path, "w");
+    // creating or appending to the log file
+    FILE *logFile = fopen(path, "a");
 
     if (logFile == NULL)
     {
@@ -206,7 +207,8 @@ void stopEventLogging()
         return;
     }
 
-    fprintf(logFile, "Timestamp,Type,Code,Value\n");
+    // Write table head for each round
+    fprintf(logFile, "Relative timestamp (tv_usec),Type,Code,Value\n");
 
     for (int i = 0; i < eventCount; i++)
     {
@@ -216,10 +218,9 @@ void stopEventLogging()
                 events[i].code,
                 events[i].value);
     }
-    fprintf(logFile, "%ld,%u,%u,%d\n", (long)0, 0, 0, 0);
 
     fclose(logFile);
-    printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
+    printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
 
     // Reset for the next logging interval
     eventCount = 0;
