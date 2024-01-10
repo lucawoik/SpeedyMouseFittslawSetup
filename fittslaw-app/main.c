@@ -21,8 +21,8 @@ int successInCircle[NUM_CIRCLES] = {0};
 Trial current_trial;
 
 /* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
-int TARGET_RADIUS[NUM_RADIUS] = {30, 50, 70}; //{40, 60, 80};
-int TARGET_DISTANCE[NUM_DISTANCE] = {400, 500, 600}; //{200, 300, 400}; //600 & 30: ID= // 400 & 70: ID=??
+int TARGET_RADIUS[NUM_RADIUS] = {15, 60, 100}; //{40, 60, 80}; min: 15 | max: 100
+int TARGET_DISTANCE[NUM_DISTANCE] = {200, 325, 450}; //{200, 300, 400}; min: 200 | max: 400
 
 // starting target
 /* TODO: Wo soll erstes probetarget sein? */
