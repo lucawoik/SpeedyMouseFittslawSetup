@@ -122,7 +122,7 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
     char endOfFeedbackText[] = " Zielen getroffen.";
 
     strcpy(resultText, checksumText);
-    strcat(resultText, partResultText, numCirclesText);
+    strcat(resultText, partResultText);
     strcat(resultText, numCirclesText);
     strcat(resultText, endOfFeedbackText);
     free(checksumText);
