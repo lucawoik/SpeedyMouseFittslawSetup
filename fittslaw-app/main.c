@@ -229,7 +229,7 @@ int main(int argc, char **argv)
     font_path = "font/arial.ttf";
     TTF_Init();
     TTF_Font *fontNumbers = TTF_OpenFont(font_path, 36);
-    TTF_Font *fontFeedback = TTF_OpenFont(font_path, 28);
+    TTF_Font *fontFeedback = TTF_OpenFont(font_path, 24);
 
     if (fontNumbers == NULL || fontFeedback == NULL)
     {

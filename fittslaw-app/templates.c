@@ -119,16 +119,19 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
     char *checksumText = intToString(checksum);
     char partResultText[] = " von ";
     char *numCirclesText = intToString(NUM_CIRCLES);
-    char endOfFeedbackText[] = " Zielen getroffen.";
+    char zielenText[] = " Zielen";
+    char getroffenText[] = "wurden getroffen.";
 
     strcpy(resultText, checksumText);
     strcat(resultText, partResultText);
     strcat(resultText, numCirclesText);
-    strcat(resultText, endOfFeedbackText);
+    strcat(resultText, zielenText);
     free(checksumText);
     free(numCirclesText);
 
-    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2, resultText, font);
+    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2 - 20, resultText, font);
+    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2 + 20, getroffenText, font);
+
 }
 
 void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
