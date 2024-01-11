@@ -228,7 +228,7 @@ int main(int argc, char **argv)
     SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
     font_path = "font/arial.ttf";
     TTF_Init();
-    TTF_Font *fontNumbers = TTF_OpenFont(font_path, 48);
+    TTF_Font *fontNumbers = TTF_OpenFont(font_path, 36);
     TTF_Font *fontFeedback = TTF_OpenFont(font_path, 28);
 
     if (fontNumbers == NULL || fontFeedback == NULL)
