@@ -101,16 +101,12 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                     // present feedback after ninth circle
                     if (circleNumber == NUM_CIRCLES - 1)
                     {
-                        // time(&end_time);
-
-                        // Calculate the elapsed time
-                        // Record the ending time
+                        // calculate task completion time
                         clock_gettime(CLOCK_MONOTONIC, &end_time);
                         elapsed_time = (end_time.tv_sec - start_time.tv_sec) * 1000.0 +
                                         (end_time.tv_nsec - start_time.tv_nsec) / 1000000.0;
                         elapsed_time = elapsed_time / 1000;
 
-                        printf("Elapsed Time: %.2f seconds\n", elapsed_time);
                         renderFeedback(renderer, target.d, target.r, font, successInCircle, elapsed_time);
                         SDL_RenderPresent(renderer);
                         // implement with delay or is a new circle presented by clicking somewhere?
