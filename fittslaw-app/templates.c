@@ -140,8 +140,8 @@ void renderFeedbackText(SDL_Renderer *renderer, TTF_Font *font, int successInCir
     free(checksumText);
     free(numCirclesText);
 
-    renderText(renderer, WIDTH / 2, HEIGHT / 2 - 30, resultText, font);
-    renderText(renderer, WIDTH / 2, HEIGHT / 2, getroffenText, font);
+    renderText(renderer, centerX, centerY - 30, resultText, font);
+    renderText(renderer, centerX, centerY, getroffenText, font);
 
     // render text "Dauer: x.yz s"
     char durationResultText[20];
@@ -154,7 +154,7 @@ void renderFeedbackText(SDL_Renderer *renderer, TTF_Font *font, int successInCir
     strcat(durationResultText, durationNumber);
     strcat(durationResultText, unitText);
 
-    renderText(renderer, WIDTH / 2, HEIGHT / 2 + 30, durationResultText, font);
+    renderText(renderer, centerX, centerY + 30, durationResultText, font);
 }
 
 void renderText(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)

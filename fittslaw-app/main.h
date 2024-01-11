@@ -40,7 +40,7 @@
 
 
 #define centerX WIDTH/2
-#define centerY HEIGHT/2
+#define centerY HEIGHT/2 + 50
 
 
 extern int PARTICIPANT_ID;
