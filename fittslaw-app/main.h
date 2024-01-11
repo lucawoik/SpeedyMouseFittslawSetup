@@ -25,6 +25,8 @@
 /* number of circles in the circle */
 #define NUM_CIRCLES 9
 
+#define NUM_ITERATIONS_PER_ID  3
+
 #define MAX_CLICKS 10000
 
 #define DEBUG 0
@@ -151,7 +153,7 @@ void render(SDL_Renderer* renderer, TTF_Font *font);
 
 void update(double deltaTime);
 
-void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font);
+void renderText(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font);
 
 int main(int argc, char** argv);
 
@@ -161,6 +163,7 @@ int main(int argc, char** argv);
 void circleDistribution();
 
 void renderFeedback();
+void renderFeedbackText();
 
 void createTargetArray();
 

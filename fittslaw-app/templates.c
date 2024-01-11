@@ -80,13 +80,18 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int circleRadius, TT
         filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
 
         char *text = intToString(currentTarget + 1);
-        renderNumbers(renderer, x, y, text, font);
+        renderText(renderer, x, y, text, font);
         free(text);
         currentTarget = (currentTarget + NUM_CIRCLES-2) % (NUM_CIRCLES);
     }
 }
 
-void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Font *font, int successInCircle[])
+void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Font *font, int successInCircle[], double elapsed_time)
+/*
+* renders the feedback screen, which includes:
+* - the success rate of the last fitts law task "round" and
+* - the last fitts law task "round" with a positive/negative feedback for each circle (indicating whether the circle was hit)
+*/
 {
     // render colored circles (based on success)
     int currentTarget = 0;
@@ -114,6 +119,12 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
     }
 
     // render feedback text based on success
+    renderFeedbackText(renderer, font, successInCircle, elapsed_time);
+}
+
+void renderFeedbackText(SDL_Renderer *renderer, TTF_Font *font, int successInCircle[], double elapsed_time)
+{
+    // render text "x von y Zielen getroffen."
     char resultText[26];
     int checksum = calculateChecksum(successInCircle);
     char *checksumText = intToString(checksum);
@@ -129,12 +140,24 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
     free(checksumText);
     free(numCirclesText);
 
-    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2 - 20, resultText, font);
-    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2 + 20, getroffenText, font);
+    renderText(renderer, WIDTH / 2, HEIGHT / 2 - 30, resultText, font);
+    renderText(renderer, WIDTH / 2, HEIGHT / 2, getroffenText, font);
 
+    // render text "Dauer: x.yz s"
+    char durationResultText[20];
+    char durationNumber[20];
+    char durationText[] = "Dauer: ";
+    char unitText[] = "s";
+
+    sprintf(durationNumber, "%.2f", elapsed_time);
+    strcpy(durationResultText, durationText);
+    strcat(durationResultText, durationNumber);
+    strcat(durationResultText, unitText);
+
+    renderText(renderer, WIDTH / 2, HEIGHT / 2 + 30, durationResultText, font);
 }
 
-void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
+void renderText(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
 {
     int text_width;
     int text_height;
