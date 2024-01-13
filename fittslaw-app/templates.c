@@ -37,18 +37,18 @@ void createTargetArray()
     step = (2 * M_PI) / NUM_CIRCLES;
     int stepNum = floor(NUM_CIRCLES/ 2);
 
-    for (int k = 0; k < NUM_TUPELS; k++)
+    for (int k = 0; k < NUM_TUPELS * NUM_ITERATIONS_PER_ID; k++)
     {
         int currentTarget = 0;
 
-        for (int l = 0; l < TOTAL_NUM_CIRCLES; l++)
+        for (int l = 0; l < NUM_CIRCLES; l++)
         {
-            int currentPosition = k * TOTAL_NUM_CIRCLES + l;
-            targetArray[currentPosition].r = TO_BE_RANDOMIZED[k].radius;
-            targetArray[currentPosition].d = TO_BE_RANDOMIZED[k].distance;
+            int currentPosition = k * NUM_CIRCLES + l;
+            targetArray[currentPosition].r = TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].radius;
+            targetArray[currentPosition].d = TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance;
             angle = step * currentTarget - M_PI / 2;
-            targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k].distance * cos(angle);
-            targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k].distance * sin(angle);
+            targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance * cos(angle);
+            targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance * sin(angle);
             currentTarget = (currentTarget + (int)floor(stepNum)) % (NUM_CIRCLES);
         }
     }
