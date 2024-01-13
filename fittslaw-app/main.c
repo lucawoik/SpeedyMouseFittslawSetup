@@ -14,23 +14,20 @@ double trial_time;
 int travel_distance;
 int lastX;
 int lastY;
-/* TODO: unnötig */
 int isSetupTarget = 1;
 int successInCircle[NUM_CIRCLES] = {0};
 
 Trial current_trial;
 
-/* int TARGET_RADIUS[NUM_RADIUS] = {20, 40, 60, 100}; */
 int TARGET_RADIUS[NUM_RADIUS] = {15, 60, 100}; //{40, 60, 80}; min: 15 | max: 100
 int TARGET_DISTANCE[NUM_DISTANCE] = {200, 325, 450}; //{200, 300, 400}; min: 200 | max: 400
 
 // starting target
-/* TODO: Wo soll erstes probetarget sein? */
-Target target = {150, 150, 100, 200};
+Target target = {centerX, centerY, 50, 200};
 
-int mouse_down = 0;
+// int mouse_down = 0;
 
-// variables for measuring duration of one fitts law round
+// variables for measuring duration of one 2d fitts law task
 struct timespec start_time, end_time;
 double elapsed_time;
 
@@ -42,8 +39,7 @@ void finish()
     SDL_Quit();
     exit(1);
 }
-/* TODO: noch mal anschaun ob das mit den rausgenommenen Werten wie distanc und velocity
-immernoch die richtigen sachen berechnet */
+
 void handleInput(SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_Event event;
@@ -54,7 +50,7 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
-                mouse_down = 1;
+                // mouse_down = 1;
 
                 int mouseX, mouseY;
 
@@ -65,7 +61,6 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 SDL_RenderPresent(renderer);
                 SDL_Delay(200);
 
-                /* TODO: setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
                 {
                     // handle click
@@ -86,19 +81,19 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
 
                 click_count++;
 
-                /* TODO: (Wie oben?) setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
                 {
+                    // circleNumber varies from 1 to number of circles
                     int circleNumber = iteration % NUM_CIRCLES;
                     successInCircle[circleNumber] = success;
 
+                    // Record the starting time after first click
                     if (circleNumber == 1)
                     {
-                        // Record the starting time
                         clock_gettime(CLOCK_MONOTONIC, &start_time);
                     }
 
-                    // present feedback after ninth circle
+                    // if a 2d fitts law task is completed
                     if (circleNumber == NUM_CIRCLES - 1)
                     {
                         // calculate task completion time
@@ -107,9 +102,9 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                                         (end_time.tv_nsec - start_time.tv_nsec) / 1000000.0;
                         elapsed_time = elapsed_time / 1000;
 
+                        // present feedback after ninth circle/click (or after NUM_CIRCLES clicks)
                         renderFeedback(renderer, target.d, target.r, font, successInCircle, elapsed_time);
                         SDL_RenderPresent(renderer);
-                        // implement with delay or is a new circle presented by clicking somewhere?
                         SDL_Delay(800);
                     }
 
@@ -129,15 +124,9 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 travel_distance = 0;
                 trial_time = 0;
                 isSetupTarget = 0;
-                /* TODO: hier werden die neuen targets generiert
-                könnte man da also nicht einfach das machen:
-                target = targetArray[iteration];
-                ?
-                */
-                // int iterationPerTrial = iteration % NUM_ITERATIONS_PER_ID;
+                
                 target = createTarget(targetArray[iteration]);
 
-                // printf("main %f %f\n", target.x, target.y);
                 current_trial = (Trial){iteration,
                                         millis(),
                                         target.r * 2,
@@ -150,20 +139,8 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                                         0,
                                         0,
                                         0};
-
-                /* if (DEBUG > 1)
-                    printf("target created: x %f y %f r %d vX %f vY %f\n", target.x, target.y, target.r, target.vX, target.vY);
-            */
             }
         }
-
-        /*         if (event.type == SDL_MOUSEBUTTONUP)
-                {
-                    if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
-                    {
-                mouse_down = 0;
-                }
-            } */
 
         if (event.type == SDL_KEYDOWN)
         {
@@ -184,16 +161,9 @@ void render(SDL_Renderer *renderer, TTF_Font *font)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     circleDistribution(renderer, target.d, target.r, font);
-
-    /* funktion die feedbackcircle malt
-        - nur wenn nicht seit dem letzt click 200ms vergangen sind
-            (timpstam beim klick speichern  => !(currentTime>= lastTime+200ms) )
-      */
-
-    // circle in bottom right corner used to measure end to end latency
-    if (!mouse_down)
-    {
-        filledCircleColor(renderer, 1900, 1000, 100, TARGET_COLOR);
+    // render first circle
+    if (isSetupTarget){
+        filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
     }
 
     SDL_RenderPresent(renderer);
@@ -205,7 +175,6 @@ void update(double deltaTime)
     SDL_GetMouseState(&mouseX, &mouseY);
 
     travel_distance += calculateDistance(mouseX, mouseY, lastX, lastY);
-
     trial_time += deltaTime;
 
     lastX = mouseX;

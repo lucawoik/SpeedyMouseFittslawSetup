@@ -1,7 +1,6 @@
 #include "main.h"
 
-/* neue belegung: x,y(die des ziels), radius, distance to the center */
-/* TODO: macht das Sinn aus einem Target ein anderes zu bilden? */
+
 Target createTarget(Target t)
 {
     Target target;
@@ -17,6 +16,8 @@ void createTargetArray()
 {
     int NUM_TUPELS = NUM_DISTANCE * NUM_RADIUS;
     Tupel TO_BE_RANDOMIZED[NUM_TUPELS];
+
+    // create array of tuples with defined radius and distance
     for (int i = 0; i < NUM_DISTANCE; i++)
     {
         for (int j = 0; j < NUM_RADIUS; j++)
@@ -26,6 +27,7 @@ void createTargetArray()
         }
     }
 
+    // randomize order of tuples
     for (int m = 0; m < NUM_TUPELS; m++)
     {
         Tupel *a = &TO_BE_RANDOMIZED[m];
@@ -41,6 +43,7 @@ void createTargetArray()
     {
         int currentTarget = 0;
 
+        // fill target array with targets of same radius and same distance for a full circle (e.g. 9 circles)
         for (int l = 0; l < NUM_CIRCLES; l++)
         {
             int currentPosition = k * NUM_CIRCLES + l;
@@ -103,7 +106,6 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
     for (int i = 0; i < NUM_CIRCLES; i++)
     {
         angle = step * i - M_PI / 2;
-
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
 
@@ -117,7 +119,6 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
         }
 
         currentTarget = (currentTarget + NUM_CIRCLES-2) % (NUM_CIRCLES);
-
     }
 
     // render feedback text based on success
