@@ -35,15 +35,15 @@ void createTargetArray()
 
     float angle, step;
     step = (2 * M_PI) / NUM_CIRCLES;
-    int stepNum = floor(NUM_CIRCLES / 2);
+    int stepNum = floor(NUM_CIRCLES/ 2);
 
     for (int k = 0; k < NUM_TUPELS; k++)
     {
         int currentTarget = 0;
 
-        for (int l = 0; l < NUM_CIRCLES; l++)
+        for (int l = 0; l < TOTAL_NUM_CIRCLES; l++)
         {
-            int currentPosition = k * NUM_CIRCLES + l;
+            int currentPosition = k * TOTAL_NUM_CIRCLES + l;
             targetArray[currentPosition].r = TO_BE_RANDOMIZED[k].radius;
             targetArray[currentPosition].d = TO_BE_RANDOMIZED[k].distance;
             angle = step * currentTarget - M_PI / 2;
@@ -73,15 +73,17 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int circleRadius, TT
 
     for (int i = 0; i < NUM_CIRCLES; i++)
     {
+        // render circle
         angle = step * i - M_PI / 2;
-
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
         filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
 
+        // render circle number
         char *text = intToString(currentTarget + 1);
         renderText(renderer, x, y, text, font);
         free(text);
+
         currentTarget = (currentTarget + NUM_CIRCLES-2) % (NUM_CIRCLES);
     }
 }

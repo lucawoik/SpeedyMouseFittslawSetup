@@ -134,6 +134,7 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 target = targetArray[iteration];
                 ?
                 */
+                // int iterationPerTrial = iteration % NUM_ITERATIONS_PER_ID;
                 target = createTarget(targetArray[iteration]);
 
                 // printf("main %f %f\n", target.x, target.y);
