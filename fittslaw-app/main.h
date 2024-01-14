@@ -25,20 +25,24 @@
 /* number of circles in the circle */
 #define NUM_CIRCLES 9
 
+#define NUM_ITERATIONS_PER_ID  3
+
 #define MAX_CLICKS 10000
 
 #define DEBUG 0
 
 #define TARGET_COLOR 0xFF000000
 
-#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * NUM_CIRCLES
+#define TOTAL_NUM_CIRCLES NUM_CIRCLES * NUM_ITERATIONS_PER_ID
+
+#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * TOTAL_NUM_CIRCLES
 
 /* TODO: hier könnte man noch nach static und mooving unterscheiden */
 #define LOG_PATH "log"
 
 
 #define centerX WIDTH/2
-#define centerY HEIGHT/2
+#define centerY HEIGHT/2 + 50
 
 
 extern int PARTICIPANT_ID;
@@ -151,7 +155,7 @@ void render(SDL_Renderer* renderer, TTF_Font *font);
 
 void update(double deltaTime);
 
-void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font);
+void renderText(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font);
 
 int main(int argc, char** argv);
 
@@ -161,6 +165,7 @@ int main(int argc, char** argv);
 void circleDistribution();
 
 void renderFeedback();
+void renderFeedbackText();
 
 void createTargetArray();
 
