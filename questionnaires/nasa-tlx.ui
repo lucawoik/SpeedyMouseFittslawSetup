@@ -81,7 +81,7 @@ sechs genannten Dimensionen von der Aufgabe beansprucht oder gefordert gesehen h
      <rect>
       <x>40</x>
       <y>310</y>
-      <width>251</width>
+      <width>260</width>
       <height>31</height>
      </rect>
     </property>
@@ -474,8 +474,8 @@ an Aufgabenerfüllung zu erreichen? </string>
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>799</x>
-      <y>352</y>
+      <x>780</x>
+      <y>370</y>
       <width>601</width>
       <height>131</height>
      </rect>

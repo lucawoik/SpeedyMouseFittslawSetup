@@ -63,8 +63,8 @@ class NasaTLX(QtWidgets.QWizard):
 
         self.showFullScreen()
 
-        # Only show an back button on page 2 (ID 1)
-        if QtWidgets.QWizard.currentId(self) is not 1:
+        # Only show a back button on page 2 (ID 1)
+        if QtWidgets.QWizard.currentId(self) != 1:
             self.button(QtWidgets.QWizard.BackButton).hide()
         else:
             self.button(QtWidgets.QWizard.BackButton).show()
