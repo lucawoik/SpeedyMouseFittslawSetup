@@ -96,6 +96,7 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                     // if a 2d fitts law task is completed
                     if (circleNumber == NUM_CIRCLES - 1)
                     {
+                        // is trial_time the same as elapsed_time??
                         // calculate task completion time
                         clock_gettime(CLOCK_MONOTONIC, &end_time);
                         elapsed_time = (end_time.tv_sec - start_time.tv_sec) * 1000.0 +
