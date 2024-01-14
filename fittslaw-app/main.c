@@ -59,7 +59,6 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 int success = checkCollision(mouseX, mouseY, &target);
 
                 SDL_RenderPresent(renderer);
-                SDL_Delay(200);
 
                 if (!isSetupTarget)
                 {
