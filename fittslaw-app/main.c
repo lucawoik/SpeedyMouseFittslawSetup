@@ -200,7 +200,7 @@ int main(int argc, char **argv)
     double deltaTime;
     SDL_Window *window;
     SDL_Renderer *renderer;
-    char *font_path;
+    // char *font_path;
 
     srand(time(0));
 
@@ -213,8 +213,11 @@ int main(int argc, char **argv)
 
     // Init TTF.
     SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
-    font_path = "font/arial.ttf";
     TTF_Init();
+    
+    char font_path[FILENAME_MAX];
+    GetCurrentDir( font_path, FILENAME_MAX );
+    strcat(font_path, "/fittslaw-app/font/arial.ttf");
     TTF_Font *fontNumbers = TTF_OpenFont(font_path, 36);
     TTF_Font *fontFeedback = TTF_OpenFont(font_path, 24);
 

@@ -1,6 +1,9 @@
 #ifndef __fitts_main__
 #define __fitts_main__
 
+#include <stdio.h>
+#include <unistd.h>
+#define GetCurrentDir getcwd
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <pthread.h>
