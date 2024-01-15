@@ -76,7 +76,6 @@ class NasaTLX(QtWidgets.QWizard):
             writer = csv.writer(file, delimiter=',')
 
             if not file_exists:
-                print("writi")
                 writer.writerow(['participant_id',
                                  'trial',
                                  'latency',
