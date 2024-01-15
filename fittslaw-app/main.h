@@ -61,8 +61,8 @@ extern int TARGET_DISTANCE[NUM_DISTANCE];
 
 extern int isSetupTarget;
 extern int click_count_total;
-extern void *startEventLogging(void *arg);
-extern void initEventLogging();
+extern void startEventLogging();
+extern void *initEventLogging(void *arg);
 extern void stopEventLogging();
 
 /* TODO: nicht mehr notwendig, aber noch in den Logs drin */

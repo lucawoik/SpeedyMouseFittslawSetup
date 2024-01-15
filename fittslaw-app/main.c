@@ -61,6 +61,10 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 SDL_RenderPresent(renderer);
                 SDL_Delay(200);
 
+                if (isSetupTarget){
+                    startEventLogging();
+                }
+
                 /* TODO: setup nicht mehr vorhanden, aber das erste wird ja nicht gezählt also vllt das hier rausnehmen?! */
                 if (!isSetupTarget)
                 {
@@ -88,32 +92,15 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                     int circleNumber = iteration % 9;
                     successInCircle[circleNumber] = success;
 
-                    if (circleNumber == 0)
-                    {
-                        printf("Logging Started\n");
-                        currently_logging=1;
-
-                        // Create a thread
-                        pthread_t loggingThread;
-                        int threadCreationResult = pthread_create(&loggingThread, NULL, startEventLogging, NULL);
-
-                        if (threadCreationResult != 0)
-                        {
-                            fprintf(stderr, "Error creating thread: %d\n", threadCreationResult);
-                            return; // Return an error code if thread creation fails
-                        }
-                    }
-
                     // present feedback after ninth circle
                     if (circleNumber == 8)
                     {
-                        currently_logging=0;
-                        printf("Logging stopped\n");
                         stopEventLogging();
                         renderFeedback(renderer, target.d, NUM_CIRCLES, target.r, font, successInCircle);
                         SDL_RenderPresent(renderer);
                         // implement with delay or is a new circle presented by clicking somewhere?
                         SDL_Delay(800);
+                        startEventLogging();
                     }
 
                     current_trial.time = trial_time;
@@ -266,7 +253,15 @@ int main(int argc, char **argv)
     system("xsetroot -cursor_name arrow");
 
     // Init Logging - Open the event handler
-    initEventLogging();
+    // Create a thread
+    pthread_t loggingThread;
+    int threadCreationResult = pthread_create(&loggingThread, NULL, initEventLogging, NULL);
+
+    if (threadCreationResult != 0)
+    {
+        fprintf(stderr, "Error creating thread: %d\n", threadCreationResult);
+        return 1; // Return an error code if thread creation fails
+    }
 
     while (1)
     {

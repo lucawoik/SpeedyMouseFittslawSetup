@@ -2,6 +2,7 @@
 
 void logClicks()
 {
+    //TODO: remove unwanted latency values, use only one...
     char path[256];
     sprintf(path, "%s/static_clicks_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
 
@@ -76,6 +77,8 @@ void logClicks()
 
 void logTrials()
 {
+    //TODO: remove unused latency logs
+    //TODO: see Notion
     char path[256];
     sprintf(path, "%s/static_iterations_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
 
@@ -146,46 +149,50 @@ void logTrials()
     }
 }
 
-void initEventLogging()
+void *initEventLogging(void *arg)
 {
     // open the event handler
     fd = open(EVENT_PATH, O_RDONLY); // | NONBLOCk in oder to make the read non-blocking
     if (fd == -1)
     {
         perror("Error opening evdev device");
-        return;
+        return NULL;
     }
-    printf("Event Logging Initialized\n");
-}
 
-void *startEventLogging(void *arg)
-{
+    printf("Event Logging Initialized\n");
 
     while (1)
     {
-        // Reading the current event-struct and saving it to the events array
-        ssize_t bytesRead = read(fd, &events[eventCount], sizeof(struct input_event));
-
-        if (bytesRead == -1)
+        while (currently_logging == 1)
         {
-            perror("Error reading from evdev device");
-            close(fd);
-            return NULL;
-        }
+            // Reading the current event-struct and saving it to the events array
+            ssize_t bytesRead = read(fd, &events[eventCount], sizeof(struct input_event));
 
-        // Counting events to keep track of the number of events already saved
-        if (bytesRead == sizeof(struct input_event))
-        {
-            eventCount++;
+            if (bytesRead == -1)
+            {
+                perror("Error reading from evdev device");
+                close(fd);
+                return NULL;
+            }
+
+            // Counting events to keep track of the number of events already saved
+            if (bytesRead == sizeof(struct input_event))
+            {
+                eventCount++;
+            }
         }
     }
+}
 
-    // TODO: properly end the thread... currently this line of code is never executed
-    pthread_exit(NULL);
+void startEventLogging()
+{
+       currently_logging = 1;
+       printf("Logging started\n");
 }
 
 void stopEventLogging()
 {
+    currently_logging = 0;
     // creating file to save logs to
     char path[256];
     sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
@@ -208,6 +215,7 @@ void stopEventLogging()
     }
 
     // Write table head for each round
+    // TODO: replace with zeroes
     fprintf(logFile, "tv_sec, tv_usec, type, code, value\n");
 
     for (int i = 0; i < eventCount; i++)
