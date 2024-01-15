@@ -4,22 +4,25 @@ import random
 
 
 participant_id = int(sys.argv[1])
-latencies_template = [[0, 0, 0, 0]]
+# latencies_template = [[0, 0, 0, 0]]
+num_latency_levels = 2
 
 
 while(True):
-    trial = 0
-    latencies = latencies_template.copy()
-    random.shuffle(latencies)
+    # latencies = latencies_template.copy()
+    # random.shuffle(latencies)
+    # trial = 0
+
     
     os.system('python3 questionnaires/demographic_survey.py ' + str(participant_id))
     
-    for l in latencies:
+    for trial in range(num_latency_levels):
+        print("trial: ", trial)
 
-        os.system('./fittslaw-app/SpeedyMouseFittslaw /dev/input/event4 {} {} {} {} {} {}'.format(participant_id, trial, latencies[trial][0], latencies[trial][1], latencies[trial][2], latencies[trial][3]))
+        os.system('./fittslaw-app/SpeedyMouseFittslaw {} {} {} {} {} {}'.format(participant_id, trial, 0, 0, 0, 0))
         
-        os.system('python3 questionnaires/nasa-tlx.py {} {} {} {} {} {}'.format(participant_id, trial, latencies[trial][0], latencies[trial][1], latencies[trial][2], latencies[trial][3]))
-        trial = trial + 1
+        os.system('python3 questionnaires/nasa-tlx.py {} {} {} {} {} {}'.format(participant_id, trial, 0, 0, 0, 0))
+        # trial += 1
 
     os.system('python3 notification.py')
 

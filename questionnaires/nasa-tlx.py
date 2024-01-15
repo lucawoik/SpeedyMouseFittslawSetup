@@ -18,10 +18,7 @@ class NasaTLX(QtWidgets.QWizard):
         # Collect and storeArguments passed to the script
         self.id_prob = sys.argv[1]
         self.id_trial = sys.argv[2]
-        self.click_min = sys.argv[3]
-        self.click_max = sys.argv[4]
-        self.move_min = sys.argv[5]
-        self.move_max = sys.argv[6]
+        self.latency = sys.argv[3]
 
         self.init_ui()
 
@@ -82,10 +79,7 @@ class NasaTLX(QtWidgets.QWizard):
                 print("writi")
                 writer.writerow(['participant_id',
                                  'trial',
-                                 'latency_click_min',
-                                 'latency_click_max',
-                                 'latency_move_min',
-                                 'latency_move_max',
+                                 'latency',
                                  'mental_demand',
                                  'physical_demand',
                                  'temporal_demand',
@@ -95,10 +89,7 @@ class NasaTLX(QtWidgets.QWizard):
 
             writer.writerow([self.id_prob,
                              self.id_trial,
-                             self.click_min,
-                             self.click_max,
-                             self.move_min,
-                             self.move_max,
+                             self.latency,
                              round(self.ui.slider_mental.value() / 5),  # Divide by 5 to get from 0-100 to 0-20
                              round(self.ui.slider_physical.value() / 5),
                              round(self.ui.slider_temporal.value() / 5),
@@ -110,6 +101,7 @@ class NasaTLX(QtWidgets.QWizard):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     nasa_tlx = NasaTLX()
+    # nasa_tlx.write_to_csv()
     sys.exit(app.exec_())
 
 
