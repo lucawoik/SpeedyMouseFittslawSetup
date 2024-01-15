@@ -12,13 +12,6 @@ LOG_DIRECTORY = 'log/'
 
 class NasaTLX(QtWidgets.QWizard):
 
-    #id_prob = -1
-    #id_trial = -1
-    #click_min = -1
-    #click_max = -1
-    #move_min = -1
-    #move_max = -1
-
     def __init__(self):
         super().__init__()
 
@@ -74,13 +67,6 @@ class NasaTLX(QtWidgets.QWizard):
         self.show()
 
     def on_finished(self):
-        #print(self.ui.slider_mental.value())
-        #print(self.ui.slider_physical.value())
-        #print(self.ui.slider_temporal.value())
-        #print(self.ui.slider_performance.value())
-        #print(self.ui.slider_effort.value())
-        #print(self.ui.slider_frustration.value())
-
         self.write_to_csv()
 
     def write_to_csv(self):
@@ -123,7 +109,7 @@ class NasaTLX(QtWidgets.QWizard):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    nasaTLX = NasaTLX()
+    nasa_tlx = NasaTLX()
     sys.exit(app.exec_())
 
 

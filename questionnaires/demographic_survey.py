@@ -12,8 +12,6 @@ LOG_DIRECTORY = 'log/'
 
 class DemographicSurvey(QtWidgets.QDialog):
 
-    #id_prob = -1
-
     def __init__(self):
         super().__init__()
 
