@@ -2,10 +2,7 @@
 
 int PARTICIPANT_ID = 0;
 int EXPERIMENT = 0;
-int LATENCY_CLICK_MIN = 0;
-int LATENCY_CLICK_MAX = 0;
-int LATENCY_MOVE_MIN = 0;
-int LATENCY_MOVE_MAX = 0;
+int LATENCY = 0;
 
 int iteration = 0;
 int click_count = 0;
@@ -187,14 +184,8 @@ int main(int argc, char **argv)
         printf("incorrect partcipant id");
     if (sscanf(argv[2], "%d", &EXPERIMENT) == EOF)
         printf("incorrect trial id");
-    if (sscanf(argv[3], "%d", &LATENCY_CLICK_MIN) == EOF)
-        printf("incorrect latency click min");
-    if (sscanf(argv[4], "%d", &LATENCY_CLICK_MAX) == EOF)
-        printf("incorrect latency click max");
-    if (sscanf(argv[5], "%d", &LATENCY_MOVE_MIN) == EOF)
-        printf("incorrect latency move min");
-    if (sscanf(argv[6], "%d", &LATENCY_MOVE_MAX) == EOF)
-        printf("incorrect latency move max");
+    if (sscanf(argv[3], "%d", &LATENCY) == EOF)
+        printf("incorrect latency");
 
     double timer;
     double deltaTime;

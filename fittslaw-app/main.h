@@ -50,10 +50,7 @@
 
 extern int PARTICIPANT_ID;
 extern int EXPERIMENT;
-extern int LATENCY_CLICK_MIN;
-extern int LATENCY_CLICK_MAX;
-extern int LATENCY_MOVE_MIN;
-extern int LATENCY_MOVE_MAX;
+extern int LATENCY;
 
 extern int TARGET_RADIUS[NUM_RADIUS];
 extern int TARGET_DISTANCE[NUM_DISTANCE];
