@@ -2,11 +2,8 @@
 
 char EVENT_PATH[MAX_PATH_LENGTH] = "";
 int PARTICIPANT_ID = 0;
-int EXPERIMENT = 0;
-int LATENCY_CLICK_MIN = 0;
-int LATENCY_CLICK_MAX = 0;
-int LATENCY_MOVE_MIN = 0;
-int LATENCY_MOVE_MAX = 0;
+int CONDITION = 0;
+int LEVEL_OF_LATENCY = 0;
 
 int iteration = 0;
 int click_count = 0;
@@ -34,7 +31,6 @@ int mouse_down = 0;
 void finish()
 {
     logClicks();
-    logTrials();
     SDL_Quit();
     exit(1);
 }
@@ -77,8 +73,8 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                                    target.y,
                                    mouseX,
                                    mouseY,
-                                   max(calculateDistance(target.x, target.y, mouseX, mouseY) - target.r, 0),
-                                   success};
+                                   success,
+                                   trial_time};
 
                     clicks[click_count_total] = click;
                     click_count_total++;
@@ -208,16 +204,10 @@ int main(int argc, char **argv)
             printf("incorrect event handle");
     if (sscanf(argv[2], "%d", &PARTICIPANT_ID) == EOF)
         printf("incorrect partcipant id");
-    if (sscanf(argv[3], "%d", &EXPERIMENT) == EOF)
+    if (sscanf(argv[3], "%d", &CONDITION) == EOF)
         printf("incorrect trial id");
-    if (sscanf(argv[4], "%d", &LATENCY_CLICK_MIN) == EOF)
+    if (sscanf(argv[4], "%d", &LEVEL_OF_LATENCY) == EOF)
         printf("incorrect latency click min");
-    if (sscanf(argv[5], "%d", &LATENCY_CLICK_MAX) == EOF)
-        printf("incorrect latency click max");
-    if (sscanf(argv[6], "%d", &LATENCY_MOVE_MIN) == EOF)
-        printf("incorrect latency move min");
-    if (sscanf(argv[7], "%d", &LATENCY_MOVE_MAX) == EOF)
-        printf("incorrect latency move max");
 
     double timer;
     double deltaTime;

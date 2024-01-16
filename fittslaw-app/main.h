@@ -50,11 +50,8 @@
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;
-extern int EXPERIMENT;
-extern int LATENCY_CLICK_MIN;
-extern int LATENCY_CLICK_MAX;
-extern int LATENCY_MOVE_MIN;
-extern int LATENCY_MOVE_MAX;
+extern int CONDITION;
+extern int LEVEL_OF_LATENCY;
 
 extern int TARGET_RADIUS[NUM_RADIUS];
 extern int TARGET_DISTANCE[NUM_DISTANCE];
@@ -109,8 +106,8 @@ typedef struct {
     int y_target;
     int x_cursor;
     int y_cursor;
-    int distance; // target -> cursor
     int success;
+    double completion_time; // in ms
 } Click;
 
 
@@ -155,8 +152,6 @@ int calculateChecksum(int array[]);
 
 // log
 void logClicks();
-
-void logTrials();
 
 // main
 void finish();

@@ -1,19 +1,21 @@
 #include "main.h"
 
+// Function to log clicks during rounds
 void logClicks()
 {
-    //TODO: remove unwanted latency values, use only one...
+    // Constructing the path for the log file based on participant ID and trial condition
     char path[256];
-    sprintf(path, "%s/static_clicks_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
+    sprintf(path, "%s/clicks_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, CONDITION);
 
     struct stat st_directory = {0};
 
-    // create log directory if it doesn't exist
+    // Checking if the log directory exists, and creating it if not
     if (stat(LOG_PATH, &st_directory) == -1)
     {
         mkdir(LOG_PATH, 0777);
     }
 
+    // Opening the log file for writing and checking if the file opening was successful
     FILE *logFile = fopen(path, "w");
 
     if (logFile == NULL)
@@ -21,128 +23,32 @@ void logClicks()
         printf("Error opening log file\n");
         return;
     }
-    /* TODO: schaun ob man immmer noch alles braucht (nachdem man nur noch ein klich hat pro ziel)
-     */
-    fprintf(logFile, "id,timestamp_ms,participant_id,trial,latency_click_min,latency_click_max,latency_move_min,latency_move_max,target_width,target_distance,target_x,target_y,cursor_x,cursor_y,distance_cursor_target,success\n");
 
-    // print clicks
-    /* clicks[i].v, */
+    // Writing the header of the CSV file
+    fprintf(logFile, "id,timestamp_ms,participant_id,condition,level_of_latency,target_number,target_width,target_amplitude,target_x,target_y,cursor_x,cursor_y,success,completion_time\n");
+
+    // Iterating through each recorded click and writing data to the log file
     for (int i = 0; i < click_count_total; i++)
     {
         fprintf(logFile,
-                "%d,%ld,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+                "%d,%ld,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n",
                 clicks[i].id,
                 clicks[i].timestamp,
                 PARTICIPANT_ID,
-                EXPERIMENT,
-                LATENCY_CLICK_MIN,
-                LATENCY_CLICK_MAX,
-                LATENCY_MOVE_MIN,
-                LATENCY_MOVE_MAX,
+                CONDITION,
+                LEVEL_OF_LATENCY,
+                clicks[i].id%9,
                 clicks[i].w,
                 clicks[i].d,
                 clicks[i].x_target,
                 clicks[i].y_target,
                 clicks[i].x_cursor,
                 clicks[i].y_cursor,
-                clicks[i].distance,
-                clicks[i].success);
-
-        /* printf( "%d %ld | %d %d | %d %d %d %d |%d %d | %d %d %d %d | %d %d\n",
-                clicks[i].id,
-                clicks[i].timestamp,
-
-                PARTICIPANT_ID,
-                EXPERIMENT,
-                LATENCY_CLICK_MIN,
-                LATENCY_CLICK_MAX,
-                LATENCY_MOVE_MIN,
-                LATENCY_MOVE_MAX,
-
-                clicks[i].w,
-                clicks[i].d,
-                clicks[i].x_target,
-                clicks[i].y_target,
-                clicks[i].x_cursor,
-                clicks[i].y_cursor,
-                clicks[i].distance,
-                clicks[i].success); */
+                clicks[i].success,
+                clicks[i].completion_time);
     }
 
-    if (fclose(logFile) == EOF)
-    {
-        printf("Error closing log file\n");
-    }
-}
-
-void logTrials()
-{
-    //TODO: remove unused latency logs
-    //TODO: see Notion
-    char path[256];
-    sprintf(path, "%s/static_iterations_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
-
-    struct stat st_directory = {0};
-
-    // create log directory if it doesn't exist
-    if (stat(LOG_PATH, &st_directory) == -1)
-        mkdir(LOG_PATH, 0777);
-
-    FILE *logFile = fopen(path, "w");
-
-    if (logFile == NULL)
-    {
-        printf("Error opening log file\n");
-        return;
-    }
-    /* TODO: schaun ob man immmer noch alles braucht (nachdem man nur noch ein klich hat pro ziel)
-     */
-    fprintf(logFile, "id,timestamp_ms,participant_id,trial,latency_click_min,latency_click_max,latency_move_min,latency_move_max,target_width,target_distance,target_x,target_y,cursor_x,cursor_y,task_time_ms,clicks_needed,travel_distance,success\n");
-
-    // print clicks
-    for (int i = 0; i < NUM_ITERATIONS; i++)
-    {
-        fprintf(logFile,
-                "%d,%ld,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%d,%d,%d\n",
-                trials[i].id,
-                trials[i].timestamp,
-                PARTICIPANT_ID,
-                EXPERIMENT,
-                LATENCY_CLICK_MIN,
-                LATENCY_CLICK_MAX,
-                LATENCY_MOVE_MIN,
-                LATENCY_MOVE_MAX,
-                trials[i].w,
-                trials[i].d,
-
-                trials[i].x_target,
-                trials[i].y_target,
-                trials[i].x_cursor,
-                trials[i].y_cursor,
-                trials[i].time,
-                trials[i].clicks,
-                trials[i].travel_distance,
-                trials[i].success);
-    }
-
-    // print Trials
-    /* for(int i = 0; i < NUM_ITERATIONS; i++)
-    {
-       printf("%d %ld | %d %d | %d %d %d %d | %f %d %d %d\n",
-               trials[i].id,
-               trials[i].timestamp,
-               trials[i].w,
-               trials[i].d,
-               trials[i].x_target,
-               trials[i].y_target,
-               trials[i].x_cursor,
-               trials[i].y_cursor,
-               trials[i].time,
-               trials[i].clicks,
-               trials[i].travel_distance,
-               trials[i].success);
-    } */
-
+    // Closing the log file and checking for errors
     if (fclose(logFile) == EOF)
     {
         printf("Error closing log file\n");
@@ -152,7 +58,7 @@ void logTrials()
 void *initEventLogging(void *arg)
 {
     // open the event handler
-    fd = open(EVENT_PATH, O_RDONLY); // | NONBLOCk in oder to make the read non-blocking
+    fd = open(EVENT_PATH, O_RDONLY); // | NONBLOCK in oder to make the read non-blocking
     if (fd == -1)
     {
         perror("Error opening evdev device");
@@ -195,7 +101,7 @@ void stopEventLogging()
     currently_logging = 0;
     // creating file to save logs to
     char path[256];
-    sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
+    sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, CONDITION);
 
     struct stat st_directory = {0};
 
@@ -215,12 +121,17 @@ void stopEventLogging()
     }
 
     // Write table head for each round
-    // TODO: replace with zeroes
-    fprintf(logFile, "tv_sec, tv_usec, type, code, value\n");
+    // TODO: replace the zeroes
+    fprintf(logFile, "participant_id, condition, level_of_latency, target_width, target_amplitude, tv_sec, tv_usec, type, code, value\n");
 
     for (int i = 0; i < eventCount; i++)
     {
-        fprintf(logFile, "%ld,%ld,%u,%u,%d\n",
+        fprintf(logFile, "%d,%d,%d,%d,%d,%ld,%ld,%u,%u,%d\n",
+                PARTICIPANT_ID,
+                CONDITION,
+                LEVEL_OF_LATENCY,
+                0,
+                0,
                 events[i].time.tv_sec,
                 events[i].time.tv_usec,
                 events[i].type,
@@ -229,7 +140,7 @@ void stopEventLogging()
     }
 
     fclose(logFile);
-    printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, EXPERIMENT);
+    printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, CONDITION);
 
     // Reset for the next logging interval
     eventCount = 0;
