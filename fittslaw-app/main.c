@@ -195,7 +195,7 @@ int main(int argc, char **argv)
     if (sscanf(argv[3], "%d", &CONDITION) == EOF)
         printf("incorrect trial id");
     if (sscanf(argv[4], "%d", &LEVEL_OF_LATENCY) == EOF)
-        printf("incorrect latency click min");
+        printf("incorrect level of latency");
 
     double timer;
     double deltaTime;
