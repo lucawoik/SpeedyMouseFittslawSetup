@@ -1,7 +1,6 @@
 #include "main.h"
 
-/* neue belegung: x,y(die des ziels), radius, distance to the center */
-/* TODO: macht das Sinn aus einem Target ein anderes zu bilden? */
+
 Target createTarget(Target t)
 {
     Target target;
@@ -17,6 +16,8 @@ void createTargetArray()
 {
     int NUM_TUPELS = NUM_DISTANCE * NUM_RADIUS;
     Tupel TO_BE_RANDOMIZED[NUM_TUPELS];
+
+    // create array of tuples with defined radius and distance
     for (int i = 0; i < NUM_DISTANCE; i++)
     {
         for (int j = 0; j < NUM_RADIUS; j++)
@@ -26,6 +27,7 @@ void createTargetArray()
         }
     }
 
+    // randomize order of tuples
     for (int m = 0; m < NUM_TUPELS; m++)
     {
         Tupel *a = &TO_BE_RANDOMIZED[m];
@@ -35,20 +37,21 @@ void createTargetArray()
 
     float angle, step;
     step = (2 * M_PI) / NUM_CIRCLES;
-    int stepNum = floor(NUM_CIRCLES / 2);
+    int stepNum = floor(NUM_CIRCLES/ 2);
 
-    for (int k = 0; k < NUM_TUPELS; k++)
+    for (int k = 0; k < NUM_TUPELS * NUM_ITERATIONS_PER_ID; k++)
     {
         int currentTarget = 0;
 
+        // fill target array with targets of same radius and same distance for a full circle (e.g. 9 circles)
         for (int l = 0; l < NUM_CIRCLES; l++)
         {
             int currentPosition = k * NUM_CIRCLES + l;
-            targetArray[currentPosition].r = TO_BE_RANDOMIZED[k].radius;
-            targetArray[currentPosition].d = TO_BE_RANDOMIZED[k].distance;
+            targetArray[currentPosition].r = TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].radius;
+            targetArray[currentPosition].d = TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance;
             angle = step * currentTarget - M_PI / 2;
-            targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k].distance * cos(angle);
-            targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k].distance * sin(angle);
+            targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance * cos(angle);
+            targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance * sin(angle);
             currentTarget = (currentTarget + (int)floor(stepNum)) % (NUM_CIRCLES);
         }
     }
@@ -65,45 +68,48 @@ char *intToString(int value)
 }
 
 // to-do: combine next methods
-void circleDistribution(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font)
+void circleDistribution(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Font *font)
 {
+    int currentTarget = 0;
     float angle, step;
+    step = (2 * M_PI) / NUM_CIRCLES;
 
-    // do not hardcode later
-    int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
-
-    step = (2 * M_PI) / numCircles;
-
-    for (int i = 0; i < numCircles; i++)
+    for (int i = 0; i < NUM_CIRCLES; i++)
     {
+        // render circle
         angle = step * i - M_PI / 2;
-
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
         filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
 
-        char *text = intToString(order[i]);
-        renderNumbers(renderer, x, y, text, font);
+        // render circle number
+        char *text = intToString(currentTarget + 1);
+        renderText(renderer, x, y, text, font);
         free(text);
+
+        currentTarget = (currentTarget + NUM_CIRCLES-2) % (NUM_CIRCLES);
     }
 }
 
-void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circleRadius, TTF_Font *font, int successInCircle[])
+void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Font *font, int successInCircle[], double elapsed_time)
+/*
+* renders the feedback screen, which includes:
+* - the success rate of the last fitts law task "round" and
+* - the last fitts law task "round" with a positive/negative feedback for each circle (indicating whether the circle was hit)
+*/
 {
     // render colored circles (based on success)
+    int currentTarget = 0;
     float angle, step;
-    int order[] = {1, 8, 6, 4, 2, 9, 7, 5, 3};
+    step = (2 * M_PI) / NUM_CIRCLES;
 
-    step = (2 * M_PI) / numCircles;
-
-    for (int i = 0; i < numCircles; i++)
+    for (int i = 0; i < NUM_CIRCLES; i++)
     {
         angle = step * i - M_PI / 2;
-
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
 
-        if (successInCircle[order[i] - 1])
+        if (successInCircle[currentTarget])
         {
             filledCircleRGBA(renderer, x, y, circleRadius, 0, 250, 0, 255);
         }
@@ -111,22 +117,50 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int numCircles, int circ
         {
             filledCircleRGBA(renderer, x, y, circleRadius, 250, 0, 0, 255);
         }
+
+        currentTarget = (currentTarget + NUM_CIRCLES-2) % (NUM_CIRCLES);
     }
 
     // render feedback text based on success
-    char resultText[26];
-    char partResultText[] = " von 9 Zielen getroffen.";
-
-    int checksum = calculateChecksum(successInCircle);
-    char *checksumText = intToString(checksum);
-    strcpy(resultText, checksumText);
-    strcat(resultText, partResultText);
-    free(checksumText);
-
-    renderNumbers(renderer, WIDTH / 2, HEIGHT / 2, resultText, font);
+    renderFeedbackText(renderer, font, successInCircle, elapsed_time);
 }
 
-void renderNumbers(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
+void renderFeedbackText(SDL_Renderer *renderer, TTF_Font *font, int successInCircle[], double elapsed_time)
+{
+    // render text "x von y Zielen getroffen."
+    char resultText[26];
+    int checksum = calculateChecksum(successInCircle);
+    char *checksumText = intToString(checksum);
+    char partResultText[] = " von ";
+    char *numCirclesText = intToString(NUM_CIRCLES);
+    char zielenText[] = " Zielen";
+    char getroffenText[] = "wurden getroffen.";
+
+    strcpy(resultText, checksumText);
+    strcat(resultText, partResultText);
+    strcat(resultText, numCirclesText);
+    strcat(resultText, zielenText);
+    free(checksumText);
+    free(numCirclesText);
+
+    renderText(renderer, centerX, centerY - 30, resultText, font);
+    renderText(renderer, centerX, centerY, getroffenText, font);
+
+    // render text "Dauer: x.yz s"
+    char durationResultText[20];
+    char durationNumber[20];
+    char durationText[] = "Dauer: ";
+    char unitText[] = "s";
+
+    sprintf(durationNumber, "%.2f", elapsed_time);
+    strcpy(durationResultText, durationText);
+    strcat(durationResultText, durationNumber);
+    strcat(durationResultText, unitText);
+
+    renderText(renderer, centerX, centerY + 30, durationResultText, font);
+}
+
+void renderText(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
 {
     int text_width;
     int text_height;

@@ -144,4 +144,9 @@ void stopEventLogging()
 
     // Reset for the next logging interval
     eventCount = 0;
+
+    if (fclose(logFile) == EOF)
+    {
+        printf("Error closing log file\n");
+    }
 }
