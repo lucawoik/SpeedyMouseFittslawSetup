@@ -111,7 +111,7 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
 
         if (successInCircle[currentTarget])
         {
-            filledCircleRGBA(renderer, x, y, circleRadius, 0, 250, 0, 255);
+            filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
         }
         else
         {
@@ -125,7 +125,7 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
     renderFeedbackText(renderer, font, successInCircle, elapsed_time);
 }
 
-void renderFeedbackText(SDL_Renderer *renderer, TTF_Font *font, int successInCircle[], double elapsed_time)
+void renderFeedbackText(SDL_Renderer *renderer, TTF_Font *font, int successInCircle[])
 {
     // render text "x von y Zielen getroffen."
     char resultText[26];
@@ -143,21 +143,8 @@ void renderFeedbackText(SDL_Renderer *renderer, TTF_Font *font, int successInCir
     free(checksumText);
     free(numCirclesText);
 
-    renderText(renderer, centerX, centerY - 30, resultText, font);
-    renderText(renderer, centerX, centerY, getroffenText, font);
-
-    // render text "Dauer: x.yz s"
-    char durationResultText[20];
-    char durationNumber[20];
-    char durationText[] = "Dauer: ";
-    char unitText[] = "s";
-
-    sprintf(durationNumber, "%.2f", elapsed_time);
-    strcpy(durationResultText, durationText);
-    strcat(durationResultText, durationNumber);
-    strcat(durationResultText, unitText);
-
-    renderText(renderer, centerX, centerY + 30, durationResultText, font);
+    renderText(renderer, centerX, centerY - 15, resultText, font);
+    renderText(renderer, centerX, centerY + 15, getroffenText, font);
 }
 
 void renderText(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font)
@@ -176,4 +163,5 @@ void renderText(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font
     SDL_Rect rect = {x - text_width / 2, y - text_height / 2, text_width, text_height};
 
     SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_DestroyTexture(texture);
 }
