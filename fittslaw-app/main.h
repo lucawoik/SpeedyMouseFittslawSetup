@@ -128,6 +128,7 @@ Target targetArray[NUM_ITERATIONS];
 
 int fd;
 int currently_logging;
+int eventLogHeadWritten;
 
 Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];

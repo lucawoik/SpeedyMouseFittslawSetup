@@ -120,18 +120,23 @@ void stopEventLogging()
         return;
     }
 
-    // Write table head for each round
-    // TODO: replace the zeroes
-    fprintf(logFile, "participant_id, trial, level_of_latency, target_width, target_amplitude, tv_sec, tv_usec, type, code, value\n");
+    // Write table head for the first round and a row of zeroes to divide rounds
+    if (eventLogHeadWritten == 0)
+    {
+        fprintf(logFile, "participant_id, trial, level_of_latency, tv_sec, tv_usec, type, code, value\n");
+        eventLogHeadWritten = 1;
+    }
+    else
+    {
+        fprintf(logFile, "%d,%d,%d,%ld,%ld,%u,%u,%d\n", 0, 0, 0, (long int)0, (long int)0, 0, 0, 0);
+    }
 
     for (int i = 0; i < eventCount; i++)
     {
-        fprintf(logFile, "%d,%d,%d,%d,%d,%ld,%ld,%u,%u,%d\n",
+        fprintf(logFile, "%d,%d,%d,%ld,%ld,%u,%u,%d\n",
                 PARTICIPANT_ID,
                 TRIAL,
                 LEVEL_OF_LATENCY,
-                0,
-                0,
                 events[i].time.tv_sec,
                 events[i].time.tv_usec,
                 events[i].type,
