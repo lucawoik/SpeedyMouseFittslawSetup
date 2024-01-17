@@ -24,10 +24,6 @@ Target target = {centerX, centerY, 50, 200};
 
 // int mouse_down = 0;
 
-// variables for measuring duration of one 2d fitts law task
-struct timespec start_time, end_time;
-double elapsed_time;
-
 
 void finish()
 {
@@ -83,24 +79,11 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                     int circleNumber = iteration % NUM_CIRCLES;
                     successInCircle[circleNumber] = success;
 
-                    // Record the starting time after first click
-                    if (circleNumber == 1)
-                    {
-                        clock_gettime(CLOCK_MONOTONIC, &start_time);
-                    }
-
                     // if a 2d fitts law task is completed
                     if (circleNumber == NUM_CIRCLES - 1)
                     {
-                        // is trial_time the same as elapsed_time??
-                        // calculate task completion time
-                        clock_gettime(CLOCK_MONOTONIC, &end_time);
-                        elapsed_time = (end_time.tv_sec - start_time.tv_sec) * 1000.0 +
-                                        (end_time.tv_nsec - start_time.tv_nsec) / 1000000.0;
-                        elapsed_time = elapsed_time / 1000;
-
                         // present feedback after ninth circle/click (or after NUM_CIRCLES clicks)
-                        renderFeedback(renderer, target.d, target.r, font, successInCircle, elapsed_time);
+                        renderFeedback(renderer, target.d, target.r, font, successInCircle);
                         SDL_RenderPresent(renderer);
                         SDL_Delay(800);
                     }
