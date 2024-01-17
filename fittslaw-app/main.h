@@ -19,7 +19,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <linux/input.h>
-#include <linux/time.h>
 
 #define WIDTH 1920
 #define HEIGHT 1080
