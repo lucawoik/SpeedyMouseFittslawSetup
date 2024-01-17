@@ -139,7 +139,6 @@ void stopEventLogging()
                 events[i].value);
     }
 
-    fclose(logFile);
     printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, CONDITION);
 
     // Reset for the next logging interval
