@@ -3,9 +3,9 @@
 // Function to log clicks during rounds
 void logClicks()
 {
-    // Constructing the path for the log file based on participant ID and trial condition
+    // Constructing the path for the log file based on participant ID and trial
     char path[256];
-    sprintf(path, "%s/clicks_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, CONDITION);
+    sprintf(path, "%s/clicks_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
 
     struct stat st_directory = {0};
 
@@ -25,7 +25,7 @@ void logClicks()
     }
 
     // Writing the header of the CSV file
-    fprintf(logFile, "id,timestamp_ms,participant_id,condition,level_of_latency,target_number,target_width,target_amplitude,target_x,target_y,cursor_x,cursor_y,success,completion_time\n");
+    fprintf(logFile, "id,timestamp_ms,participant_id,trial,level_of_latency,target_number,target_width,target_amplitude,target_x,target_y,cursor_x,cursor_y,success,completion_time\n");
 
     // Iterating through each recorded click and writing data to the log file
     for (int i = 0; i < click_count_total; i++)
@@ -35,7 +35,7 @@ void logClicks()
                 clicks[i].id,
                 clicks[i].timestamp,
                 PARTICIPANT_ID,
-                CONDITION,
+                TRIAL,
                 LEVEL_OF_LATENCY,
                 clicks[i].id%9,
                 clicks[i].w,
@@ -101,7 +101,7 @@ void stopEventLogging()
     currently_logging = 0;
     // creating file to save logs to
     char path[256];
-    sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, CONDITION);
+    sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
 
     struct stat st_directory = {0};
 
@@ -122,13 +122,13 @@ void stopEventLogging()
 
     // Write table head for each round
     // TODO: replace the zeroes
-    fprintf(logFile, "participant_id, condition, level_of_latency, target_width, target_amplitude, tv_sec, tv_usec, type, code, value\n");
+    fprintf(logFile, "participant_id, trial, level_of_latency, target_width, target_amplitude, tv_sec, tv_usec, type, code, value\n");
 
     for (int i = 0; i < eventCount; i++)
     {
         fprintf(logFile, "%d,%d,%d,%d,%d,%ld,%ld,%u,%u,%d\n",
                 PARTICIPANT_ID,
-                CONDITION,
+                TRIAL,
                 LEVEL_OF_LATENCY,
                 0,
                 0,
@@ -139,7 +139,7 @@ void stopEventLogging()
                 events[i].value);
     }
 
-    printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, CONDITION);
+    printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, TRIAL);
 
     // Reset for the next logging interval
     eventCount = 0;

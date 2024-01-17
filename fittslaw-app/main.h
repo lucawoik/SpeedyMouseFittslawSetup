@@ -56,7 +56,7 @@
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;
-extern int CONDITION;
+extern int TRIAL;
 extern int LEVEL_OF_LATENCY;
 
 extern int TARGET_RADIUS[NUM_RADIUS];

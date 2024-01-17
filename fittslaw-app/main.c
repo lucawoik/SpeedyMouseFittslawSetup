@@ -2,7 +2,7 @@
 
 char EVENT_PATH[MAX_PATH_LENGTH] = "";
 int PARTICIPANT_ID = 0;
-int CONDITION = 0;
+int TRIAL = 0;
 int LEVEL_OF_LATENCY = 0;
 
 int iteration = 0;
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
             printf("incorrect event handle");
     if (sscanf(argv[2], "%d", &PARTICIPANT_ID) == EOF)
         printf("incorrect partcipant id");
-    if (sscanf(argv[3], "%d", &CONDITION) == EOF)
+    if (sscanf(argv[3], "%d", &TRIAL) == EOF)
         printf("incorrect trial id");
     if (sscanf(argv[4], "%d", &LEVEL_OF_LATENCY) == EOF)
         printf("incorrect level of latency");
