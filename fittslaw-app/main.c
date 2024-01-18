@@ -1,12 +1,14 @@
 #include "main.h"
 
+char EVENT_PATH[MAX_PATH_LENGTH] = "";
 int PARTICIPANT_ID = 0;
-int EXPERIMENT = 0;
-int LATENCY = 0;
+int TRIAL = 0;
+int LEVEL_OF_LATENCY = 0;
 
 int iteration = 0;
 int click_count = 0;
 int click_count_total = 0;
+int showing_feedback = 0;
 double trial_time;
 int travel_distance;
 int lastX;
@@ -16,7 +18,7 @@ int successInCircle[NUM_CIRCLES] = {0};
 
 Trial current_trial;
 
-int TARGET_RADIUS[NUM_RADIUS] = {15, 60, 100}; //{40, 60, 80}; min: 15 | max: 100
+int TARGET_RADIUS[NUM_RADIUS] = {15, 60, 100};       //{40, 60, 80}; min: 15 | max: 100
 int TARGET_DISTANCE[NUM_DISTANCE] = {200, 325, 450}; //{200, 300, 400}; min: 200 | max: 400
 
 // starting target
@@ -24,11 +26,9 @@ Target target = {centerX, centerY, 50, 200};
 
 // int mouse_down = 0;
 
-
 void finish()
 {
     logClicks();
-    logTrials();
     SDL_Quit();
     exit(1);
 }
@@ -39,12 +39,10 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
 
     while (SDL_PollEvent(&event))
     {
-        if (event.type == SDL_MOUSEBUTTONDOWN)
+        if (event.type == SDL_MOUSEBUTTONDOWN && !showing_feedback) //TODO: showing_feedback flag does not work since the events are processed one after another...
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
             {
-                // mouse_down = 1;
-
                 int mouseX, mouseY;
 
                 SDL_GetMouseState(&mouseX, &mouseY);
@@ -53,9 +51,15 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
 
                 SDL_RenderPresent(renderer);
 
-                if (!isSetupTarget)
+                if (isSetupTarget)
                 {
-                    // handle click
+                    // starting event logging right after setup target is clicked
+                    startEventLogging();
+                    isSetupTarget = 0;
+                }
+                else // only count the click if task is active
+                {
+                    // create click struct for logging
                     Click click = {click_count_total,
                                    millis(),
                                    target.r * 2,
@@ -64,17 +68,13 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                                    target.y,
                                    mouseX,
                                    mouseY,
-                                   max(calculateDistance(target.x, target.y, mouseX, mouseY) - target.r, 0),
-                                   success};
+                                   success,
+                                   trial_time};
 
                     clicks[click_count_total] = click;
                     click_count_total++;
-                }
+                    click_count++;
 
-                click_count++;
-
-                if (!isSetupTarget)
-                {
                     // circleNumber varies from 1 to number of circles
                     int circleNumber = iteration % NUM_CIRCLES;
                     successInCircle[circleNumber] = success;
@@ -82,17 +82,16 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                     // if a 2d fitts law task is completed
                     if (circleNumber == NUM_CIRCLES - 1)
                     {
+                        stopEventLogging();
+                        showing_feedback = 1;
                         // present feedback after ninth circle/click (or after NUM_CIRCLES clicks)
                         renderFeedback(renderer, target.d, target.r, font, successInCircle);
                         SDL_RenderPresent(renderer);
                         SDL_Delay(800);
+                        startEventLogging();
+                        showing_feedback = 0;
                     }
 
-                    current_trial.time = trial_time;
-                    current_trial.clicks = click_count;
-                    current_trial.travel_distance = travel_distance;
-                    current_trial.success = 1;
-                    trials[iteration] = current_trial;
                     iteration++;
                     if (iteration >= NUM_ITERATIONS)
                     {
@@ -103,22 +102,7 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                 click_count = 0;
                 travel_distance = 0;
                 trial_time = 0;
-                isSetupTarget = 0;
-                
                 target = createTarget(targetArray[iteration]);
-
-                current_trial = (Trial){iteration,
-                                        millis(),
-                                        target.r * 2,
-                                        target.d,
-                                        target.x,
-                                        target.y,
-                                        mouseX,
-                                        mouseY,
-                                        0,
-                                        0,
-                                        0,
-                                        0};
             }
         }
 
@@ -142,7 +126,8 @@ void render(SDL_Renderer *renderer, TTF_Font *font)
     SDL_RenderClear(renderer);
     circleDistribution(renderer, target.d, target.r, font);
     // render first circle
-    if (isSetupTarget){
+    if (isSetupTarget)
+    {
         filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
     }
 
@@ -163,12 +148,15 @@ void update(double deltaTime)
 
 int main(int argc, char **argv)
 {
-    if (sscanf(argv[1], "%d", &PARTICIPANT_ID) == EOF)
+    if (strlen(argv[1]) <= MAX_PATH_LENGTH)
+        if (sscanf(argv[1], "%255s", EVENT_PATH) == EOF)
+            printf("incorrect event handle");
+    if (sscanf(argv[2], "%d", &PARTICIPANT_ID) == EOF)
         printf("incorrect partcipant id");
-    if (sscanf(argv[2], "%d", &EXPERIMENT) == EOF)
+    if (sscanf(argv[3], "%d", &TRIAL) == EOF)
         printf("incorrect trial id");
-    if (sscanf(argv[3], "%d", &LATENCY) == EOF)
-        printf("incorrect latency");
+    if (sscanf(argv[4], "%d", &LEVEL_OF_LATENCY) == EOF)
+        printf("incorrect level of latency");
 
     double timer;
     double deltaTime;
@@ -188,9 +176,9 @@ int main(int argc, char **argv)
     // Init TTF.
     SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
     TTF_Init();
-    
+
     char font_path[FILENAME_MAX];
-    GetCurrentDir( font_path, FILENAME_MAX );
+    GetCurrentDir(font_path, FILENAME_MAX);
     strcat(font_path, "/fittslaw-app/font/arial.ttf");
     TTF_Font *fontNumbers = TTF_OpenFont(font_path, 36);
     TTF_Font *fontFeedback = TTF_OpenFont(font_path, 24);
@@ -205,6 +193,17 @@ int main(int argc, char **argv)
     SDL_RenderClear(renderer);
 
     system("xsetroot -cursor_name arrow");
+
+    // Init Logging - Open the event handler
+    // Create a thread
+    pthread_t loggingThread;
+    int threadCreationResult = pthread_create(&loggingThread, NULL, initEventLogging, NULL);
+
+    if (threadCreationResult != 0)
+    {
+        fprintf(stderr, "Error creating thread: %d\n", threadCreationResult);
+        return 1; // Return an error code if thread creation fails
+    }
 
     while (1)
     {

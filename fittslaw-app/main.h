@@ -15,6 +15,10 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <linux/input.h>
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -31,6 +35,7 @@
 #define NUM_ITERATIONS_PER_ID  3
 
 #define MAX_CLICKS 10000
+#define MAX_EVENTS 100000
 
 #define DEBUG 0
 
@@ -47,16 +52,21 @@
 #define centerX WIDTH/2
 #define centerY HEIGHT/2 + 50
 
+#define MAX_PATH_LENGTH 256
 
+extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;
-extern int EXPERIMENT;
-extern int LATENCY;
+extern int TRIAL;
+extern int LEVEL_OF_LATENCY;
 
 extern int TARGET_RADIUS[NUM_RADIUS];
 extern int TARGET_DISTANCE[NUM_DISTANCE];
 
 extern int isSetupTarget;
 extern int click_count_total;
+extern void startEventLogging();
+extern void *initEventLogging(void *arg);
+extern void stopEventLogging();
 
 /* TODO: nicht mehr notwendig, aber noch in den Logs drin */
 /* static const char *ANGLE_STRING[] = {
@@ -102,8 +112,8 @@ typedef struct {
     int y_target;
     int x_cursor;
     int y_cursor;
-    int distance; // target -> cursor
     int success;
+    double completion_time; // in ms
 } Click;
 
 
@@ -116,9 +126,15 @@ typedef struct
 
 Target targetArray[NUM_ITERATIONS];
 
+int fd;
+int currently_logging;
+int eventLogHeadWritten;
 
 Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
+struct input_event events[MAX_EVENTS];
+
+int eventCount;
 
 /* TODO: macht das so noch Sinn odr kann man einfach die Targets direkt aus dem Array nehmen?! */
 Target createTarget(Target t);
@@ -143,8 +159,6 @@ int calculateChecksum(int array[]);
 
 // log
 void logClicks();
-
-void logTrials();
 
 // main
 void finish();
