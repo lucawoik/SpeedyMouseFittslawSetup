@@ -14,16 +14,19 @@ Target createTarget(Target t)
 
 void createTargetArray()
 {
-    int NUM_TUPELS = NUM_DISTANCE * NUM_RADIUS;
+    int NUM_TUPELS = NUM_DISTANCE * NUM_RADIUS * NUM_ITERATIONS_PER_ID;
     Tupel TO_BE_RANDOMIZED[NUM_TUPELS];
 
     // create array of tuples with defined radius and distance
-    for (int i = 0; i < NUM_DISTANCE; i++)
+    for (int k = 0; k < NUM_ITERATIONS_PER_ID; k++)
     {
-        for (int j = 0; j < NUM_RADIUS; j++)
+        for (int i = 0; i < NUM_DISTANCE; i++)
         {
-            TO_BE_RANDOMIZED[NUM_RADIUS * i + j].radius = TARGET_RADIUS[j];
-            TO_BE_RANDOMIZED[NUM_RADIUS * i + j].distance = TARGET_DISTANCE[i];
+            for (int j = 0; j < NUM_RADIUS; j++)
+            {
+                TO_BE_RANDOMIZED[NUM_RADIUS * (NUM_DISTANCE * k + i) + j].radius = TARGET_RADIUS[j];
+                TO_BE_RANDOMIZED[NUM_RADIUS * (NUM_DISTANCE * k + i) + j].distance = TARGET_DISTANCE[i];
+            }
         }
     }
 
@@ -39,7 +42,7 @@ void createTargetArray()
     step = (2 * M_PI) / NUM_CIRCLES;
     int stepNum = floor(NUM_CIRCLES/ 2);
 
-    for (int k = 0; k < NUM_TUPELS * NUM_ITERATIONS_PER_ID; k++)
+    for (int k = 0; k < NUM_TUPELS; k++)
     {
         int currentTarget = 0;
 
@@ -47,11 +50,11 @@ void createTargetArray()
         for (int l = 0; l < NUM_CIRCLES; l++)
         {
             int currentPosition = k * NUM_CIRCLES + l;
-            targetArray[currentPosition].r = TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].radius;
-            targetArray[currentPosition].d = TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance;
+            targetArray[currentPosition].r = TO_BE_RANDOMIZED[k].radius;
+            targetArray[currentPosition].d = TO_BE_RANDOMIZED[k].distance;
             angle = step * currentTarget - M_PI / 2;
-            targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance * cos(angle);
-            targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k % NUM_ITERATIONS_PER_ID].distance * sin(angle);
+            targetArray[currentPosition].x = centerX + TO_BE_RANDOMIZED[k].distance * cos(angle);
+            targetArray[currentPosition].y = centerY + TO_BE_RANDOMIZED[k].distance * sin(angle);
             currentTarget = (currentTarget + (int)floor(stepNum)) % (NUM_CIRCLES);
         }
     }
