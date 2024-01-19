@@ -39,6 +39,21 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
 
     while (SDL_PollEvent(&event))
     {
+        if (event.type == SDL_KEYDOWN)
+        {
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_q:
+                finish();
+                SDL_Quit();
+                exit(1);
+                break;
+            }
+        }
+
+	// current_time = time()
+	// if feedback_timer > current_time - feedback_delay -> continue
+	// else -> startLogging()
         if (event.type == SDL_MOUSEBUTTONDOWN && !showing_feedback) //TODO: showing_feedback flag does not work since the events are processed one after another...
         {
             if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
@@ -87,7 +102,9 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
                         // present feedback after ninth circle/click (or after NUM_CIRCLES clicks)
                         renderFeedback(renderer, target.d, target.r, font, successInCircle);
                         SDL_RenderPresent(renderer);
-                        SDL_Delay(800);
+			// logging aus
+			// feedback_timer = time()
+                        SDL_Delay(800); // weg
                         startEventLogging();
                         showing_feedback = 0;
                     }
@@ -106,17 +123,6 @@ void handleInput(SDL_Renderer *renderer, TTF_Font *font)
             }
         }
 
-        if (event.type == SDL_KEYDOWN)
-        {
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_q:
-                finish();
-                SDL_Quit();
-                exit(1);
-                break;
-            }
-        }
     }
 }
 
