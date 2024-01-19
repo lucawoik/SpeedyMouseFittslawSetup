@@ -50,7 +50,7 @@
 
 
 #define centerX WIDTH/2
-#define centerY HEIGHT/2 + 50
+#define centerY HEIGHT/2 + 13
 
 #define MAX_PATH_LENGTH 256
 
