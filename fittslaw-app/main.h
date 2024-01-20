@@ -165,7 +165,7 @@ void finish();
 
 void handleInput();
 
-void render(SDL_Renderer* renderer, TTF_Font *font);
+void render(SDL_Renderer* renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedback);
 
 void update(double deltaTime);
 
