@@ -89,12 +89,12 @@ class NasaTLX(QtWidgets.QWizard):
             writer.writerow([self.id_prob,
                              self.id_trial,
                              self.latency,
-                             round(self.ui.slider_mental.value() / 5),  # Divide by 5 to get from 0-100 to 0-20
-                             round(self.ui.slider_physical.value() / 5),
-                             round(self.ui.slider_temporal.value() / 5),
-                             round(self.ui.slider_performance.value() / 5),
-                             round(self.ui.slider_effort.value() / 5),
-                             round(self.ui.slider_frustration.value() / 5)])
+                             self.ui.slider_mental.value() / 5,  # Divide by 5 to get from 0-100 to 0-20
+                             self.ui.slider_physical.value() / 5,
+                             self.ui.slider_temporal.value() / 5,
+                             self.ui.slider_performance.value() / 5,
+                             self.ui.slider_effort.value() / 5,
+                             self.ui.slider_frustration.value() / 5])
 
 
 def main():
