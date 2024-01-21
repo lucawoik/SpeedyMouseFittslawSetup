@@ -6,7 +6,6 @@ int TRIAL = 0;
 int LEVEL_OF_LATENCY = 0;
 
 int iteration = 0;
-int click_count = 0;
 int click_count_total = 0;
 double trial_time;
 int travel_distance;
@@ -87,7 +86,6 @@ void handleInput(SDL_Renderer *renderer)
 
                         clicks[click_count_total] = click;
                         click_count_total++;
-                        click_count++;
 
                         // circleNumber varies from 1 to number of circles
                         int circleNumber = iteration % NUM_CIRCLES;
@@ -111,7 +109,6 @@ void handleInput(SDL_Renderer *renderer)
                         }
                     }
 
-                    click_count = 0;
                     travel_distance = 0;
                     trial_time = 0;
                     lastTarget = target;
