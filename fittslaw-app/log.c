@@ -128,7 +128,7 @@ void stopEventLogging()
     // Write table head for the first round and a row of zeroes to divide rounds
     if (eventLogHeadWritten == 0)
     {
-        fprintf(logFile, "participant_id, trial, level_of_latency, tv_sec, tv_usec, type, code, value\n");
+        fprintf(logFile, "participant_id,trial,level_of_latency,tv_sec,tv_usec,type,code,value\n");
         eventLogHeadWritten = 1;
     }
     else
