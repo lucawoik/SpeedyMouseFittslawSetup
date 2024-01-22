@@ -62,6 +62,7 @@ void *initEventLogging(void *arg)
     if (fd == -1)
     {
         perror("Error opening evdev device");
+        exit(0);
         return NULL;
     }
 
