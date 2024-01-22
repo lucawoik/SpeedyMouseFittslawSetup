@@ -78,12 +78,6 @@ void *initEventLogging(void *arg)
         {
             // Reading the current event-struct and saving it to the events array
             ssize_t bytesRead = read(fd, &events[eventCount], sizeof(struct input_event));
-
-            if (events[eventCount].type == 1 && events[eventCount].code == 272 && events[eventCount].value == 1)
-            {
-                printf("Click as event recorded\n");
-            }
-            
     
             if (bytesRead == -1)
             {
@@ -104,7 +98,7 @@ void *initEventLogging(void *arg)
 void startEventLogging()
 {
        currently_logging = 1;
-       printf("Logging started\n");
+       printf("Event-logging started\n");
 }
 
 void stopEventLogging()
@@ -155,7 +149,7 @@ void stopEventLogging()
                 events[i].value);
     }
 
-    printf("Mouse events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, TRIAL);
+    printf("Events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, TRIAL);
 
     // Reset for the next logging interval
     eventCount = 0;
