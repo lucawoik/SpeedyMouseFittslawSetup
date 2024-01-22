@@ -69,11 +69,22 @@ void *initEventLogging(void *arg)
 
     while (1)
     {
+        if (currently_logging == 0)
+        {
+            struct input_event sacrificial_buffer [1];
+            read(fd, &sacrificial_buffer[0], sizeof(struct input_event));
+        }
         while (currently_logging == 1)
         {
             // Reading the current event-struct and saving it to the events array
             ssize_t bytesRead = read(fd, &events[eventCount], sizeof(struct input_event));
 
+            if (events[eventCount].type == 1 && events[eventCount].code == 272 && events[eventCount].value == 1)
+            {
+                printf("Click as event recorded\n");
+            }
+            
+    
             if (bytesRead == -1)
             {
                 perror("Error reading from evdev device");
