@@ -133,6 +133,7 @@ int eventLogHeadWritten;
 Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
 struct input_event events[MAX_EVENTS];
+pthread_mutex_t eventArrayMutex;
 
 int eventCount;
 

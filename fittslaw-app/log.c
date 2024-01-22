@@ -77,8 +77,12 @@ void *initEventLogging(void *arg)
         }
         while (currently_logging == 1)
         {
+            // Locking events-array mutex before accessing
+            pthread_mutex_lock(&eventArrayMutex);
             // Reading the current event-struct and saving it to the events array
             ssize_t bytesRead = read(fd, &events[eventCount], sizeof(struct input_event));
+            // Unlocking mutex again
+            pthread_mutex_unlock(&eventArrayMutex);
     
             if (bytesRead == -1)
             {
@@ -138,6 +142,7 @@ void stopEventLogging()
         fprintf(logFile, "%d,%d,%d,%ld,%ld,%u,%u,%d\n", 0, 0, 0, (long int)0, (long int)0, 0, 0, 0);
     }
 
+    pthread_mutex_lock(&eventArrayMutex);
     for (int i = 0; i < eventCount; i++)
     {
         fprintf(logFile, "%d,%d,%d,%ld,%ld,%u,%u,%d\n",
@@ -150,6 +155,7 @@ void stopEventLogging()
                 events[i].code,
                 events[i].value);
     }
+    pthread_mutex_unlock(&eventArrayMutex);
 
     printf("Events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, TRIAL);
 
