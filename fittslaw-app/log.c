@@ -84,6 +84,7 @@ void *initEventLogging(void *arg)
             {
                 perror("Error reading from evdev device");
                 close(fd);
+                exit(0);
                 return NULL;
             }
 
