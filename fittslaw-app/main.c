@@ -13,6 +13,7 @@ int lastX;
 int lastY;
 int isSetupTarget = 1;
 int successInCircle[NUM_CIRCLES] = {0};
+int isLogging = 0;
 
 Trial current_trial;
 
@@ -53,7 +54,8 @@ void handleInput(SDL_Renderer *renderer)
             }
         }
 
-        if (elapsedTime >= displayFeedbackTime){
+        if (elapsedTime >= displayFeedbackTime)
+        {
             if (event.type == SDL_MOUSEBUTTONDOWN)
             {
                 if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
@@ -66,23 +68,21 @@ void handleInput(SDL_Renderer *renderer)
 
                     if (isSetupTarget)
                     {
-                        // starting event logging right after setup target is clicked
-                        startEventLogging();
                         isSetupTarget = 0;
                     }
                     else // only count the click if task is active
                     {
                         // create click struct for logging
                         Click click = {click_count_total,
-                                    millis(),
-                                    target.r * 2,
-                                    target.d,
-                                    target.x,
-                                    target.y,
-                                    mouseX,
-                                    mouseY,
-                                    success,
-                                    trial_time};
+                                       millis(),
+                                       target.r * 2,
+                                       target.d,
+                                       target.x,
+                                       target.y,
+                                       mouseX,
+                                       mouseY,
+                                       success,
+                                       trial_time};
 
                         clicks[click_count_total] = click;
                         click_count_total++;
@@ -95,11 +95,9 @@ void handleInput(SDL_Renderer *renderer)
                         if (circleNumber == NUM_CIRCLES - 1)
                         {
                             stopEventLogging();
+                            isLogging = 0;
                             // get starting time of feedback screen for calculation of how long it is displayed
                             startTime = SDL_GetTicks();
-                            // TO-DO: passt das so, dass das event logging hier gestartet wird?
-                            // eigentlich erst wieder, nachdem das feedback-delay vorbei ist?
-                            startEventLogging();
                         }
 
                         iteration++;
@@ -134,6 +132,11 @@ void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedbac
     else
     {
         circleDistribution(renderer, target.d, target.r, fontNumbers);
+        if (!isLogging && !isSetupTarget)
+        {
+            startEventLogging();
+            isLogging = 1;
+        }
     }
 
     // render first circle
