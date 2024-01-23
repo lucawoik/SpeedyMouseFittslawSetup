@@ -86,7 +86,7 @@ class DemographicSurvey(QtWidgets.QDialog):
             os.makedirs(LOG_DIRECTORY)
 
         with open(
-            LOG_DIRECTORY + "demographic_participant_" + str(self.id_prob) + ".csv",
+            LOG_DIRECTORY + "participant_" + str(self.id_prob) + "_demographic.csv",
             mode="w",
         ) as file:
             writer = csv.writer(file, delimiter=",")

@@ -5,7 +5,7 @@ void logClicks()
 {
     // Constructing the path for the log file based on participant ID and trial
     char path[256];
-    sprintf(path, "%s/clicks_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
+    sprintf(path, "%s/participant_%d_clicks_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
 
     struct stat st_directory = {0};
 
@@ -114,7 +114,7 @@ void stopEventLogging()
     currently_logging = 0;
     // creating file to save logs to
     char path[256];
-    sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
+    sprintf(path, "%s/participant_%d_mouse-events_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
 
     struct stat st_directory = {0};
 

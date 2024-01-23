@@ -70,9 +70,9 @@ class NasaTLX(QtWidgets.QWizard):
         if not os.path.exists(LOG_DIRECTORY):
             os.makedirs(LOG_DIRECTORY)
 
-        file_exists = os.path.exists(LOG_DIRECTORY + 'tlx_participant_' + str(self.id_prob) + '.csv')
+        file_exists = os.path.exists(LOG_DIRECTORY + 'participant_' + str(self.id_prob) + '_tlx.csv')
 
-        with open(LOG_DIRECTORY + 'tlx_participant_' + str(self.id_prob) + '.csv', mode='a+') as file:
+        with open(LOG_DIRECTORY + 'participant_' + str(self.id_prob) + '_tlx.csv', mode='a+') as file:
             writer = csv.writer(file, delimiter=',')
 
             if not file_exists:
