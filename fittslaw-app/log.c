@@ -16,7 +16,7 @@ void logClicks()
     }
 
     // Opening the log file for writing and checking if the file opening was successful
-    FILE *logFile = fopen(path, "w");
+    FILE *logFile = fopen(path, "a");
 
     if (logFile == NULL)
     {
