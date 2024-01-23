@@ -83,7 +83,7 @@ void circleDistribution(SDL_Renderer *renderer, int radius, int circleRadius, TT
         angle = step * i - M_PI / 2;
         int x = centerX + radius * cos(angle);
         int y = centerY + radius * sin(angle);
-        filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 255);
+        filledCircleRGBA(renderer, x, y, circleRadius, 170, 170, 170, 180);
 
         // render circle number
         char *text = intToString(currentTarget + 1);
