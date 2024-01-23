@@ -4,6 +4,7 @@ char EVENT_PATH[MAX_PATH_LENGTH] = "";
 int PARTICIPANT_ID = 0;
 int TRIAL = 0;
 int LEVEL_OF_LATENCY = 0;
+int IS_TEST_MODE = 0;
 
 int iteration = 0;
 int click_count_total = 0;
@@ -171,6 +172,8 @@ int main(int argc, char **argv)
         printf("incorrect trial id");
     if (sscanf(argv[4], "%d", &LEVEL_OF_LATENCY) == EOF)
         printf("incorrect level of latency");
+    if (sscanf(argv[5], "%d", &IS_TEST_MODE) == EOF)
+        printf("incorrect test mode flag");
 
     double timer;
     double deltaTime;

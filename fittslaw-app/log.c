@@ -62,7 +62,8 @@ void *initEventLogging(void *arg)
     if (fd == -1)
     {
         perror("Error opening evdev device");
-        exit(0);
+        if (!IS_TEST_MODE)
+            exit(0);
         return NULL;
     }
 
@@ -88,7 +89,8 @@ void *initEventLogging(void *arg)
             {
                 perror("Error reading from evdev device");
                 close(fd);
-                exit(0);
+                if (!IS_TEST_MODE)
+                    exit(0);
                 return NULL;
             }
 
