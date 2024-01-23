@@ -81,7 +81,7 @@ sechs genannten Dimensionen von der Aufgabe beansprucht oder gefordert gesehen h
      <rect>
       <x>40</x>
       <y>310</y>
-      <width>251</width>
+      <width>260</width>
       <height>31</height>
      </rect>
     </property>
@@ -218,7 +218,7 @@ War die Abfolge langsam und geruhsam oder schnell und hektisch? </string>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>812</x>
       <y>370</y>
       <width>601</width>
       <height>131</height>
@@ -234,7 +234,7 @@ War die Abfolge langsam und geruhsam oder schnell und hektisch? </string>
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>812</x>
       <y>530</y>
       <width>601</width>
       <height>131</height>
@@ -281,7 +281,7 @@ War die Abfolge langsam und geruhsam oder schnell und hektisch? </string>
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>812</x>
       <y>730</y>
       <width>601</width>
       <height>131</height>
@@ -474,8 +474,8 @@ an Aufgabenerfüllung zu erreichen? </string>
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>799</x>
-      <y>352</y>
+      <x>812</x>
+      <y>370</y>
       <width>601</width>
       <height>131</height>
      </rect>
@@ -583,7 +583,7 @@ an Aufgabenerfüllung zu erreichen? </string>
    <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>812</x>
       <y>730</y>
       <width>601</width>
       <height>131</height>
@@ -599,7 +599,7 @@ an Aufgabenerfüllung zu erreichen? </string>
    <widget class="QLabel" name="label_13">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>812</x>
       <y>530</y>
       <width>601</width>
       <height>131</height>

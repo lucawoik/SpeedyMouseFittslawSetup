@@ -1,5 +1,6 @@
 *.swp
-FittsiM
-FittsiS
+SpeedyMouseFittslaw
 log/
 bin/
+.vscode/
+venv

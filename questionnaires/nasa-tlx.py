@@ -12,23 +12,13 @@ LOG_DIRECTORY = 'log/'
 
 class NasaTLX(QtWidgets.QWizard):
 
-    #id_prob = -1
-    #id_trial = -1
-    #click_min = -1
-    #click_max = -1
-    #move_min = -1
-    #move_max = -1
-
     def __init__(self):
         super().__init__()
 
         # Collect and storeArguments passed to the script
         self.id_prob = sys.argv[1]
         self.id_trial = sys.argv[2]
-        self.click_min = sys.argv[3]
-        self.click_max = sys.argv[4]
-        self.move_min = sys.argv[5]
-        self.move_max = sys.argv[6]
+        self.latency = sys.argv[3]
 
         self.init_ui()
 
@@ -63,8 +53,8 @@ class NasaTLX(QtWidgets.QWizard):
 
         self.showFullScreen()
 
-        # Only show an back button on page 2 (ID 1)
-        if QtWidgets.QWizard.currentId(self) is not 1:
+        # Only show a back button on page 2 (ID 1)
+        if QtWidgets.QWizard.currentId(self) != 1:
             self.button(QtWidgets.QWizard.BackButton).hide()
         else:
             self.button(QtWidgets.QWizard.BackButton).show()
@@ -74,13 +64,6 @@ class NasaTLX(QtWidgets.QWizard):
         self.show()
 
     def on_finished(self):
-        #print(self.ui.slider_mental.value())
-        #print(self.ui.slider_physical.value())
-        #print(self.ui.slider_temporal.value())
-        #print(self.ui.slider_performance.value())
-        #print(self.ui.slider_effort.value())
-        #print(self.ui.slider_frustration.value())
-
         self.write_to_csv()
 
     def write_to_csv(self):
@@ -93,13 +76,9 @@ class NasaTLX(QtWidgets.QWizard):
             writer = csv.writer(file, delimiter=',')
 
             if not file_exists:
-                print("writi")
                 writer.writerow(['participant_id',
                                  'trial',
-                                 'latency_click_min',
-                                 'latency_click_max',
-                                 'latency_move_min',
-                                 'latency_move_max',
+                                 'latency',
                                  'mental_demand',
                                  'physical_demand',
                                  'temporal_demand',
@@ -109,24 +88,21 @@ class NasaTLX(QtWidgets.QWizard):
 
             writer.writerow([self.id_prob,
                              self.id_trial,
-                             self.click_min,
-                             self.click_max,
-                             self.move_min,
-                             self.move_max,
-                             round(self.ui.slider_mental.value() / 5),  # Divide by 5 to get from 0-100 to 0-20
-                             round(self.ui.slider_physical.value() / 5),
-                             round(self.ui.slider_temporal.value() / 5),
-                             round(self.ui.slider_performance.value() / 5),
-                             round(self.ui.slider_effort.value() / 5),
-                             round(self.ui.slider_frustration.value() / 5)])
+                             self.latency,
+                             self.ui.slider_mental.value() / 5,  # Divide by 5 to get from 0-100 to 0-20
+                             self.ui.slider_physical.value() / 5,
+                             self.ui.slider_temporal.value() / 5,
+                             self.ui.slider_performance.value() / 5,
+                             self.ui.slider_effort.value() / 5,
+                             self.ui.slider_frustration.value() / 5])
 
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    nasaTLX = NasaTLX()
+    nasa_tlx = NasaTLX()
+    # nasa_tlx.write_to_csv()
     sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
     main()
-
