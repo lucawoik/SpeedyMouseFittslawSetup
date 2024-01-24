@@ -288,7 +288,26 @@
     </property>
    </widget>
 
-  
+  </widget>
+  <widget class="QLabel" name="label_hint">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>700</y>
+     <width>521</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>6</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>selten: weniger als 1 Mal pro Woche / unregelmäßig
+gelegentlich: weniger als 1 Mal am Tag / mehr als 1 Mal pro Woche
+häufig: regelmäßig / täglich</string>
+   </property>
   </widget>
 
  <widget class="QCheckBox" name="checkbox_agree">
