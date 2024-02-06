@@ -95,7 +95,7 @@ void handleInput(SDL_Renderer *renderer)
                         // if a 2d fitts law task is completed
                         if (circleNumber == NUM_CIRCLES - 1)
                         {
-                            stopEventLogging();
+                            // stopEventLogging();
                             isLogging = 0;
                             // get starting time of feedback screen for calculation of how long it is displayed
                             startTime = SDL_GetTicks();
@@ -135,7 +135,7 @@ void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedbac
         circleDistribution(renderer, target.d, target.r, fontNumbers);
         if (!isLogging && !isSetupTarget)
         {
-            startEventLogging();
+            // startEventLogging();
             isLogging = 1;
         }
     }
@@ -213,14 +213,14 @@ int main(int argc, char **argv)
 
     // Init Logging - Open the event handler
     // Create a thread
-    pthread_t loggingThread;
+    /* pthread_t loggingThread;
     int threadCreationResult = pthread_create(&loggingThread, NULL, initEventLogging, NULL);
 
     if (threadCreationResult != 0)
     {
         fprintf(stderr, "Error creating thread: %d\n", threadCreationResult);
         return 1; // Return an error code if thread creation fails
-    }
+    } */
 
     while (1)
     {
