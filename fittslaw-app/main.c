@@ -211,6 +211,16 @@ int main(int argc, char **argv)
 
     system("xsetroot -cursor_name arrow");
 
+    // Init thread for mouse manipulation
+    pthread_t eventThread;
+    int threadCreationResult = pthread_create(&eventThread, NULL, manipulateMouseEvents, NULL);
+
+    if (threadCreationResult != 0)
+    {
+        fprintf(stderr, "Error creating thread: %d\n", threadCreationResult);
+        return 1; // Return an error code if thread creation fails
+    }
+
     // Init Logging - Open the event handler
     // Create a thread
     /* pthread_t loggingThread;

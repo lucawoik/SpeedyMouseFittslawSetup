@@ -69,6 +69,8 @@ extern void startEventLogging();
 extern void *initEventLogging(void *arg);
 extern void stopEventLogging();
 
+extern void *manipulateMouseEvents(void *arg);
+
 /* TODO: nicht mehr notwendig, aber noch in den Logs drin */
 /* static const char *ANGLE_STRING[] = {
     "towards", "towards_diagonal", "perpendicular", "away_diagonal", "away", "none",
