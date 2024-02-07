@@ -124,9 +124,8 @@ void *manipulateMouseEvents(void *arg)
 
         if (eventsInInterval > 0)
         {
-            intervalX = sumX / eventsInInterval;
-            intervalY = sumY / eventsInInterval;
-            // printf("x: %f | y: %f\n", intervalX, intervalY);
+            intervalX = sumX;
+            intervalY = sumY;
         }
 
         struct timeval time;
@@ -144,6 +143,8 @@ void *manipulateMouseEvents(void *arg)
         calculatedEvent.code = REL_Y;
         calculatedEvent.value = (int)intervalY;
         write(fd_uinput, &calculatedEvent, sizeof(struct input_event));
+        emit(fd_uinput, EV_SYN, SYN_REPORT, 0);
+
 
         // printf("Interval has stopped\n");
         eventsInInterval = 0; // reset for next interval
