@@ -147,12 +147,9 @@ void *manipulateMouseEvents(void *arg)
         intervalX = 0;
         intervalY = 0;
 
-        struct timeval time;
-        gettimeofday(&time, NULL);
-
         struct input_event calculatedEvent;
-        calculatedEvent.time.tv_sec = time.tv_sec;
-        calculatedEvent.time.tv_usec = time.tv_usec;
+        calculatedEvent.time.tv_sec = 0;
+        calculatedEvent.time.tv_usec = 0;
         calculatedEvent.type = EV_REL;
 
         calculatedEvent.code = REL_X;
