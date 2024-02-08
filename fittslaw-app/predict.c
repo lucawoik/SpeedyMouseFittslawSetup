@@ -44,6 +44,7 @@ int initInput(){
 }
 
 int initUInput(){
+    // Create and open virtual uinput device
     struct uinput_user_dev uidev;
 
     // Open uinput device
