@@ -39,6 +39,9 @@ void *manipulateMouseEvents(void *arg)
         return NULL;
     }
 
+    // this line reserves the device for this program so its events do not arrive at other applications
+    ioctl(fd_event, EVIOCGRAB, 1);
+
     struct uinput_user_dev uidev;
 
     // Open uinput device
@@ -127,6 +130,9 @@ void *manipulateMouseEvents(void *arg)
             intervalX = sumX;
             intervalY = sumY;
         }
+
+        intervalX = 0;
+        intervalY = 0;
 
         struct timeval time;
         gettimeofday(&time, NULL);
