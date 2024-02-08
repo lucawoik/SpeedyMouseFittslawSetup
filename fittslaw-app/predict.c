@@ -7,8 +7,8 @@ int eventsInInterval = 0;
 long intervalStart = 0;
 long intervalStop = 0;
 
-float intervalX = 0.0f;
-float intervalY = 0.0f;
+int intervalX = 0;
+int intervalY = 0;
 
 // creates an input event for the specified device
 // source: https://www.kernel.org/doc/html/v4.12/input/uinput.html
@@ -86,12 +86,8 @@ void *manipulateMouseEvents(void *arg)
 
     while (true)
     {
-        int sumX = 0;
-        int sumY = 0;
-
         intervalStart = millis();
         intervalStop = intervalStart + intervalDurationMs;
-
         // printf("Interval has started\n");
 
         while (true)
@@ -101,19 +97,11 @@ void *manipulateMouseEvents(void *arg)
                 break;
             }
             
-            // printf("before read\n");
             struct input_event currentEvent;
+
             // read all events during the interval
-            // TODO: werden hier events geschluckt bzw erst im nächsten Intervall gelesen?
             ssize_t bytesRead = read(fd_event, &currentEvent, sizeof(struct input_event));
-            /* if (bytesRead == -1)
-            {
-                perror("Error reading from evdev device");
-                close(fd_event);
-                if (!IS_TEST_MODE)
-                    exit(0);
-                return NULL;
-            } */
+
             // Counting events to keep track of the number of events already saved
             if (bytesRead == sizeof(struct input_event))
             {
@@ -123,11 +111,13 @@ void *manipulateMouseEvents(void *arg)
                 {
                     if (currentEvent.code == REL_X)
                     {
-                        sumX += currentEvent.value;
+                        intervalX += currentEvent.value;
+                        printf("Recieved events: x->%d\n", currentEvent.value);
                     }
                     if (currentEvent.code == REL_Y)
                     {
-                        sumY += currentEvent.value;
+                        intervalY += currentEvent.value;
+                        printf("Recieved events: y->%d\n", currentEvent.value);
                     }
                 }
             }
@@ -137,33 +127,14 @@ void *manipulateMouseEvents(void *arg)
             }
         }
 
-        if (eventsInInterval > 0)
-        {
-            intervalX = sumX;
-            intervalY = sumY;
-        }
-
-        // For testing purposes
-        intervalX = 0;
-        intervalY = 0;
-
-        struct input_event calculatedEvent;
-        calculatedEvent.time.tv_sec = 0;
-        calculatedEvent.time.tv_usec = 0;
-        calculatedEvent.type = EV_REL;
-
-        calculatedEvent.code = REL_X;
-        calculatedEvent.value = (int)intervalX;
-        write(fd_uinput, &calculatedEvent, sizeof(struct input_event));
-
-        calculatedEvent.code = REL_Y;
-        calculatedEvent.value = (int)intervalY;
-        write(fd_uinput, &calculatedEvent, sizeof(struct input_event));
+        emit(fd_uinput, EV_REL, REL_X, intervalX);
+        emit(fd_uinput, EV_REL, REL_Y, intervalY);
         emit(fd_uinput, EV_SYN, SYN_REPORT, 0);
 
+        printf("Emitted events: x->%d, y->%d\n", intervalX, intervalY);
 
-        // printf("Interval has stopped\n");
-        eventsInInterval = 0; // reset for next interval
+        // reset for next interval
+        eventsInInterval = 0; 
         intervalX = 0;
         intervalY = 0;
     }
