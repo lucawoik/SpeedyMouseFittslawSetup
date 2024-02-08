@@ -26,9 +26,7 @@ void emit(int fd, int type, int code, int val)
     write(fd, &ie, sizeof(ie));
 }
 
-
-void *manipulateMouseEvents(void *arg)
-{
+int initInput(){
     // open the event handler
     int fd_event = open(EVENT_PATH, O_RDONLY | O_NONBLOCK); // | NONBLOCK in oder to make the read non-blocking
     if (fd_event == -1)
@@ -36,12 +34,16 @@ void *manipulateMouseEvents(void *arg)
         perror("Error opening evdev device");
         if (!IS_TEST_MODE)
             exit(0);
-        return NULL;
+        return 0;
     }
 
     // this line reserves the device for this program so its events do not arrive at other applications
     ioctl(fd_event, EVIOCGRAB, 1);
 
+    return fd_event;
+}
+
+int initUInput(){
     struct uinput_user_dev uidev;
 
     // Open uinput device
@@ -51,7 +53,7 @@ void *manipulateMouseEvents(void *arg)
         perror("Error opening uinput device");
         if (!IS_TEST_MODE)
             exit(0);
-        return NULL;
+        return 0;
     }
 
     // Set up the uinput device
@@ -71,6 +73,15 @@ void *manipulateMouseEvents(void *arg)
 
     write(fd_uinput, &uidev, sizeof(uidev));
     ioctl(fd_uinput, UI_DEV_CREATE);
+
+    return fd_uinput;
+}
+
+
+void *manipulateMouseEvents(void *arg)
+{
+    int fd_event = initInput();
+    int fd_uinput = initUInput();
 
     while (true)
     {
@@ -131,6 +142,7 @@ void *manipulateMouseEvents(void *arg)
             intervalY = sumY;
         }
 
+        // For testing purposes
         intervalX = 0;
         intervalY = 0;
 
