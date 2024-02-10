@@ -7,7 +7,7 @@ main: main.c
 # $(CC) -Wall -c utils.c -lSDL2main -lSDL2 -lSDL2_gfx -lm -lpthread -o bin/utils.o
 # $(CC) -Wall -c log.c -lSDL2main -lSDL2 -lSDL2_gfx -lm -lpthread -o bin/log.o
 # $(CC) -Wall bin/main.o bin/templates.o bin/utils.o bin/log.o -lSDL2main -lSDL2 -lSDL2_gfx -lm -lpthread -o Fittsi
-	$(CC) -Wall -fcommon main.c templates.c utils.c log.c predict.c -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_ttf -lm -lpthread -lGL -o SpeedyMouseFittslaw
+	$(CC) -I/usr/local/include/ -L/usr/local/lib -Wall -fcommon main.c templates.c utils.c log.c predict.c -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_ttf -lm -lpthread -lGL -o SpeedyMouseFittslaw
 
 clean:
 	rm -rf bin

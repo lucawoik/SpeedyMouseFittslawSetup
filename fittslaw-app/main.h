@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
+#include "tensorflow/c/c_api.h"
 
 #define WIDTH 1920
 #define HEIGHT 1080
