@@ -10,6 +10,41 @@ long intervalStop = 0;
 int intervalX = 0;
 int intervalY = 0;
 
+typedef struct
+{
+    int x;
+    int y;
+} ResampledEvent;
+
+typedef struct 
+{
+    ResampledEvent events[200];
+    int front;
+} CircularBuffer;
+
+CircularBuffer buffer;
+
+// Functions for circular buffer
+void addEvent(CircularBuffer *buffer, ResampledEvent event)
+{
+    buffer->front = (buffer->front - 1) % 200;
+
+    buffer->events[buffer->front] = event;
+}
+
+void initCircularBuffer(CircularBuffer *buffer)
+{
+    buffer->front = 0;
+
+    ResampledEvent eventZero;
+    eventZero.x = 0;
+    eventZero.y = 0;
+
+    for(int i = 0; i < 200; i++){
+        addEvent(buffer, eventZero);
+    }
+}
+
 // creates an input event for the specified device
 // source: https://www.kernel.org/doc/html/v4.12/input/uinput.html
 void emit(int fd, int type, int code, int val)
@@ -83,6 +118,27 @@ void *manipulateMouseEvents(void *arg)
 {
     int fd_event = initInput();
     int fd_uinput = initUInput();
+    initCircularBuffer(&buffer);
+
+    printf("Circular Buffer contents:\n");
+    for(int i = 0; i < 200; i++){
+        int index = buffer.front + i % 200;
+        printf("%d  x: %d, y: %d\n", i, buffer.events[index].x, buffer.events[index].y);
+    }
+
+
+    ResampledEvent eventZero;
+    eventZero.x = 1;
+    eventZero.y = 1;
+
+    addEvent(&buffer, eventZero);
+
+
+    printf("Circular Buffer contents:\n");
+    for(int i = 0; i < 200; i++){
+        int index = buffer.front + i % 200;
+        printf("%d  x: %d, y: %d\n", i, buffer.events[index].x, buffer.events[index].y);
+    }
 
     while (true)
     {
@@ -132,6 +188,12 @@ void *manipulateMouseEvents(void *arg)
         emit(fd_uinput, EV_SYN, SYN_REPORT, 0);
 
         printf("Emitted events: x->%d, y->%d\n", intervalX, intervalY);
+
+        ResampledEvent resampledEvent;
+        resampledEvent.x = intervalX;
+        resampledEvent.y = intervalY;
+
+        addEvent(&buffer, resampledEvent);
 
         // reset for next interval
         eventsInInterval = 0; 
