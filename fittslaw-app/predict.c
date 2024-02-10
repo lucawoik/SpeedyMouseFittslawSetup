@@ -1,6 +1,6 @@
 #include "main.h"
 
-int intervalDurationMs = 5;
+int intervalDurationMs = 250;
 
 int eventsInInterval = 0;
 
@@ -12,36 +12,41 @@ int intervalY = 0;
 
 typedef struct
 {
-    int x;
-    int y;
+    float x;
+    float y;
 } ResampledEvent;
 
-typedef struct 
+typedef struct
 {
     ResampledEvent events[200];
     int front;
 } CircularBuffer;
 
-CircularBuffer buffer;
+CircularBuffer resampledEventsBuffer;
+
+// Helper function for accessing Tensorflow C API
+void NoOpDeallocator(void *data, size_t a, void *b) {}
 
 // Functions for circular buffer
 void addEvent(CircularBuffer *buffer, ResampledEvent event)
 {
-    buffer->front = (buffer->front - 1) % 200;
+    buffer->front = (buffer->front + 1) % 200;
 
     buffer->events[buffer->front] = event;
 }
 
 void initCircularBuffer(CircularBuffer *buffer)
 {
-    buffer->front = 0;
+    buffer->front = -1;
 
     ResampledEvent eventZero;
-    eventZero.x = 0;
-    eventZero.y = 0;
+    eventZero.x = 0.5f;
+    eventZero.y = 0.5f;
 
-    for(int i = 0; i < 200; i++){
+    for (int i = 0; i < 200; i++)
+    {
         addEvent(buffer, eventZero);
+        printf("Filling buffer -> %d\n", i);
     }
 }
 
@@ -61,7 +66,8 @@ void emit(int fd, int type, int code, int val)
     write(fd, &ie, sizeof(ie));
 }
 
-int initInput(){
+int initInput()
+{
     // open the event handler
     int fd_event = open(EVENT_PATH, O_RDONLY | O_NONBLOCK); // | NONBLOCK in oder to make the read non-blocking
     if (fd_event == -1)
@@ -78,7 +84,8 @@ int initInput(){
     return fd_event;
 }
 
-int initUInput(){
+int initUInput()
+{
     // Create and open virtual uinput device
     struct uinput_user_dev uidev;
 
@@ -113,31 +120,83 @@ int initUInput(){
     return fd_uinput;
 }
 
-
 void *manipulateMouseEvents(void *arg)
 {
-    int fd_event = initInput();
-    int fd_uinput = initUInput();
-    initCircularBuffer(&buffer);
+    //********* Read model
+    TF_Graph *Graph = TF_NewGraph();
+    TF_Status *Status = TF_NewStatus();
 
-    printf("Circular Buffer contents:\n");
-    for(int i = 0; i < 200; i++){
-        int index = buffer.front + i % 200;
-        printf("%d  x: %d, y: %d\n", i, buffer.events[index].x, buffer.events[index].y);
+    TF_SessionOptions *SessionOpts = TF_NewSessionOptions();
+    TF_Buffer *RunOpts = NULL;
+
+    const char *saved_model_dir = "ANN_10ms_200_zeros/"; // Path of the model
+    const char *tags = "serve";                        // default model serving tag; can change in future
+    int ntags = 1;
+
+    TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, saved_model_dir, &tags, ntags, Graph, NULL, Status);
+    if (TF_GetCode(Status) == TF_OK)
+    {
+        printf("TF_LoadSessionFromSavedModel OK\n");
+    }
+    else
+    {
+        printf("%s", TF_Message(Status));
     }
 
+    //****** Get input tensor
+    int NumInputs = 2;
+    TF_Output *Input = malloc(sizeof(TF_Output) * NumInputs);
 
-    ResampledEvent eventZero;
-    eventZero.x = 1;
-    eventZero.y = 1;
+    TF_Output t0 = {TF_GraphOperationByName(Graph, "serving_default_last_x_values"), 0};
+    if (t0.oper == NULL)
+        printf("ERROR: Failed TF_GraphOperationByName serving_default_batch_normalization_input\n");
+    else
+        printf("TF_GraphOperationByName serving_default_batch_normalization_input is OK\n");
 
-    addEvent(&buffer, eventZero);
+    Input[0] = t0;
 
+    TF_Output t1 = {TF_GraphOperationByName(Graph, "serving_default_last_y_values"), 0};
+    if (t1.oper == NULL)
+        printf("ERROR: Failed TF_GraphOperationByName serving_default_batch_normalization_input\n");
+    else
+        printf("TF_GraphOperationByName serving_default_batch_normalization_input is OK\n");
+
+    Input[1] = t1;
+
+    //********* Get Output tensor
+    int NumOutputs = 2;
+    TF_Output *Output = malloc(sizeof(TF_Output) * NumOutputs);
+
+    TF_Output t2 = {TF_GraphOperationByName(Graph, "StatefulPartitionedCall"), 0};
+    if (t2.oper == NULL)
+        printf("ERROR: Failed TF_GraphOperationByName StatefulPartitionedCall\n");
+    else
+        printf("TF_GraphOperationByName StatefulPartitionedCall is OK\n");
+
+    Output[0] = t2;
+
+    TF_Output t3 = {TF_GraphOperationByName(Graph, "StatefulPartitionedCall"), 1};
+    if (t3.oper == NULL)
+        printf("ERROR: Failed TF_GraphOperationByName StatefulPartitionedCall\n");
+    else
+        printf("TF_GraphOperationByName StatefulPartitionedCall is OK\n");
+
+    Output[1] = t3;
+    //********* Allocate data for inputs & outputs
+    TF_Tensor **InputValues = (TF_Tensor **)malloc(sizeof(TF_Tensor *) * NumInputs);
+    TF_Tensor **OutputValues = malloc(sizeof(TF_Tensor *) * NumOutputs);
+
+    // #######
+
+    int fd_event = initInput();
+    int fd_uinput = initUInput();
+    initCircularBuffer(&resampledEventsBuffer);
 
     printf("Circular Buffer contents:\n");
-    for(int i = 0; i < 200; i++){
-        int index = buffer.front + i % 200;
-        printf("%d  x: %d, y: %d\n", i, buffer.events[index].x, buffer.events[index].y);
+    for (int i = 0; i < 200; i++)
+    {
+        int index = (resampledEventsBuffer.front - i + 200) % 200;
+        printf("%d  x: %f, y: %f\n", i, resampledEventsBuffer.events[index].x, resampledEventsBuffer.events[index].y);
     }
 
     while (true)
@@ -152,7 +211,7 @@ void *manipulateMouseEvents(void *arg)
             {
                 break;
             }
-            
+
             struct input_event currentEvent;
 
             // read all events during the interval
@@ -183,20 +242,87 @@ void *manipulateMouseEvents(void *arg)
             }
         }
 
-        emit(fd_uinput, EV_REL, REL_X, intervalX);
-        emit(fd_uinput, EV_REL, REL_Y, intervalY);
+        int ndims = 2;
+        int64_t dims[] = {1, 200};
+        float dataX[200];
+        float dataY[200];
+        printf("Circular Buffer: ");
+        for (int i = 0; i < 200; i++){
+            printf("%f, ", resampledEventsBuffer.events[i].x);
+        }
+        printf("\n");
+        printf("\n");
+        printf("DataX: ");
+        for (int i = 0; i < 200; i++)
+        {
+            int index = (resampledEventsBuffer.front - i + 200) % 200;
+            dataX[i] = resampledEventsBuffer.events[index].x;
+            printf("index: %d %f, ", index, dataX[i]);
+            dataY[i] = resampledEventsBuffer.events[index].y;
+        }
+        printf("\n");
+        int ndata = 200 * sizeof(float); // This is tricky, it number of bytes not number of element
+
+        TF_Tensor *int_tensor = TF_NewTensor(TF_FLOAT, dims, ndims, dataX, ndata, &NoOpDeallocator, 0);
+        if (int_tensor != NULL)
+        {
+            printf("TF_NewTensor is OK\n");
+        }
+        else
+            printf("ERROR: Failed TF_NewTensor\n");
+
+        InputValues[0] = int_tensor;
+
+        TF_Tensor *int_tensor1 = TF_NewTensor(TF_FLOAT, dims, ndims, dataY, ndata, &NoOpDeallocator, 0);
+        if (int_tensor1 != NULL)
+        {
+            printf("TF_NewTensor is OK\n");
+        }
+        else
+            printf("ERROR: Failed TF_NewTensor\n");
+
+        InputValues[1] = int_tensor1;
+        // //Run the Session
+        TF_SessionRun(Session, NULL, Input, InputValues, NumInputs, Output, OutputValues, NumOutputs, NULL, 0, NULL, Status);
+
+        if (TF_GetCode(Status) == TF_OK)
+        {
+            printf("Session is OK\n");
+        }
+        else
+        {
+            printf("%s", TF_Message(Status));
+        }
+
+        void *buff = TF_TensorData(OutputValues[0]);
+        float *offsets = buff;
+
+        void *buff1 = TF_TensorData(OutputValues[1]);
+        float *offsets1 = buff1;
+
+        float predX = offsets[0]*73.0f-31.0f;
+        float predY = offsets1[0]*59.0f-28.0f;
+
+        emit(fd_uinput, EV_REL, REL_X, (int)predX);
+        emit(fd_uinput, EV_REL, REL_Y, (int)predY);
         emit(fd_uinput, EV_SYN, SYN_REPORT, 0);
 
-        printf("Emitted events: x->%d, y->%d\n", intervalX, intervalY);
+        printf("Emitted events: x->%f, y->%f\n", predX, predY);
 
         ResampledEvent resampledEvent;
-        resampledEvent.x = intervalX;
-        resampledEvent.y = intervalY;
+        resampledEvent.x = (intervalX+31.0f)/72.0f;
+        resampledEvent.y = (intervalY+28.0f)/59.0f;
+        printf("Resampled event values: x %f, y %f\n", resampledEvent.x, resampledEvent.y);
 
-        addEvent(&buffer, resampledEvent);
+
+        addEvent(&resampledEventsBuffer, resampledEvent);
+
+        printf("Buffer front: %d\n", resampledEventsBuffer.front);
+        printf("Buffer front value: x %f, y %f\n", resampledEventsBuffer.events[resampledEventsBuffer.front].x, resampledEventsBuffer.events[resampledEventsBuffer.front].y);
+
 
         // reset for next interval
-        eventsInInterval = 0; 
+        eventsInInterval = 0;
         intervalX = 0;
         intervalY = 0;
     }
