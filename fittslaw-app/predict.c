@@ -130,7 +130,7 @@ TF_Session *createSession()
     TF_SessionOptions *SessionOpts = TF_NewSessionOptions();
     TF_Buffer *RunOpts = NULL;
 
-    const char *saved_model_dir = "ANN_10ms_200_zeros/"; // Path of the model
+    const char *saved_model_dir = SAVED_MODEL_DIR;       // Path of the model
     const char *tags = "serve";                          // default model serving tag
     int ntags = 1;
 
