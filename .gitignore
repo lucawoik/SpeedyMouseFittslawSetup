@@ -1,5 +1,6 @@
 *.swp
 SpeedyMouseFittslaw
+SpeedyMouseFittslawDebug
 log/
 bin/
 .vscode/
