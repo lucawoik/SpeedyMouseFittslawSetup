@@ -56,6 +56,10 @@
 
 #define MAX_PATH_LENGTH 256
 
+// Predict.c
+#define INTERVAL_LENGTH 5
+#define BUFFER_LENGTH 200
+
 extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;
 extern int TRIAL;
@@ -127,6 +131,21 @@ typedef struct
     int radius;
     int distance;
 } Tupel;
+
+// for saving a resampled event
+typedef struct
+{
+    float x;
+    float y;
+} ResampledEvent;
+
+// Circular buffer to save all past resampled events
+typedef struct
+{
+    ResampledEvent events[BUFFER_LENGTH];
+    int front;
+} CircularBuffer;
+
 
 
 Target targetArray[NUM_ITERATIONS];
