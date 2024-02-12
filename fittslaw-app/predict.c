@@ -1,7 +1,5 @@
 #include "main.h"
 
-int eventsInInterval = 0;
-
 long intervalStart = 0;
 long intervalStop = 0;
 
@@ -135,11 +133,7 @@ TF_Session *createSession()
     int ntags = 1;
 
     TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, saved_model_dir, &tags, ntags, Graph, NULL, Status);
-    if (TF_GetCode(Status) == TF_OK)
-    {
-        printf("TF_LoadSessionFromSavedModel OK\n");
-    }
-    else
+    if (TF_GetCode(Status) != TF_OK)
     {
         printf("%s", TF_Message(Status));
     }
@@ -151,9 +145,7 @@ TF_Output getOutput(char *name, int number)
 {
     TF_Output t = {TF_GraphOperationByName(Graph, name), number};
     if (t.oper == NULL)
-        printf("ERROR: Failed TF_GraphOperationByName serving_default_batch_normalization_input\n");
-    else
-        printf("TF_GraphOperationByName serving_default_batch_normalization_input is OK\n");
+        printf("ERROR: Failed TF_GraphOperationByName %s\n", name);
 
     return t;
 }
@@ -161,12 +153,10 @@ TF_Output getOutput(char *name, int number)
 TF_Tensor *getTensor(int ndims, int64_t dims[], float data[], int ndata)
 {
     TF_Tensor *tensor = TF_NewTensor(TF_FLOAT, dims, ndims, data, ndata, &NoOpDeallocator, 0);
-    if (tensor != NULL)
+    if (tensor == NULL)
     {
-        printf("TF_NewTensor is OK\n");
-    }
-    else
         printf("ERROR: Failed TF_NewTensor\n");
+    }
 
     return tensor;
 }
@@ -234,14 +224,10 @@ void *manipulateMouseEvents(void *arg)
             }
 
             struct input_event currentEvent;
+            ssize_t bytesRead = read(fd_event, &currentEvent, sizeof(struct input_event));  // read all events during the interval
 
-            // read all events during the interval
-            ssize_t bytesRead = read(fd_event, &currentEvent, sizeof(struct input_event));
-
-            // Counting events to keep track of the number of events already saved
             if (bytesRead == sizeof(struct input_event))
             {
-                eventsInInterval++;
                 // Add current event to sum
                 if (currentEvent.type == EV_REL)
                 {
@@ -335,7 +321,6 @@ void *manipulateMouseEvents(void *arg)
         printf("Buffer front value: x %f, y %f\n", resampledEventsBuffer.events[resampledEventsBuffer.front].x, resampledEventsBuffer.events[resampledEventsBuffer.front].y);
 
         // reset for next interval
-        eventsInInterval = 0;
         intervalX = 0;
         intervalY = 0;
     }
