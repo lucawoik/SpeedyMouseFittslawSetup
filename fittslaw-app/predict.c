@@ -61,6 +61,15 @@ void emitKlick(int fd, int value)
     emit(fd, EV_SYN, SYN_REPORT, 0);
 }
 
+void emitRel(int fd, int x, int y)
+{
+    emit(fd, EV_REL, REL_X, x);
+    emit(fd, EV_REL, REL_Y, y);
+    emit(fd, EV_SYN, SYN_REPORT, 0); // Syn-event
+    // TODO: Print for debugging purposes
+    printf("Emitted events: x->%d, y->%d\n", x, y);
+}
+
 // Input helpers
 int initInput()
 {
@@ -296,10 +305,7 @@ void *manipulateMouseEvents(void *arg)
         float predY = getOutputValues(1, OutputValues) * 59.0f - 28.0f;
 
         // emit predicted events
-        emit(fd_uinput, EV_REL, REL_X, (int)predX);
-        emit(fd_uinput, EV_REL, REL_Y, (int)predY);
-        emit(fd_uinput, EV_SYN, SYN_REPORT, 0); // Syn-event
-        printf("Emitted events: x->%f, y->%f\n", predX, predY);
+        emitRel(fd_uinput, (int)roundf(predX), (int)roundf(predY));
 
         // normalize the resampled event and add to buffer
         ResampledEvent resampledEvent;
