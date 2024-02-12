@@ -27,8 +27,8 @@ void initCircularBuffer(CircularBuffer *buffer)
     buffer->front = -1;
 
     ResampledEvent eventZero;
-    eventZero.x = 0.5f;
-    eventZero.y = 0.5f;
+    eventZero.x = 0.430556f;
+    eventZero.y = 0.474576f;
 
     // init buffer with all zeros to be able to call the ann right from the beginning
     for (int i = 0; i < BUFFER_LENGTH; i++)
