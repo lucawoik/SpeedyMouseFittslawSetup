@@ -67,7 +67,7 @@ void emitRel(int fd, int x, int y)
     emit(fd, EV_REL, REL_Y, y);
     emit(fd, EV_SYN, SYN_REPORT, 0); // Syn-event
     // TODO: Print for debugging purposes
-    printf("Emitted events: x->%d, y->%d\n", x, y);
+    printf("Emitted events:     x->%d, y->%d\n", x, y);
 }
 
 // Input helpers
@@ -291,11 +291,7 @@ void *manipulateMouseEvents(void *arg)
 
         // //Run the Session
         TF_SessionRun(Session, NULL, Input, InputValues, NumInputs, Output, OutputValues, NumOutputs, NULL, 0, NULL, Status);
-        if (TF_GetCode(Status) == TF_OK)
-        {
-            printf("Session is OK\n");
-        }
-        else
+        if (TF_GetCode(Status) != TF_OK)
         {
             printf("%s", TF_Message(Status));
         }
@@ -309,12 +305,14 @@ void *manipulateMouseEvents(void *arg)
 
         // normalize the resampled event and add to buffer
         ResampledEvent resampledEvent;
-        resampledEvent.x = (intervalX + 31.0f) / 72.0f;
-        resampledEvent.y = (intervalY + 28.0f) / 59.0f;
+        resampledEvent.x = ((float)intervalX + 31.0f) / 72.0f;
+        resampledEvent.y = ((float)intervalY + 28.0f) / 59.0f;
         addEvent(&resampledEventsBuffer, resampledEvent);
 
-        printf("Resampled event values: x %f, y %f\n", resampledEvent.x, resampledEvent.y);
-        printf("Buffer front: %d\n", resampledEventsBuffer.front);
+        // TODO: for debugging
+        // printf("Resampled event values: x %f, y %f\n", resampledEvent.x, resampledEvent.y);
+        // printf("Buffer front: %d\n", resampledEventsBuffer.front);
+        printf("Resampled events:   x->%d, y->%d\n", intervalX, intervalY);
         printf("Buffer front value: x %f, y %f\n", resampledEventsBuffer.events[resampledEventsBuffer.front].x, resampledEventsBuffer.events[resampledEventsBuffer.front].y);
 
         // reset for next interval
