@@ -13,7 +13,6 @@ CircularBuffer resampledEventsBuffer;
 TF_Graph *Graph;
 TF_Status *Status;
 
-
 //****** Helper functions
 // Helpers for circular Buffer
 void addEvent(CircularBuffer *buffer, ResampledEvent event)
@@ -39,7 +38,6 @@ void initCircularBuffer(CircularBuffer *buffer)
     }
 }
 
-
 // creates an input event for the specified device
 // source: https://www.kernel.org/doc/html/v4.12/input/uinput.html
 void emit(int fd, int type, int code, int val)
@@ -56,6 +54,12 @@ void emit(int fd, int type, int code, int val)
     write(fd, &ie, sizeof(ie));
 }
 
+void emitKlick(int fd, int value)
+{
+    emit(fd, EV_MSC, MSC_SCAN, 9001);
+    emit(fd, EV_KEY, BTN_LEFT, value);
+    emit(fd, EV_SYN, SYN_REPORT, 0);
+}
 
 // Input helpers
 int initInput()
@@ -112,7 +116,6 @@ int initUInput()
     return fd_uinput;
 }
 
-
 // ANN helper functions
 // Source: https://github.com/AmirulOm/tensorflow_capi_sample/tree/master?tab=readme-ov-file
 
@@ -128,8 +131,8 @@ TF_Session *createSession()
     TF_SessionOptions *SessionOpts = TF_NewSessionOptions();
     TF_Buffer *RunOpts = NULL;
 
-    const char *saved_model_dir = SAVED_MODEL_DIR;       // Path of the model
-    const char *tags = "serve";                          // default model serving tag
+    const char *saved_model_dir = SAVED_MODEL_DIR; // Path of the model
+    const char *tags = "serve";                    // default model serving tag
     int ntags = 1;
 
     TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, saved_model_dir, &tags, ntags, Graph, NULL, Status);
@@ -161,14 +164,13 @@ TF_Tensor *getTensor(int ndims, int64_t dims[], float data[], int ndata)
     return tensor;
 }
 
-float getOutputValues(int index, TF_Tensor** OutputValues)
+float getOutputValues(int index, TF_Tensor **OutputValues)
 {
     void *buff = TF_TensorData(OutputValues[index]);
     float *offsets = buff;
 
     return offsets[0];
 }
-
 
 //******* MAIN
 // Resample the input, run the ANN and emit the predicted events
@@ -224,7 +226,7 @@ void *manipulateMouseEvents(void *arg)
             }
 
             struct input_event currentEvent;
-            ssize_t bytesRead = read(fd_event, &currentEvent, sizeof(struct input_event));  // read all events during the interval
+            ssize_t bytesRead = read(fd_event, &currentEvent, sizeof(struct input_event)); // read all events during the interval
 
             if (bytesRead == sizeof(struct input_event))
             {
@@ -234,28 +236,17 @@ void *manipulateMouseEvents(void *arg)
                     if (currentEvent.code == REL_X)
                     {
                         intervalX += currentEvent.value;
-                        printf("Recieved events: x->%d\n", currentEvent.value);
+                        // printf("Recieved events: x->%d\n", currentEvent.value);
                     }
                     if (currentEvent.code == REL_Y)
                     {
                         intervalY += currentEvent.value;
-                        printf("Recieved events: y->%d\n", currentEvent.value);
+                        // printf("Recieved events: y->%d\n", currentEvent.value);
                     }
                 }
                 else if (currentEvent.type == EV_KEY) // Register klicks right away
                 {
-                    if (currentEvent.value == 1)
-                    {
-                        emit(fd_uinput, EV_MSC, MSC_SCAN, 9001);
-                        emit(fd_uinput, EV_KEY, BTN_LEFT, 1);
-                        emit(fd_uinput, EV_SYN, SYN_REPORT, 0);
-                    }
-                    else if (currentEvent.value == 0)
-                    {
-                        emit(fd_uinput, EV_MSC, MSC_SCAN, 9001);
-                        emit(fd_uinput, EV_KEY, BTN_LEFT, 0);
-                        emit(fd_uinput, EV_SYN, SYN_REPORT, 0);
-                    }
+                    emitKlick(fd_uinput, currentEvent.value);
                 }
             }
             else
