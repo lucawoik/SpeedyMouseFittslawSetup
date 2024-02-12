@@ -305,7 +305,7 @@ void *manipulateMouseEvents(void *arg)
 
         // normalize the resampled event and add to buffer
         ResampledEvent resampledEvent;
-        resampledEvent.x = ((float)intervalX + 31.0f) / 72.0f;
+        resampledEvent.x = ((float)intervalX + 31.0f) / 73.0f;
         resampledEvent.y = ((float)intervalY + 28.0f) / 59.0f;
         addEvent(&resampledEventsBuffer, resampledEvent);
 
