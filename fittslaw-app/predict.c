@@ -220,6 +220,9 @@ void *manipulateMouseEvents(void *arg)
     }
      */
 
+    long long totalTime = 0;
+    long intervals = 0;
+
     // Entering interval-loop
     while (true)
     {
@@ -286,13 +289,14 @@ void *manipulateMouseEvents(void *arg)
         printf("\nDataX: ");
         */
         // filling datax and y in the correct sequence
-        for (int i = 0; i < BUFFER_LENGTH; i++)
+        for (int i = BUFFER_LENGTH-1; i >= 0; i--)
         {
-            int index = (resampledEventsBuffer.front - i + BUFFER_LENGTH) % BUFFER_LENGTH;
+            int index = (resampledEventsBuffer.front - i + BUFFER_LENGTH -1) % BUFFER_LENGTH;
             dataX[i] = resampledEventsBuffer.events[index].x;
             // printf("index: %d %f, ", index, dataX[i]);
             dataY[i] = resampledEventsBuffer.events[index].y;
         }
+
 
         // Create input tensors
         InputValues[0] = getTensor(ndims, dims, dataX, ndata);
@@ -312,18 +316,15 @@ void *manipulateMouseEvents(void *arg)
         // emit predicted events
         emitRel(fd_uinput, (int)roundf(predX), (int)roundf(predY));
 
-        // normalize the resampled event and add to buffer
-        ResampledEvent resampledEvent;
-        resampledEvent.x = ((float)intervalX + 31.0f) / 73.0f;
-        resampledEvent.y = ((float)intervalY + 28.0f) / 59.0f;
-        addEvent(&resampledEventsBuffer, resampledEvent);
-
         // TODO: for debugging
         // printf("Resampled event values: x %f, y %f\n", resampledEvent.x, resampledEvent.y);
         // printf("Buffer front: %d\n", resampledEventsBuffer.front);
         printf("Resampled events:   x->%d, y->%d\n", intervalX, intervalY);
         printf("Buffer front value: x %f, y %f\n", resampledEventsBuffer.events[resampledEventsBuffer.front].x, resampledEventsBuffer.events[resampledEventsBuffer.front].y);
 
+        totalTime += micros()-start;
+        intervals ++;
+        printf("Inference time %lld\n", totalTime/intervals);
         // reset for next interval
         intervalX = 0;
         intervalY = 0;
