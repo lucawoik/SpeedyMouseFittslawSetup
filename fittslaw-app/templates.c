@@ -125,7 +125,7 @@ void renderFeedback(SDL_Renderer *renderer, int radius, int circleRadius, TTF_Fo
     }
 
     // render feedback text based on success
-    renderFeedbackText(renderer, font, successInCircle, elapsed_time);
+    renderFeedbackText(renderer, font, successInCircle);
 }
 
 void renderFeedbackText(SDL_Renderer *renderer, TTF_Font *font, int successInCircle[])
