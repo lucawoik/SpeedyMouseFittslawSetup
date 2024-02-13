@@ -264,6 +264,15 @@ void *manipulateMouseEvents(void *arg)
             }
         }
 
+        // TODO: do this before starting the first interval
+        long long start = micros();
+
+        // normalize the resampled event and add to buffer
+        ResampledEvent resampledEvent;
+        resampledEvent.x = ((float)intervalX + 31.0f) / 73.0f;
+        resampledEvent.y = ((float)intervalY + 28.0f) / 59.0f;
+        addEvent(&resampledEventsBuffer, resampledEvent);
+
         int ndims = 2;
         int64_t dims[] = {1, BUFFER_LENGTH};
         float dataX[BUFFER_LENGTH]; // these two arrays store the history of resampled events for x and y respectively
