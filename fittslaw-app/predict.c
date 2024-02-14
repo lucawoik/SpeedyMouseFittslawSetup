@@ -17,6 +17,8 @@ CircularBuffer resampledEventsBuffer;
 TF_Graph *Graph;
 TF_Status *Status;
 
+
+
 //****** Helper functions
 // Helpers for circular Buffer
 void addEvent(CircularBuffer *buffer, ResampledEvent event)
@@ -42,17 +44,17 @@ void initCircularBuffer(CircularBuffer *buffer)
     }
 }
 
+
 // Helpers for input and events
 // creates an input event for the specified device
 // source: https://www.kernel.org/doc/html/v4.12/input/uinput.html
 void emit(int type, int code, int val)
 {
     int rc = libevdev_uinput_write_event(
-        uinput_dev, type,
-        code, val);
+            uinput_dev, type,
+            code, val);
 
-    if (rc != 0)
-        printf("Failed to write uinput event: %s\n", strerror(-rc));
+    if(rc != 0) printf("Failed to write uinput event: %s\n", strerror(-rc));
 
     rc = libevdev_uinput_write_event(uinput_dev, EV_SYN, SYN_REPORT, 0);
 }
@@ -78,14 +80,13 @@ void emitRel(int x, int y)
 int get_event(struct input_event *event)
 {
     struct timeval current_time;
-    gettimeofday(&current_time, NULL);
+	gettimeofday(&current_time, NULL);
 
-    int rc = LIBEVDEV_READ_STATUS_SUCCESS;
+	int rc = LIBEVDEV_READ_STATUS_SUCCESS;
 
     rc = libevdev_next_event(event_dev,
-                             LIBEVDEV_READ_FLAG_NORMAL |
-                                 LIBEVDEV_READ_FLAG_BLOCKING,
-                             event);
+                    LIBEVDEV_READ_FLAG_NORMAL |
+                    LIBEVDEV_READ_FLAG_BLOCKING, event);
 
     /* Handle dropped SYN. */
     if (rc == LIBEVDEV_READ_STATUS_SYNC)
@@ -95,15 +96,15 @@ int get_event(struct input_event *event)
         while (rc == LIBEVDEV_READ_STATUS_SYNC)
         {
             rc = libevdev_next_event(event_dev,
-                                     LIBEVDEV_READ_FLAG_SYNC, event);
+                    LIBEVDEV_READ_FLAG_SYNC, event);
         }
     }
 
-    if (rc == -ENODEV)
+	if (rc == -ENODEV)
     {
-        printf("Device disconnected: (%d) %s\n", -rc, strerror(-rc));
+		printf("Device disconnected: (%d) %s\n", -rc, strerror(-rc));
         return -1;
-    }
+	}
     return 1;
 }
 
@@ -111,28 +112,28 @@ int get_event(struct input_event *event)
 // open the input device that should be predicted
 int init_input_device()
 {
-    /* Open device. */
-    int fd_event = open(EVENT_PATH, O_RDONLY | O_NONBLOCK);
-    if (fd_event < 0)
+	/* Open device. */
+	int fd_event = open(EVENT_PATH, O_RDONLY | O_NONBLOCK);
+	if (fd_event < 0)
     {
-        perror("Failed to open input device");
+		perror("Failed to open input device");
         if (!IS_TEST_MODE)
             exit(EXIT_FAILURE);
-        return 0;
-    }
+		return 0;
+	}
 
-    /* Create libevdev device and grab it. */
-    if (libevdev_new_from_fd(fd_event, &event_dev) < 0)
+	/* Create libevdev device and grab it. */
+	if (libevdev_new_from_fd(fd_event, &event_dev) < 0)
     {
-        perror("Failed to init libevdev");
-        exit(EXIT_FAILURE);
-    }
+		perror("Failed to init libevdev");
+		exit(EXIT_FAILURE);
+	}
 
-    if (libevdev_grab(event_dev, LIBEVDEV_GRAB) < 0)
+	if (libevdev_grab(event_dev, LIBEVDEV_GRAB) < 0)
     {
-        perror("Failed to grab device");
-        exit(EXIT_FAILURE);
-    }
+		perror("Failed to grab device");
+		exit(EXIT_FAILURE);
+	}
 
     return 1;
 }
@@ -158,6 +159,7 @@ int init_virtual_input()
 
     return 1;
 }
+
 
 // ANN helper functions
 // Source: https://github.com/AmirulOm/tensorflow_capi_sample/tree/master?tab=readme-ov-file
@@ -215,6 +217,8 @@ float getOutputValues(int index, TF_Tensor **OutputValues)
     return offsets[0];
 }
 
+
+
 //******* MAIN
 // Resample the input, run the ANN and emit the predicted events
 void *manipulateMouseEvents(void *arg)
@@ -240,10 +244,8 @@ void *manipulateMouseEvents(void *arg)
     TF_Tensor **OutputValues = malloc(sizeof(TF_Tensor *) * NumOutputs);
 
     // Init inputs and resampled buffer
-    if (!init_input_device())
-        return NULL;
-    if (!init_virtual_input())
-        return NULL;
+    if(!init_input_device()) return NULL;
+    if(!init_virtual_input()) return NULL;
 
     initCircularBuffer(&resampledEventsBuffer);
 
@@ -279,7 +281,7 @@ void *manipulateMouseEvents(void *arg)
                 break;
             }
 
-            err = get_event(&currentEvent); // read all events during the interval
+            err = get_event(&currentEvent);   // read all events during the interval
 
             if (err > -1 && currentEvent.type != EV_SYN && currentEvent.type != EV_MSC)
             {
@@ -353,27 +355,8 @@ void *manipulateMouseEvents(void *arg)
         float predX = getOutputValues(0, OutputValues) * 73.0f - 31.0f;
         float predY = getOutputValues(1, OutputValues) * 59.0f - 28.0f;
 
-        if (dataX[BUFFER_LENGTH - 1] == 0)
-        {
-            // emit predicted events
-            emit(EV_REL, REL_X, 0);
-            emit(EV_REL, REL_Y, (int)roundf(predY));
-
-            // TODO: Print for debugging purposes
-            printf("Emitted events:     x->%d, y->%d\n", 0, predY);
-        }
-        if (dataY[BUFFER_LENGTH - 1] == 0)
-        {
-            // emit predicted events
-            emit(EV_REL, REL_X, (int)roundf(predX));
-            emit(EV_REL, REL_Y, 0);
-            // TODO: Print for debugging purposes
-            printf("Emitted events:     x->%d, y->%d\n", predX, 0);
-        }
-        emit(EV_SYN, SYN_REPORT, 0); // Syn-event
-
         // emit predicted events
-        emitRel((int)roundf(predX), (int)roundf(predY));
+        emitRel(dataX[BUFFER_LENGTH-1] != 0.0f ? (int)roundf(predX) : 0, dataY[BUFFER_LENGTH-1] != 0.0f ? (int)roundf(predY) : 0);
 
         // TODO: for debugging
         // printf("Resampled event values: x %f, y %f\n", resampledEvent.x, resampledEvent.y);

@@ -9,7 +9,7 @@ main: main.c
 
 debug: main.c
 	mkdir bin
-	$(CC) -Wall -fcommon $(LINKER) main.c templates.c utils.c log.c predict.c $(FLAGS) -o SpeedyMouseFittslawDebug
+	$(CC) -g -Wall -fcommon $(LINKER) main.c templates.c utils.c log.c predict.c $(FLAGS) -o SpeedyMouseFittslawDebug
 
 clean:
 	rm -rf bin
