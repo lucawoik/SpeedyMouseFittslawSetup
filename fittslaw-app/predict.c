@@ -1,5 +1,9 @@
 #include "main.h"
 
+// Input devices
+struct libevdev *event_dev = NULL;
+struct libevdev *uinput_dev = NULL;
+
 long intervalStart = 0;
 long intervalStop = 0;
 
@@ -12,6 +16,8 @@ CircularBuffer resampledEventsBuffer;
 // ANN stuff
 TF_Graph *Graph;
 TF_Status *Status;
+
+
 
 //****** Helper functions
 // Helpers for circular Buffer
@@ -27,8 +33,8 @@ void initCircularBuffer(CircularBuffer *buffer)
     buffer->front = -1;
 
     ResampledEvent eventZero;
-    eventZero.x = 0.424658f;
-    eventZero.y = 0.474576f;
+    eventZero.x = 0.43065032f;
+    eventZero.y = 0.47260916f;
 
     // init buffer with all zeros to be able to call the ann right from the beginning
     for (int i = 0; i < BUFFER_LENGTH; i++)
@@ -38,92 +44,122 @@ void initCircularBuffer(CircularBuffer *buffer)
     }
 }
 
+
+// Helpers for input and events
 // creates an input event for the specified device
 // source: https://www.kernel.org/doc/html/v4.12/input/uinput.html
-void emit(int fd, int type, int code, int val)
+void emit(int type, int code, int val)
 {
-    struct input_event ie;
+    int rc = libevdev_uinput_write_event(
+            uinput_dev, type,
+            code, val);
 
-    ie.type = type;
-    ie.code = code;
-    ie.value = val;
+    if(rc != 0) printf("Failed to write uinput event: %s\n", strerror(-rc));
 
-    ie.time.tv_sec = 0;
-    ie.time.tv_usec = 0;
-
-    write(fd, &ie, sizeof(ie));
+    rc = libevdev_uinput_write_event(uinput_dev, EV_SYN, SYN_REPORT, 0);
 }
 
-void emitKlick(int fd, int value)
+void emitKlick(int value)
 {
-    emit(fd, EV_MSC, MSC_SCAN, 9001);
-    emit(fd, EV_KEY, BTN_LEFT, value);
-    emit(fd, EV_SYN, SYN_REPORT, 0);
+    emit(EV_MSC, MSC_SCAN, 9001);
+    emit(EV_KEY, BTN_LEFT, value);
+    emit(EV_SYN, SYN_REPORT, 0);
 }
 
-void emitRel(int fd, int x, int y)
+void emitRel(int x, int y)
 {
-    emit(fd, EV_REL, REL_X, x);
-    emit(fd, EV_REL, REL_Y, y);
-    emit(fd, EV_SYN, SYN_REPORT, 0); // Syn-event
+    emit(EV_REL, REL_X, x);
+    emit(EV_REL, REL_Y, y);
+    emit(EV_SYN, SYN_REPORT, 0); // Syn-event
     // TODO: Print for debugging purposes
     printf("Emitted events:     x->%d, y->%d\n", x, y);
 }
 
-// Input helpers
-int initInput()
+// get the next input event from libevdev
+// source: https://github.com/thomfischer/DelayDaemon/tree/master
+int get_event(struct input_event *event)
 {
-    // open the event handler
-    int fd_event = open(EVENT_PATH, O_RDONLY | O_NONBLOCK); // | NONBLOCK in oder to make the read non-blocking
-    if (fd_event == -1)
+    struct timeval current_time;
+	gettimeofday(&current_time, NULL);
+
+	int rc = LIBEVDEV_READ_STATUS_SUCCESS;
+
+    rc = libevdev_next_event(event_dev,
+                    LIBEVDEV_READ_FLAG_NORMAL |
+                    LIBEVDEV_READ_FLAG_BLOCKING, event);
+
+    /* Handle dropped SYN. */
+    if (rc == LIBEVDEV_READ_STATUS_SYNC)
     {
-        perror("Error opening evdev device");
-        if (!IS_TEST_MODE)
-            exit(0);
-        return 0;
+        printf("Warning, syn dropped: (%d) %s\n", -rc, strerror(-rc));
+
+        while (rc == LIBEVDEV_READ_STATUS_SYNC)
+        {
+            rc = libevdev_next_event(event_dev,
+                    LIBEVDEV_READ_FLAG_SYNC, event);
+        }
     }
 
-    // this line reserves the device for this program so its events do not arrive at other applications
-    ioctl(fd_event, EVIOCGRAB, 1);
-
-    return fd_event;
+	if (rc == -ENODEV)
+    {
+		printf("Device disconnected: (%d) %s\n", -rc, strerror(-rc));
+        return -1;
+	}
+    return 1;
 }
 
-int initUInput()
+// Input helpers, source: https://github.com/thomfischer/DelayDaemon/tree/master
+// open the input device that should be predicted
+int init_input_device()
 {
-    // Create and open virtual uinput device
-    struct uinput_user_dev uidev;
+	/* Open device. */
+	int fd_event = open(EVENT_PATH, O_RDONLY | O_NONBLOCK);
+	if (fd_event < 0)
+    {
+		perror("Failed to open input device");
+        if (!IS_TEST_MODE)
+            exit(EXIT_FAILURE);
+		return 0;
+	}
 
-    // Open uinput device
-    int fd_uinput = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
+	/* Create libevdev device and grab it. */
+	if (libevdev_new_from_fd(fd_event, &event_dev) < 0)
+    {
+		perror("Failed to init libevdev");
+		exit(EXIT_FAILURE);
+	}
+
+	if (libevdev_grab(event_dev, LIBEVDEV_GRAB) < 0)
+    {
+		perror("Failed to grab device");
+		exit(EXIT_FAILURE);
+	}
+
+    return 1;
+}
+
+// create a virtual input device
+// this device is used to trigger delayed input events
+// source: https://www.freedesktop.org/software/libevdev/doc/latest/group__uinput.html#gaf14b21301bac9d79c20e890172873b96
+int init_virtual_input()
+{
+    /* Create uinput clone of device. */
+    int fd_uinput = open("/dev/uinput", O_WRONLY);
     if (fd_uinput < 0)
     {
-        perror("Error opening uinput device");
-        if (!IS_TEST_MODE)
-            exit(0);
-        return 0;
+        perror("Failed to open uinput device");
+        exit(EXIT_FAILURE);
     }
 
-    // Set up the uinput device
-    memset(&uidev, 0, sizeof(uidev));
-    snprintf(uidev.name, UINPUT_MAX_NAME_SIZE, "virtual-mouse");
-    uidev.id.bustype = BUS_USB;
-    uidev.id.vendor = 0x1;
-    uidev.id.product = 0x1;
-    uidev.id.version = 1;
+    if (libevdev_uinput_create_from_device(event_dev, fd_uinput, &uinput_dev) < 0)
+    {
+        perror("Failed to create uinput device");
+        exit(EXIT_FAILURE);
+    }
 
-    ioctl(fd_uinput, UI_SET_EVBIT, EV_REL);
-    ioctl(fd_uinput, UI_SET_RELBIT, REL_X);
-    ioctl(fd_uinput, UI_SET_RELBIT, REL_Y);
-    ioctl(fd_uinput, UI_SET_EVBIT, EV_KEY);
-    ioctl(fd_uinput, UI_SET_KEYBIT, BTN_LEFT);
-    ioctl(fd_uinput, UI_SET_KEYBIT, BTN_RIGHT);
-
-    write(fd_uinput, &uidev, sizeof(uidev));
-    ioctl(fd_uinput, UI_DEV_CREATE);
-
-    return fd_uinput;
+    return 1;
 }
+
 
 // ANN helper functions
 // Source: https://github.com/AmirulOm/tensorflow_capi_sample/tree/master?tab=readme-ov-file
@@ -181,6 +217,8 @@ float getOutputValues(int index, TF_Tensor **OutputValues)
     return offsets[0];
 }
 
+
+
 //******* MAIN
 // Resample the input, run the ANN and emit the predicted events
 void *manipulateMouseEvents(void *arg)
@@ -206,8 +244,9 @@ void *manipulateMouseEvents(void *arg)
     TF_Tensor **OutputValues = malloc(sizeof(TF_Tensor *) * NumOutputs);
 
     // Init inputs and resampled buffer
-    int fd_event = initInput();
-    int fd_uinput = initUInput();
+    if(!init_input_device()) return NULL;
+    if(!init_virtual_input()) return NULL;
+
     initCircularBuffer(&resampledEventsBuffer);
 
     /*
@@ -220,8 +259,13 @@ void *manipulateMouseEvents(void *arg)
     }
      */
 
+    // TODO: better inferenc-time measurement
     long long totalTime = 0;
     long intervals = 0;
+
+    // to save output of get event function
+    int err = -1;
+    struct input_event currentEvent;
 
     // Entering interval-loop
     while (true)
@@ -237,10 +281,9 @@ void *manipulateMouseEvents(void *arg)
                 break;
             }
 
-            struct input_event currentEvent;
-            ssize_t bytesRead = read(fd_event, &currentEvent, sizeof(struct input_event)); // read all events during the interval
+            err = get_event(&currentEvent);   // read all events during the interval
 
-            if (bytesRead == sizeof(struct input_event))
+            if (err > -1 && currentEvent.type != EV_SYN && currentEvent.type != EV_MSC)
             {
                 // Add current event to sum
                 if (currentEvent.type == EV_REL)
@@ -258,7 +301,7 @@ void *manipulateMouseEvents(void *arg)
                 }
                 else if (currentEvent.type == EV_KEY) // Register klicks right away
                 {
-                    emitKlick(fd_uinput, currentEvent.value);
+                    emitKlick(currentEvent.value);
                 }
             }
             else
@@ -289,14 +332,13 @@ void *manipulateMouseEvents(void *arg)
         printf("\nDataX: ");
         */
         // filling datax and y in the correct sequence
-        for (int i = BUFFER_LENGTH-1; i >= 0; i--)
+        for (int i = BUFFER_LENGTH - 1; i >= 0; i--)
         {
-            int index = (resampledEventsBuffer.front - i + BUFFER_LENGTH -1) % BUFFER_LENGTH;
+            int index = (resampledEventsBuffer.front - i + BUFFER_LENGTH - 1) % BUFFER_LENGTH;
             dataX[i] = resampledEventsBuffer.events[index].x;
             // printf("index: %d %f, ", index, dataX[i]);
             dataY[i] = resampledEventsBuffer.events[index].y;
         }
-
 
         // Create input tensors
         InputValues[0] = getTensor(ndims, dims, dataX, ndata);
@@ -314,7 +356,7 @@ void *manipulateMouseEvents(void *arg)
         float predY = getOutputValues(1, OutputValues) * 59.0f - 28.0f;
 
         // emit predicted events
-        emitRel(fd_uinput, (int)roundf(predX), (int)roundf(predY));
+        emitRel((int)roundf(predX), (int)roundf(predY));
 
         // TODO: for debugging
         // printf("Resampled event values: x %f, y %f\n", resampledEvent.x, resampledEvent.y);
@@ -322,9 +364,9 @@ void *manipulateMouseEvents(void *arg)
         printf("Resampled events:   x->%d, y->%d\n", intervalX, intervalY);
         printf("Buffer front value: x %f, y %f\n", resampledEventsBuffer.events[resampledEventsBuffer.front].x, resampledEventsBuffer.events[resampledEventsBuffer.front].y);
 
-        totalTime += micros()-start;
-        intervals ++;
-        printf("Inference time %lld\n", totalTime/intervals);
+        totalTime += micros() - start;
+        intervals++;
+        printf("Inference time %lld\n", totalTime / intervals);
         // reset for next interval
         intervalX = 0;
         intervalY = 0;
