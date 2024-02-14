@@ -18,9 +18,11 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
 #include "tensorflow/c/c_api.h"
+#include <libevdev/libevdev.h>
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -59,7 +61,7 @@
 // Predict.c
 #define INTERVAL_LENGTH 5
 #define BUFFER_LENGTH 200
-#define SAVED_MODEL_DIR "models/ANN_100ms_200/"
+#define SAVED_MODEL_DIR "models/ANN_0ms_200/"
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;
