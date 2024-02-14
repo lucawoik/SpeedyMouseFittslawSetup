@@ -58,8 +58,8 @@
 
 // Predict.c
 #define INTERVAL_LENGTH 5
-#define BUFFER_LENGTH 200
-#define SAVED_MODEL_DIR "models/ANN_100ms_200/"
+#define BUFFER_LENGTH 100
+#define SAVED_MODEL_DIR "models/ANN_5ms_100/"
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;

@@ -13,6 +13,7 @@ int travel_distance;
 int lastX;
 int lastY;
 int isSetupTarget = 1;
+int measureLatency = 0;
 int successInCircle[NUM_CIRCLES] = {0};
 int isLogging = 0;
 
@@ -22,6 +23,8 @@ int TARGET_RADIUS[NUM_RADIUS] = {15, 60, 100};       //{40, 60, 80}; min: 15 | m
 int TARGET_DISTANCE[NUM_DISTANCE] = {200, 325, 450}; //{200, 300, 400}; min: 200 | max: 400
 
 // starting target
+Target measuringTarget = {70, 70, 200, 0};
+Target measuringTargetRight = {WIDTH-50, HEIGHT-50, 200, 0};
 Target target = {centerX, centerY, 50, 200};
 Target lastTarget = {centerX, centerY, 50, 200};
 
@@ -71,6 +74,10 @@ void handleInput(SDL_Renderer *renderer)
                     {
                         isSetupTarget = 0;
                     }
+                    else if (measureLatency)
+                    {
+                        measureLatency = 0;
+                    }
                     else // only count the click if task is active
                     {
                         // create click struct for logging
@@ -114,6 +121,10 @@ void handleInput(SDL_Renderer *renderer)
                     target = createTarget(targetArray[iteration]);
                 }
             }
+            else if (event.type == SDL_MOUSEBUTTONUP)
+            {
+                measureLatency = 0; //1;
+            }
         }
     }
 }
@@ -145,7 +156,11 @@ void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedbac
     {
         filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
     }
-
+    if(measureLatency)
+    {
+        filledCircleColor(renderer, measuringTarget.x, measuringTarget.y, measuringTarget.r, TARGET_COLOR);
+        filledCircleColor(renderer, measuringTargetRight.x, measuringTargetRight.y, measuringTarget.r, TARGET_COLOR);
+    }
     SDL_RenderPresent(renderer);
 }
 
