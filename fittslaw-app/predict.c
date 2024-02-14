@@ -259,6 +259,7 @@ void *manipulateMouseEvents(void *arg)
     }
      */
 
+    // TODO: better inferenc-time measurement
     long long totalTime = 0;
     long intervals = 0;
 
