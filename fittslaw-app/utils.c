@@ -53,3 +53,29 @@ int calculateChecksum(int array[])
 
     return checksum;
 }
+
+float normalize(float value, char axis)
+{
+    if (axis=='x')
+    {
+        return (value - X_MIN) / X_RANGE;
+    }
+    else if (axis=='y')
+    {
+        return (value - Y_MIN) / Y_RANGE;
+    }
+    return -1.0f;
+}
+
+float denormalize(float value, char axis)
+{
+    if (axis=='x')
+    {
+        return value * X_RANGE + X_MIN;
+    }
+    else if (axis=='y')
+    {
+        return value * Y_RANGE + Y_MIN;
+    }
+    return -1.0f;
+}

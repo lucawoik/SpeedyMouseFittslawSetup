@@ -60,8 +60,12 @@
 
 // Predict.c
 #define INTERVAL_LENGTH 5
-#define BUFFER_LENGTH 100
-#define SAVED_MODEL_DIR "models/ANN_5ms_100/"
+#define BUFFER_LENGTH 10
+#define SAVED_MODEL_DIR "models/ANN_5ms_10/"
+#define X_RANGE 73.0f
+#define X_MIN -31.0f
+#define Y_RANGE 59.0f
+#define Y_MIN -28.0f
 
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
@@ -185,6 +189,10 @@ int checkCollision(int x, int y, Target *t);
 int calculateDistance(int x1, int y1, int x2, int y2);
 
 int calculateChecksum(int array[]);
+
+float normalize(float value, char axis);
+
+float denormalize(float value, char axis);
 
 // log
 void logClicks();

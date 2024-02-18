@@ -33,8 +33,8 @@ void initCircularBuffer(CircularBuffer *buffer)
     buffer->front = -1;
 
     ResampledEvent eventZero;
-    eventZero.x = 0.43065032f;
-    eventZero.y = 0.47260916f;
+    eventZero.x = normalize(0.0f, 'x');
+    eventZero.y = normalize(0.0f, 'y');
 
     // init buffer with all zeros to be able to call the ann right from the beginning
     for (int i = 0; i < BUFFER_LENGTH; i++)
@@ -315,8 +315,8 @@ void *manipulateMouseEvents(void *arg)
 
         // normalize the resampled event and add to buffer
         ResampledEvent resampledEvent;
-        resampledEvent.x = ((float)intervalX + 31.0f) / 73.0f;
-        resampledEvent.y = ((float)intervalY + 28.0f) / 59.0f;
+        resampledEvent.x = normalize((float)intervalX, 'x');
+        resampledEvent.y = normalize((float)intervalY, 'y');
         addEvent(&resampledEventsBuffer, resampledEvent);
 
         int ndims = 2;
@@ -352,11 +352,14 @@ void *manipulateMouseEvents(void *arg)
         }
 
         // get and de-normalize the output values
-        float predX = getOutputValues(0, OutputValues) * 73.0f - 31.0f;
-        float predY = getOutputValues(1, OutputValues) * 59.0f - 28.0f;
+        float predX = denormalize(getOutputValues(0, OutputValues), 'x');
+        float predY = denormalize(getOutputValues(1, OutputValues), 'y');
+
+        // predX = (float)0;
+        // predY = (float)0;
 
         // emit predicted events
-        emitRel(dataX[BUFFER_LENGTH-1] != 0.0f ? (int)roundf(predX) : 0, dataY[BUFFER_LENGTH-1] != 0.0f ? (int)roundf(predY) : 0);
+        emitRel(dataX[BUFFER_LENGTH-1] != normalize(0.0f, 'x') ? (int)roundf(predX) : 0, dataY[BUFFER_LENGTH-1] != normalize(0.0f, 'y') ? (int)roundf(predY) : 0);
 
         // TODO: for debugging
         // printf("Resampled event values: x %f, y %f\n", resampledEvent.x, resampledEvent.y);
