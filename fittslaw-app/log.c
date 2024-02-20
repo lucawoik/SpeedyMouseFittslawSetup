@@ -1,6 +1,20 @@
 #include "main.h"
 
-// Function to log clicks during rounds
+int logsInitialized = 0;
+int actualHeadWritten = 0;
+
+char eventsPath[256];
+int roundCounter;
+
+long currentInterval = 0;
+
+// ------------------------------
+//
+// Clicks
+//
+// ------------------------------
+
+/* Logging all clicks during rounds */
 void logClicks()
 {
     // Constructing the path for the log file based on participant ID and trial
@@ -37,7 +51,7 @@ void logClicks()
                 PARTICIPANT_ID,
                 TRIAL,
                 LEVEL_OF_LATENCY,
-                clicks[i].id%9,
+                clicks[i].id % 9,
                 clicks[i].w,
                 clicks[i].d,
                 clicks[i].x_target,
@@ -55,77 +69,65 @@ void logClicks()
     }
 }
 
-void *initEventLogging(void *arg)
+// ------------------------------
+//
+// Events
+//
+// ------------------------------
+
+/* Append interval and predicted events to logging arrays */
+void appendEvents(float intervalX, float intervalY, float predX, float predY)
 {
-    // open the event handler
-    fd = open(EVENT_PATH, O_RDONLY); // | NONBLOCK in oder to make the read non-blocking
-    if (fd == -1)
+    if (isLogging)
     {
-        perror("Error opening evdev device");
-        if (!IS_TEST_MODE)
-            exit(0);
-        return NULL;
-    }
-
-    printf("Event Logging Initialized\n");
-
-    while (1)
-    {
-        if (currently_logging == 0)
+        if (currentInterval < MAX_EVENTS)
         {
-            struct input_event sacrificial_buffer [1];
-            read(fd, &sacrificial_buffer[0], sizeof(struct input_event));
+            // lock the arrays to prevent race conditions (although unlikely)
+            pthread_mutex_lock(&intervalEventsMutex);
+            pthread_mutex_lock(&predictedEventMutex);
+
+            // Save the values as ResampledEvent
+            ResampledEvent currentEvent;
+
+            currentEvent.x = intervalX;
+            currentEvent.y = intervalY;
+            intervalEvents[currentInterval] = currentEvent;
+
+            currentEvent.x = predX;
+            currentEvent.y = predY;
+            predictedEvents[currentInterval] = currentEvent;
+
+            // unlock
+            pthread_mutex_unlock(&intervalEventsMutex);
+            pthread_mutex_unlock(&predictedEventMutex);
         }
-        while (currently_logging == 1)
+        else
         {
-            // Locking events-array mutex before accessing
-            pthread_mutex_lock(&eventArrayMutex);
-            // Reading the current event-struct and saving it to the events array
-            ssize_t bytesRead = read(fd, &events[eventCount], sizeof(struct input_event));
-            // Unlocking mutex again
-            pthread_mutex_unlock(&eventArrayMutex);
-    
-            if (bytesRead == -1)
-            {
-                perror("Error reading from evdev device");
-                close(fd);
-                if (!IS_TEST_MODE)
-                    exit(0);
-                return NULL;
-            }
-
-            // Counting events to keep track of the number of events already saved
-            if (bytesRead == sizeof(struct input_event))
-            {
-                eventCount++;
-            }
+            perror("Interval and prediction logging array is full");
+            exit(1);
         }
     }
 }
 
-void startEventLogging()
+/* write the logged events to .csv file */
+void logEvents()
 {
-       currently_logging = 1;
-       printf("Event-logging started\n");
-}
-
-void stopEventLogging()
-{
-    currently_logging = 0;
-    // creating file to save logs to
-    char path[256];
-    sprintf(path, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
-
-    struct stat st_directory = {0};
-
-    // create log directory if it doesn't exist
-    if (stat(LOG_PATH, &st_directory) == -1)
+    // create files if logEvents() is called for the first time
+    if (logsInitialized == 0)
     {
-        mkdir(LOG_PATH, 0777);
+        sprintf(eventsPath, "%s/mouse_events_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
+
+        struct stat st_directory = {0};
+
+        // create log directory if it doesn't exist
+        if (stat(LOG_PATH, &st_directory) == -1)
+        {
+            mkdir(LOG_PATH, 0777);
+        }
     }
 
-    // creating or appending to the log file
-    FILE *logFile = fopen(path, "a");
+    // creating the log file or appending
+    FILE *logFile = fopen(eventsPath, "a");
 
     if (logFile == NULL)
     {
@@ -134,38 +136,33 @@ void stopEventLogging()
     }
 
     // Write table head for the first round and a row of zeroes to divide rounds
-    if (eventLogHeadWritten == 0)
+    if (logsInitialized == 0)
     {
-        fprintf(logFile, "participant_id,trial,level_of_latency,tv_sec,tv_usec,type,code,value\n");
-        eventLogHeadWritten = 1;
-    }
-    else
-    {
-        fprintf(logFile, "%d,%d,%d,%ld,%ld,%u,%u,%d\n", 0, 0, 0, (long int)0, (long int)0, 0, 0, 0);
+        fprintf(logFile, "participant_id,trial,round,level_of_latency,interval_x,interval_y,predicted_x,predicted_y\n");
     }
 
-    pthread_mutex_lock(&eventArrayMutex);
-    for (int i = 0; i < eventCount; i++)
+    pthread_mutex_lock(&intervalEventsMutex);
+    pthread_mutex_lock(&predictedEventMutex);
+    for (int i = 0; i <= currentInterval; i++)
     {
-        fprintf(logFile, "%d,%d,%d,%ld,%ld,%u,%u,%d\n",
+        fprintf(logFile, "%d,%d,%d,%d,%f,%f,%f,%f\n",
                 PARTICIPANT_ID,
                 TRIAL,
+                roundCounter,
                 LEVEL_OF_LATENCY,
-                events[i].time.tv_sec,
-                events[i].time.tv_usec,
-                events[i].type,
-                events[i].code,
-                events[i].value);
+                intervalEvents[i].x,
+                intervalEvents[i].y,
+                predictedEvents[i].x,
+                predictedEvents[i].y);
     }
-    pthread_mutex_unlock(&eventArrayMutex);
-
-    printf("Events saved to:\n%s/mouse_events_participant_%d_trial_%d.csv\n", LOG_PATH, PARTICIPANT_ID, TRIAL);
-
-    // Reset for the next logging interval
-    eventCount = 0;
+    pthread_mutex_unlock(&intervalEventsMutex);
+    pthread_mutex_unlock(&predictedEventMutex);
 
     if (fclose(logFile) == EOF)
     {
         printf("Error closing log file\n");
     }
+
+    logsInitialized = 1;
+    roundCounter++;
 }

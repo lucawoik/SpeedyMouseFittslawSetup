@@ -39,7 +39,7 @@
 #define NUM_ITERATIONS_PER_ID  4
 
 #define MAX_CLICKS 10000
-#define MAX_EVENTS 100000
+#define MAX_EVENTS 1000000
 
 #define DEBUG 0
 
@@ -61,7 +61,7 @@
 // Predict.c
 #define INTERVAL_LENGTH 5
 #define BUFFER_LENGTH 10
-#define SAVED_MODEL_DIR "models/ANN_5ms_10/"
+#define SAVED_MODEL_DIR "models/ANN_60ms_10/"
 #define X_RANGE 73.0f
 #define X_MIN -31.0f
 #define Y_RANGE 59.0f
@@ -79,11 +79,11 @@ extern int TARGET_DISTANCE[NUM_DISTANCE];
 
 extern int isSetupTarget;
 extern int click_count_total;
-extern void startEventLogging();
-extern void *initEventLogging(void *arg);
-extern void stopEventLogging();
-
 extern void *manipulateMouseEvents(void *arg);
+
+extern long intervalCounter;
+
+extern int isLogging;
 
 /* TODO: nicht mehr notwendig, aber noch in den Logs drin */
 /* static const char *ANGLE_STRING[] = {
@@ -164,8 +164,10 @@ int eventLogHeadWritten;
 
 Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
-struct input_event events[MAX_EVENTS];
-pthread_mutex_t eventArrayMutex;
+ResampledEvent intervalEvents[MAX_EVENTS];
+pthread_mutex_t intervalEventsMutex;
+ResampledEvent predictedEvents[MAX_EVENTS];
+pthread_mutex_t predictedEventMutex;
 
 int eventCount;
 
@@ -196,6 +198,10 @@ float denormalize(float value, char axis);
 
 // log
 void logClicks();
+
+void appendEvents(float intervalX, float intervalY, float predX, float predY);
+
+void logEvents();
 
 // main
 void finish();

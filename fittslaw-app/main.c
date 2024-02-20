@@ -24,7 +24,7 @@ int TARGET_DISTANCE[NUM_DISTANCE] = {200, 325, 450}; //{200, 300, 400}; min: 200
 
 // starting target
 Target measuringTarget = {70, 70, 200, 0};
-Target measuringTargetRight = {WIDTH-50, HEIGHT-50, 200, 0};
+Target measuringTargetRight = {WIDTH - 50, HEIGHT - 50, 200, 0};
 Target target = {centerX, centerY, 50, 200};
 Target lastTarget = {centerX, centerY, 50, 200};
 
@@ -102,8 +102,6 @@ void handleInput(SDL_Renderer *renderer)
                         // if a 2d fitts law task is completed
                         if (circleNumber == NUM_CIRCLES - 1)
                         {
-                            // stopEventLogging();
-                            isLogging = 0;
                             // get starting time of feedback screen for calculation of how long it is displayed
                             startTime = SDL_GetTicks();
                         }
@@ -123,7 +121,7 @@ void handleInput(SDL_Renderer *renderer)
             }
             else if (event.type == SDL_MOUSEBUTTONUP)
             {
-                measureLatency = 0; //1;
+                measureLatency = 0; // 1;
             }
         }
     }
@@ -140,13 +138,17 @@ void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedbac
     if (elapsedTime < displayFeedbackTime)
     {
         renderFeedback(renderer, lastTarget.d, lastTarget.r, fontFeedback, successInCircle);
+        if (isLogging)
+        {
+            logEvents();
+            isLogging = 0;
+        }
     }
     else
     {
         circleDistribution(renderer, target.d, target.r, fontNumbers);
         if (!isLogging && !isSetupTarget)
         {
-            // startEventLogging();
             isLogging = 1;
         }
     }
@@ -156,7 +158,7 @@ void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedbac
     {
         filledCircleColor(renderer, target.x, target.y, target.r, TARGET_COLOR);
     }
-    if(measureLatency)
+    if (measureLatency)
     {
         filledCircleColor(renderer, measuringTarget.x, measuringTarget.y, measuringTarget.r, TARGET_COLOR);
         filledCircleColor(renderer, measuringTargetRight.x, measuringTargetRight.y, measuringTarget.r, TARGET_COLOR);
