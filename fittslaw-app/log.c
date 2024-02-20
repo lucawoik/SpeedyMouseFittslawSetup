@@ -100,6 +100,8 @@ void appendEvents(float intervalX, float intervalY, float predX, float predY)
             // unlock
             pthread_mutex_unlock(&intervalEventsMutex);
             pthread_mutex_unlock(&predictedEventMutex);
+
+            currentInterval++;
         }
         else
         {
