@@ -36,7 +36,7 @@
 /* number of circles in the circle */
 #define NUM_CIRCLES 9
 
-#define NUM_ITERATIONS_PER_ID  4
+#define NUM_ITERATIONS_PER_ID  2
 
 #define MAX_CLICKS 10000
 #define MAX_EVENTS 1000000

@@ -4,7 +4,7 @@ import sys
 
 participant_id = int(sys.argv[1])
 event_handler = sys.argv[2]
-num_latency_levels = 5
+num_latency_levels = 7
 
 
 while(True):
