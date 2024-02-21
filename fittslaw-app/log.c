@@ -142,7 +142,7 @@ void logEvents()
     }
 
     pthread_mutex_lock(&loggedEventsMutex);
-    for (int i = 0; i <= currentInterval; i++)
+    for (int i = 0; i < currentInterval; i++)
     {
         fprintf(logFile, "%d,%d,%d,%d,%ld,%d,%d,%f,%f\n",
                 PARTICIPANT_ID,
