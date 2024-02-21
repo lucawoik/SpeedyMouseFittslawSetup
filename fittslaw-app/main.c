@@ -150,6 +150,7 @@ void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedbac
         circleDistribution(renderer, target.d, target.r, fontNumbers);
         if (!isLogging && !isSetupTarget)
         {
+            // TODO: log current absolute mouse position
             isLogging = 1;
         }
     }
