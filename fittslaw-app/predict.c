@@ -11,7 +11,7 @@ long intervalStop = 0;
 int intervalX = 0;
 int intervalY = 0;
 
-CircularBuffer resampledEventsBuffer;
+CircularBuffer eventsBuffer;
 
 // ANN stuff
 TF_Graph *Graph;
@@ -29,7 +29,7 @@ TF_Status *Status;
  *  - initCircularBuffer()
  */
 
-void addEvent(CircularBuffer *buffer, ResampledEvent event)
+void addEvent(CircularBuffer *buffer, NormalizedEvent event)
 {
     buffer->front = (buffer->front + 1) % BUFFER_LENGTH;
     buffer->events[buffer->front] = event;
@@ -40,7 +40,7 @@ void initCircularBuffer(CircularBuffer *buffer)
     /* init buffer and fill with all zeroes */
     buffer->front = -1;
 
-    ResampledEvent eventZero;
+    NormalizedEvent eventZero;
     eventZero.x = normalize(0.0f, 'x');
     eventZero.y = normalize(0.0f, 'y');
 
@@ -48,7 +48,6 @@ void initCircularBuffer(CircularBuffer *buffer)
     for (int i = 0; i < BUFFER_LENGTH; i++)
     {
         addEvent(buffer, eventZero);
-        // printf("Filling buffer -> %d\n", i);
     }
 }
 
@@ -280,12 +279,12 @@ void *manipulateMouseEvents(void *arg)
     if (!init_virtual_input())
         return NULL;
 
-    initCircularBuffer(&resampledEventsBuffer);
+    initCircularBuffer(&eventsBuffer);
 
     int err = -1;
     struct input_event currentEvent;
 
-    ResampledEvent resampledEvent;
+    NormalizedEvent normalizedEvent;
 
     int ndims = 2;
     int64_t dims[] = {1, BUFFER_LENGTH};
@@ -343,17 +342,17 @@ void *manipulateMouseEvents(void *arg)
         long long start = micros();
 
         /* normalize the resampled event and add to buffer */
-        resampledEvent.x = normalize((float)intervalX, 'x');
-        resampledEvent.y = normalize((float)intervalY, 'y');
-        addEvent(&resampledEventsBuffer, resampledEvent);
+        normalizedEvent.x = normalize((float)intervalX, 'x');
+        normalizedEvent.y = normalize((float)intervalY, 'y');
+        addEvent(&eventsBuffer, normalizedEvent);
 
         /* get prediction from buffer */
         // filling datax and y in the correct sequence
         for (int i = BUFFER_LENGTH - 1; i >= 0; i--)
         {
-            int index = (resampledEventsBuffer.front - i + BUFFER_LENGTH - 1) % BUFFER_LENGTH;
-            dataX[i] = resampledEventsBuffer.events[index].x;
-            dataY[i] = resampledEventsBuffer.events[index].y;
+            int index = (eventsBuffer.front - i + BUFFER_LENGTH - 1) % BUFFER_LENGTH;
+            dataX[i] = eventsBuffer.events[index].x;
+            dataY[i] = eventsBuffer.events[index].y;
         }
 
         // Create input tensors
@@ -378,12 +377,12 @@ void *manipulateMouseEvents(void *arg)
             emitRel((int)roundf(predX), (int)roundf(predY));
 
             // Write to logging array
-            appendEvents((float)intervalX, (float)intervalY, predX, predY);
+            appendEvents(intervalX, intervalY, predX, predY);
         }
 
         // TODO: for debugging
         printf("Resampled events:   x->%d, y->%d\n", intervalX, intervalY);
-        printf("Buffer front value: x %f, y %f\n", resampledEventsBuffer.events[resampledEventsBuffer.front].x, resampledEventsBuffer.events[resampledEventsBuffer.front].y);
+        printf("Buffer front value: x %f, y %f\n", eventsBuffer.events[eventsBuffer.front].x, eventsBuffer.events[eventsBuffer.front].y);
         totalTime += micros() - start;
         intervals++;
         printf("Inference time %lld\n", totalTime / intervals);
