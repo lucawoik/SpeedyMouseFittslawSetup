@@ -1,5 +1,7 @@
 *.swp
-SpeedymouseFittslaw
+SpeedyMouseFittslaw
+SpeedyMouseFittslawDebug
 log/
 bin/
 .vscode/
+venv

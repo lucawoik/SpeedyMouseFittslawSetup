@@ -15,6 +15,14 @@
 #include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+#include <linux/input.h>
+#include <linux/uinput.h>
+#include "tensorflow/c/c_api.h"
+#include <libevdev/libevdev.h>
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -28,9 +36,10 @@
 /* number of circles in the circle */
 #define NUM_CIRCLES 9
 
-#define NUM_ITERATIONS_PER_ID  3
+#define NUM_ITERATIONS_PER_ID  4
 
 #define MAX_CLICKS 10000
+#define MAX_EVENTS 1000000
 
 #define DEBUG 0
 
@@ -45,18 +54,36 @@
 
 
 #define centerX WIDTH/2
-#define centerY HEIGHT/2 + 50
+#define centerY HEIGHT/2 + 13
+
+#define MAX_PATH_LENGTH 256
+
+// Predict.c
+#define INTERVAL_LENGTH 5
+#define BUFFER_LENGTH 10
+#define X_RANGE 73.0f
+#define X_MIN -31.0f
+#define Y_RANGE 59.0f
+#define Y_MIN -28.0f
 
 
+extern char EVENT_PATH[MAX_PATH_LENGTH];
+extern char MODEL_DIR[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;
-extern int EXPERIMENT;
-extern int LATENCY;
+extern int TRIAL;
+extern int LEVEL_OF_LATENCY;
+extern int IS_TEST_MODE;
 
 extern int TARGET_RADIUS[NUM_RADIUS];
 extern int TARGET_DISTANCE[NUM_DISTANCE];
 
 extern int isSetupTarget;
 extern int click_count_total;
+extern void *manipulateMouseEvents(void *arg);
+
+extern long intervalCounter;
+
+extern int isLogging;
 
 /* TODO: nicht mehr notwendig, aber noch in den Logs drin */
 /* static const char *ANGLE_STRING[] = {
@@ -102,8 +129,8 @@ typedef struct {
     int y_target;
     int x_cursor;
     int y_cursor;
-    int distance; // target -> cursor
     int success;
+    double completion_time; // in ms
 } Click;
 
 
@@ -113,12 +140,36 @@ typedef struct
     int distance;
 } Tupel;
 
+// for saving a resampled event
+typedef struct
+{
+    float x;
+    float y;
+} ResampledEvent;
+
+// Circular buffer to save all past resampled events
+typedef struct
+{
+    ResampledEvent events[BUFFER_LENGTH];
+    int front;
+} CircularBuffer;
+
+
 
 Target targetArray[NUM_ITERATIONS];
 
+int fd;
+int currently_logging;
+int eventLogHeadWritten;
 
 Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
+ResampledEvent intervalEvents[MAX_EVENTS];
+pthread_mutex_t intervalEventsMutex;
+ResampledEvent predictedEvents[MAX_EVENTS];
+pthread_mutex_t predictedEventMutex;
+
+int eventCount;
 
 /* TODO: macht das so noch Sinn odr kann man einfach die Targets direkt aus dem Array nehmen?! */
 Target createTarget(Target t);
@@ -141,17 +192,23 @@ int calculateDistance(int x1, int y1, int x2, int y2);
 
 int calculateChecksum(int array[]);
 
+float normalize(float value, char axis);
+
+float denormalize(float value, char axis);
+
 // log
 void logClicks();
 
-void logTrials();
+void appendEvents(float intervalX, float intervalY, float predX, float predY);
+
+void logEvents();
 
 // main
 void finish();
 
 void handleInput();
 
-void render(SDL_Renderer* renderer, TTF_Font *font);
+void render(SDL_Renderer* renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedback);
 
 void update(double deltaTime);
 
