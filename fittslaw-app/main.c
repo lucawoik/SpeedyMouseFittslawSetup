@@ -37,6 +37,7 @@ Uint32 startTime = 0;
 void finish()
 {
     logClicks();
+    logMousePositions();
     SDL_Quit();
     exit(1);
 }
@@ -141,7 +142,7 @@ void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedbac
         renderFeedback(renderer, lastTarget.d, lastTarget.r, fontFeedback, successInCircle);
         if (isLogging)
         {
-            logEvents();
+            logEvents(); // log events during feedback screen to ensure logging does not interfere with task timing
             isLogging = 0;
         }
     }
@@ -151,6 +152,19 @@ void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedbac
         if (!isLogging && !isSetupTarget)
         {
             // TODO: log current absolute mouse position
+            // Log the current mouse position just after the feedback screen disappeared
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+
+            MousePosition currentPosition;
+            currentPosition.id = positionsLogged;
+            currentPosition.timestamp = millis();
+            currentPosition.x = mouseX;
+            currentPosition.y = mouseY;
+            positions[positionsLogged] = currentPosition;
+
+            positionsLogged ++;
+
             isLogging = 1;
         }
     }

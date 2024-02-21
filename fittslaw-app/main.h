@@ -76,6 +76,7 @@ extern int TARGET_DISTANCE[NUM_DISTANCE];
 
 extern int isSetupTarget;
 extern int click_count_total;
+extern int positionsLogged;
 extern void *manipulateMouseEvents(void *arg);
 
 extern long intervalCounter;
@@ -134,6 +135,14 @@ typedef struct
 
 typedef struct
 {
+    int id;
+    long timestamp;
+    int x;
+    int y;
+} MousePosition;
+
+typedef struct
+{
     int radius;
     int distance;
 } Tupel;
@@ -171,6 +180,8 @@ Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
 LogEvent loggedEvents[MAX_EVENTS];
 pthread_mutex_t loggedEventsMutex;
+MousePosition positions[MAX_CLICKS];
+int positionsLogged;
 
 int eventCount;
 
@@ -204,6 +215,8 @@ void logClicks();
 void appendEvents(int intervalX, int intervalY, float predX, float predY);
 
 void logEvents();
+
+void logMousePositions();
 
 // main
 void finish();

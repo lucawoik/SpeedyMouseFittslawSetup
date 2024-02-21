@@ -30,7 +30,7 @@ void logClicks()
     }
 
     // Opening the log file for writing and checking if the file opening was successful
-    FILE *logFile = fopen(path, "w");
+    FILE *logFile = fopen(path, "a");
 
     if (logFile == NULL)
     {
@@ -138,7 +138,7 @@ void logEvents()
     // Write table head for the first round
     if (logsInitialized == 0)
     {
-        fprintf(logFile, "participant_id,trial,round,level_of_latency,tv_sec,tv_usec,interval_x,interval_y,predicted_x,predicted_y\n");
+        fprintf(logFile, "participant_id,trial,round,level_of_latency,timestamp_ms,interval_x,interval_y,predicted_x,predicted_y\n");
     }
 
     pthread_mutex_lock(&loggedEventsMutex);
@@ -153,8 +153,7 @@ void logEvents()
                 loggedEvents[i].intervalX,
                 loggedEvents[i].intervalY,
                 loggedEvents[i].predictedX,
-                loggedEvents[i].predictedX
-                );
+                loggedEvents[i].predictedX);
     }
     pthread_mutex_unlock(&loggedEventsMutex);
 
@@ -165,4 +164,59 @@ void logEvents()
 
     logsInitialized = 1;
     roundCounter++;
+}
+
+// ------------------------------
+//
+// Mouse positions
+//
+// ------------------------------
+
+/* Function writing all mouse positions to CSV  */
+
+void logMousePositions()
+{
+    // Constructing the path for the log file based on participant ID and trial
+    char path[256];
+    sprintf(path, "%s/mouse_positions_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
+
+    struct stat st_directory = {0};
+
+    // Checking if the log directory exists, and creating it if not
+    if (stat(LOG_PATH, &st_directory) == -1)
+    {
+        mkdir(LOG_PATH, 0777);
+    }
+
+    // Opening the log file for writing and checking if the file opening was successful
+    FILE *logFile = fopen(path, "a");
+
+    if (logFile == NULL)
+    {
+        printf("Error opening log file\n");
+        return;
+    }
+
+    // Writing the header of the CSV file
+    fprintf(logFile, "id,participant_id,trial,level_of_latency,timestamp_ms,abs_x,abs_y\n");
+
+    // Iterating through each recorded click and writing data to the log file
+    for (int i = 0; i < positionsLogged; i++)
+    {
+        fprintf(logFile,
+                "%d,%d,%d,%d,%ld,%d,%d\n",
+                positions[i].id,
+                PARTICIPANT_ID,
+                TRIAL,
+                LEVEL_OF_LATENCY,
+                positions[i].timestamp,
+                positions[i].x,
+                positions[i].y);
+    }
+
+    // Closing the log file and checking for errors
+    if (fclose(logFile) == EOF)
+    {
+        printf("Error closing log file\n");
+    }
 }
