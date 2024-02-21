@@ -238,17 +238,6 @@ int main(int argc, char **argv)
         return 1; // Return an error code if thread creation fails
     }
 
-    // Init Logging - Open the event handler
-    // Create a thread
-    /* pthread_t loggingThread;
-    int threadCreationResult = pthread_create(&loggingThread, NULL, initEventLogging, NULL);
-
-    if (threadCreationResult != 0)
-    {
-        fprintf(stderr, "Error creating thread: %d\n", threadCreationResult);
-        return 1; // Return an error code if thread creation fails
-    } */
-
     while (1)
     {
         deltaTime = (micros() - timer) / 1000000.0;
