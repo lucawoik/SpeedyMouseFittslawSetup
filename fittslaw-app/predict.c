@@ -374,10 +374,10 @@ void *manipulateMouseEvents(void *arg)
         if (dataX[BUFFER_LENGTH - 1] != normalize(0.0f, 'x') && dataY[BUFFER_LENGTH - 1] != normalize(0.0f, 'y'))
         {
             // emit predicted events
-            emitRel((int)roundf(predX), (int)roundf(predY));
+            emitRel(PREDICTION_ACTIVE ? (int)roundf(predX) : intervalX, PREDICTION_ACTIVE ? (int)roundf(predY) : intervalY);
 
             // Write to logging array
-            appendEvents(intervalX, intervalY, predX, predY);
+            appendEvents(intervalX, intervalY, PREDICTION_ACTIVE ? predX : 0.0f, PREDICTION_ACTIVE ? predY : 0.0f);
         }
 
         // TODO: for debugging

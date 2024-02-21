@@ -63,6 +63,7 @@
 #define X_MIN -31.0f
 #define Y_RANGE 59.0f
 #define Y_MIN -28.0f
+#define PREDICTION_ACTIVE 0
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern char MODEL_DIR[MAX_PATH_LENGTH];
