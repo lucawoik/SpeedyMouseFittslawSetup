@@ -1,6 +1,7 @@
 #include "main.h"
 
 char EVENT_PATH[MAX_PATH_LENGTH] = "";
+char MODEL_DIR[MAX_PATH_LENGTH] = "";
 int PARTICIPANT_ID = 0;
 int TRIAL = 0;
 int LEVEL_OF_LATENCY = 0;
@@ -183,13 +184,16 @@ int main(int argc, char **argv)
     if (strlen(argv[1]) <= MAX_PATH_LENGTH)
         if (sscanf(argv[1], "%255s", EVENT_PATH) == EOF)
             printf("incorrect event handle");
-    if (sscanf(argv[2], "%d", &PARTICIPANT_ID) == EOF)
+    if (strlen(argv[2]) <= MAX_PATH_LENGTH)
+        if (sscanf(argv[2], "%255s", MODEL_DIR) == EOF)
+            printf("incorrect model directory");
+    if (sscanf(argv[3], "%d", &PARTICIPANT_ID) == EOF)
         printf("incorrect partcipant id");
-    if (sscanf(argv[3], "%d", &TRIAL) == EOF)
+    if (sscanf(argv[4], "%d", &TRIAL) == EOF)
         printf("incorrect trial id");
-    if (sscanf(argv[4], "%d", &LEVEL_OF_LATENCY) == EOF)
+    if (sscanf(argv[5], "%d", &LEVEL_OF_LATENCY) == EOF)
         printf("incorrect level of latency");
-    if (sscanf(argv[5], "%d", &IS_TEST_MODE) == EOF)
+    if (sscanf(argv[6], "%d", &IS_TEST_MODE) == EOF)
         printf("incorrect test mode flag");
 
     double timer;

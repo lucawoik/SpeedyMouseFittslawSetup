@@ -200,11 +200,10 @@ TF_Session *createSession()
     TF_SessionOptions *SessionOpts = TF_NewSessionOptions();
     TF_Buffer *RunOpts = NULL;
 
-    const char *saved_model_dir = SAVED_MODEL_DIR; // Path of the model
     const char *tags = "serve";                    // default model serving tag
     int ntags = 1;
 
-    TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, saved_model_dir, &tags, ntags, Graph, NULL, Status);
+    TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, MODEL_DIR, &tags, ntags, Graph, NULL, Status);
     if (TF_GetCode(Status) != TF_OK)
     {
         printf("%s", TF_Message(Status));

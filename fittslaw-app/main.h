@@ -61,7 +61,6 @@
 // Predict.c
 #define INTERVAL_LENGTH 5
 #define BUFFER_LENGTH 10
-#define SAVED_MODEL_DIR "models/ANN_60ms_10/"
 #define X_RANGE 73.0f
 #define X_MIN -31.0f
 #define Y_RANGE 59.0f
@@ -69,6 +68,7 @@
 
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
+extern char MODEL_DIR[MAX_PATH_LENGTH];
 extern int PARTICIPANT_ID;
 extern int TRIAL;
 extern int LEVEL_OF_LATENCY;
