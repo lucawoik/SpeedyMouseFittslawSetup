@@ -107,8 +107,6 @@ void *emitRel(void *args)
     emit(EV_REL, REL_X, x);
     emit(EV_REL, REL_Y, y);
     emit(EV_SYN, SYN_REPORT, 0); // Syn-event
-    // TODO: Print for debugging purposes
-    printf("Emitted events:     x->%d, y->%d\n", x, y);
 
     pthread_exit(NULL);
 }
@@ -347,10 +345,6 @@ void *manipulateMouseEvents(void *arg)
                     emitKlick(currentEvent.value);
                 }
             }
-            else // no idea why this is here but it works this way...
-            {
-                continue;
-            }
         }
 
         // TODO: finalize and log time measurement
@@ -386,7 +380,7 @@ void *manipulateMouseEvents(void *arg)
         float predY = denormalize(getOutputValues(1, OutputValues), 'y');
 
         /* process predictions */
-        if (dataX[BUFFER_LENGTH - 1] != normalize(0.0f, 'x') && dataY[BUFFER_LENGTH - 1] != normalize(0.0f, 'y'))
+        if (dataX[BUFFER_LENGTH - 1] != normalize(0.0f, 'x') || dataY[BUFFER_LENGTH - 1] != normalize(0.0f, 'y'))
         {
 
             DelayedEvent *event = malloc(sizeof(DelayedEvent));
@@ -405,6 +399,7 @@ void *manipulateMouseEvents(void *arg)
             // emit predicted events
             pthread_t delayed_event_thread;
             pthread_create(&delayed_event_thread, &invoked_event_thread_attr, emitRel, event);
+            printf("Emitted events: x %d, y %d\n", event->x, event->y);
 
             // Write to logging array
             appendEvents(intervalX, intervalY, settings[currentSetting].prediction_active ? predX : 0.0f, settings[currentSetting].prediction_active ? predY : 0.0f);
@@ -412,7 +407,6 @@ void *manipulateMouseEvents(void *arg)
 
         // TODO: for debugging
         printf("Resampled events:   x->%d, y->%d\n", intervalX, intervalY);
-        printf("Buffer front value: x %f, y %f\n", eventsBuffer.events[eventsBuffer.front].x, eventsBuffer.events[eventsBuffer.front].y);
         totalTime += micros() - start;
         intervals++;
         printf("Inference time %lld\n", totalTime / intervals);
