@@ -2,6 +2,7 @@
 SpeedyMouseFittslaw
 SpeedyMouseFittslawDebug
 log/
+data_collection_log/
 bin/
 .vscode/
 venv
