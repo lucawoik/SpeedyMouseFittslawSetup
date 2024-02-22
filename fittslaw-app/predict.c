@@ -386,7 +386,7 @@ void *manipulateMouseEvents(void *arg)
         float predY = denormalize(getOutputValues(1, OutputValues), 'y');
 
         /* process predictions */
-        if (true)
+        if (dataX[BUFFER_LENGTH - 1] != normalize(0.0f, 'x') && dataY[BUFFER_LENGTH - 1] != normalize(0.0f, 'y'))
         {
 
             DelayedEvent *event = malloc(sizeof(DelayedEvent));
