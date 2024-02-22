@@ -69,19 +69,19 @@ void handleInput(SDL_Renderer *renderer)
                     int mouseX, mouseY;
                     SDL_GetMouseState(&mouseX, &mouseY);
                     int success = checkCollision(mouseX, mouseY, &target);
-
                     SDL_RenderPresent(renderer);
 
-                    if (isSetupTarget)
-                    {
-                        isSetupTarget = 0;
-                    }
-                    else if (measureLatency)
+                    if (measureLatency)
                     {
                         measureLatency = 0;
                     }
+                    if(isSetupTarget){
+                        if (success)
+                            isSetupTarget = 0;
+                    } 
                     else // only count the click if task is active
                     {
+                        
                         // create click struct for logging
                         Click click = {click_count_total,
                                        millis(),
@@ -114,11 +114,12 @@ void handleInput(SDL_Renderer *renderer)
                             finish();
                         }
                     }
-
-                    travel_distance = 0;
-                    trial_time = 0;
-                    lastTarget = target;
-                    target = createTarget(targetArray[iteration]);
+                    if(!isSetupTarget){
+                        travel_distance = 0;
+                        trial_time = 0;
+                        lastTarget = target;
+                        target = createTarget(targetArray[iteration]);
+                    }
                 }
             }
             else if (event.type == SDL_MOUSEBUTTONUP)

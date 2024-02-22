@@ -35,7 +35,7 @@
 /* number of circles in the circle */
 #define NUM_CIRCLES 9
 
-#define NUM_ITERATIONS_PER_ID 4
+#define NUM_ITERATIONS_PER_ID 2
 
 #define CONDITIONS 7
 
