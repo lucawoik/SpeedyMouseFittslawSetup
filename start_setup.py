@@ -14,7 +14,7 @@ while(True):
     os.system('python3 questionnaires/demographic_survey.py ' + str(participant_id))
     
     for level in order_levels:
-        os.system('./fittslaw-app/SpeedyMouseFittslaw {} {} {} {} {} {}'.format(event_handler, level, participant_id, trial, 0, 0))
+        os.system('./fittslaw-app/SpeedyMouseFittslaw {} {} {} {} {} {}'.format(event_handler, int(level), participant_id, trial, 0, 0))
         os.system('python3 questionnaires/nasa-tlx.py {} {} {}'.format(participant_id, trial, 0))
         trial += 1
     os.system('python3 notification.py')
