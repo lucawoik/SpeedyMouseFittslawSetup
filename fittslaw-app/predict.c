@@ -380,30 +380,26 @@ void *manipulateMouseEvents(void *arg)
         float predY = denormalize(getOutputValues(1, OutputValues), 'y');
 
         /* process predictions */
-        if (dataX[BUFFER_LENGTH - 1] != normalize(0.0f, 'x') || dataY[BUFFER_LENGTH - 1] != normalize(0.0f, 'y'))
+        DelayedEvent *event = malloc(sizeof(DelayedEvent));
+        if (settings[currentSetting].prediction_active)
         {
-
-            DelayedEvent *event = malloc(sizeof(DelayedEvent));
-            if (settings[currentSetting].prediction_active)
-            {
-                event->x = (int)roundf(predX);
-                event->y = (int)roundf(predY);
-            }
-            else
-            {
-                event->x = intervalX;
-                event->y = intervalY;
-            }
-            event->delay_ms = settings[currentSetting].delay_ms;
-
-            // emit predicted events
-            pthread_t delayed_event_thread;
-            pthread_create(&delayed_event_thread, &invoked_event_thread_attr, emitRel, event);
-            printf("Emitted events: x %d, y %d\n", event->x, event->y);
-
-            // Write to logging array
-            appendEvents(intervalX, intervalY, settings[currentSetting].prediction_active ? predX : 0.0f, settings[currentSetting].prediction_active ? predY : 0.0f);
+            event->x = (int)roundf(predX);
+            event->y = (int)roundf(predY);
         }
+        else
+        {
+            event->x = intervalX;
+            event->y = intervalY;
+        }
+        event->delay_ms = settings[currentSetting].delay_ms;
+
+        // emit predicted events
+        pthread_t delayed_event_thread;
+        pthread_create(&delayed_event_thread, &invoked_event_thread_attr, emitRel, event);
+        printf("Emitted events: x %d, y %d\n", event->x, event->y);
+
+        // Write to logging array
+        appendEvents(intervalX, intervalY, settings[currentSetting].prediction_active ? predX : 0.0f, settings[currentSetting].prediction_active ? predY : 0.0f);
 
         // TODO: for debugging
         printf("Resampled events:   x->%d, y->%d\n", intervalX, intervalY);
