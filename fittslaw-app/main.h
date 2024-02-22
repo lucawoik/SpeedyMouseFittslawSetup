@@ -64,6 +64,7 @@
 #define Y_RANGE 59.0f
 #define Y_MIN -28.0f
 #define PREDICTION_ACTIVE 0
+#define DELAY_MS 500
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern char MODEL_DIR[MAX_PATH_LENGTH];
@@ -163,6 +164,14 @@ typedef struct
     float x;
     float y;
 } NormalizedEvent;
+
+typedef struct
+{
+    int x;
+    int y;
+    int delay_ms;
+} DelayedEvent;
+
 
 // Circular buffer to save all past resampled events
 typedef struct

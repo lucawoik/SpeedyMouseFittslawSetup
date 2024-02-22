@@ -17,6 +17,10 @@ CircularBuffer eventsBuffer;
 TF_Graph *Graph;
 TF_Status *Status;
 
+// use attributes to create threads in a detached state
+// source: https://github.com/PDA-UR/DelayDaemon
+pthread_attr_t invoked_event_thread_attr;
+
 // ------------------------------
 //
 // Helper functions
@@ -89,13 +93,24 @@ void emitKlick(int value)
     emit(EV_SYN, SYN_REPORT, 0);
 }
 
-void emitRel(int x, int y)
+void *emitRel(void *args)
 {
+    // Source: https://github.com/PDA-UR/DelayDaemon
+    DelayedEvent *event = args;
+    int x = event->x;
+    int y = event->y;
+    int delay_ms = event->delay_ms;
+    free(event);
+
+    usleep(delay_ms * 1000);
+
     emit(EV_REL, REL_X, x);
     emit(EV_REL, REL_Y, y);
     emit(EV_SYN, SYN_REPORT, 0); // Syn-event
     // TODO: Print for debugging purposes
     printf("Emitted events:     x->%d, y->%d\n", x, y);
+
+    pthread_exit(NULL);
 }
 
 int getEvent(struct input_event *event)
@@ -199,7 +214,7 @@ TF_Session *createSession()
     TF_SessionOptions *SessionOpts = TF_NewSessionOptions();
     TF_Buffer *RunOpts = NULL;
 
-    const char *tags = "serve";                    // default model serving tag
+    const char *tags = "serve"; // default model serving tag
     int ntags = 1;
 
     TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, MODEL_DIR, &tags, ntags, Graph, NULL, Status);
@@ -371,13 +386,28 @@ void *manipulateMouseEvents(void *arg)
         float predY = denormalize(getOutputValues(1, OutputValues), 'y');
 
         /* process predictions */
-        if (dataX[BUFFER_LENGTH - 1] != normalize(0.0f, 'x') && dataY[BUFFER_LENGTH - 1] != normalize(0.0f, 'y'))
+        if (true)
         {
+
+            DelayedEvent *event = malloc(sizeof(DelayedEvent));
+            if (PREDICTION_ACTIVE)
+            {
+                event->x = (int)roundf(predX);
+                event->y = (int)roundf(predY);
+            }
+            else
+            {
+                event->x = intervalX;
+                event->y = intervalY;
+            }
+            event->delay_ms = DELAY_MS;
+
             // emit predicted events
-            emitRel(PREDICTION_ACTIVE ? (int)roundf(predX) : intervalX, PREDICTION_ACTIVE ? (int)roundf(predY) : intervalY);
+            pthread_t delayed_event_thread;
+            pthread_create(&delayed_event_thread, &invoked_event_thread_attr, emitRel, event);
 
             // Write to logging array
-            appendEvents(intervalX, intervalY, PREDICTION_ACTIVE ? predX : 0.0f, PREDICTION_ACTIVE ? predY : 0.0f);
+            // appendEvents(intervalX, intervalY, PREDICTION_ACTIVE ? predX : 0.0f, PREDICTION_ACTIVE ? predY : 0.0f);
         }
 
         // TODO: for debugging
