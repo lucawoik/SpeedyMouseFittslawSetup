@@ -30,7 +30,7 @@ void logClicks()
     }
 
     // Opening the log file for writing and checking if the file opening was successful
-    FILE *logFile = fopen(path, "w");
+    FILE *logFile = fopen(path, "a");
 
     if (logFile == NULL)
     {
@@ -76,30 +76,28 @@ void logClicks()
 // ------------------------------
 
 /* Append interval and predicted events to logging arrays */
-void appendEvents(float intervalX, float intervalY, float predX, float predY)
+void appendEvents(int intervalX, int intervalY, float predX, float predY)
 {
     if (isLogging)
     {
         if (currentInterval < MAX_EVENTS)
         {
+            long currentTimestamp = millis();
             // lock the arrays to prevent race conditions (although unlikely)
-            pthread_mutex_lock(&intervalEventsMutex);
-            pthread_mutex_lock(&predictedEventMutex);
+            pthread_mutex_lock(&loggedEventsMutex);
 
-            // Save the values as ResampledEvent
-            ResampledEvent currentEvent;
+            // Save the values as LogEvent
+            LogEvent currentEvents;
+            currentEvents.timestamp = currentTimestamp;
+            currentEvents.intervalX = intervalX;
+            currentEvents.intervalY = intervalY;
+            currentEvents.predictedX = predX;
+            currentEvents.predictedY = predY;
 
-            currentEvent.x = intervalX;
-            currentEvent.y = intervalY;
-            intervalEvents[currentInterval] = currentEvent;
-
-            currentEvent.x = predX;
-            currentEvent.y = predY;
-            predictedEvents[currentInterval] = currentEvent;
+            loggedEvents[currentInterval] = currentEvents;
 
             // unlock
-            pthread_mutex_unlock(&intervalEventsMutex);
-            pthread_mutex_unlock(&predictedEventMutex);
+            pthread_mutex_unlock(&loggedEventsMutex);
 
             currentInterval++;
         }
@@ -137,28 +135,27 @@ void logEvents()
         return;
     }
 
-    // Write table head for the first round and a row of zeroes to divide rounds
+    // Write table head for the first round
     if (logsInitialized == 0)
     {
-        fprintf(logFile, "participant_id,trial,round,level_of_latency,interval_x,interval_y,predicted_x,predicted_y\n");
+        fprintf(logFile, "participant_id,trial,round,level_of_latency,timestamp_ms,interval_x,interval_y,predicted_x,predicted_y\n");
     }
 
-    pthread_mutex_lock(&intervalEventsMutex);
-    pthread_mutex_lock(&predictedEventMutex);
-    for (int i = 0; i <= currentInterval; i++)
+    pthread_mutex_lock(&loggedEventsMutex);
+    for (int i = 0; i < currentInterval; i++)
     {
-        fprintf(logFile, "%d,%d,%d,%d,%f,%f,%f,%f\n",
+        fprintf(logFile, "%d,%d,%d,%d,%ld,%d,%d,%f,%f\n",
                 PARTICIPANT_ID,
                 TRIAL,
                 roundCounter,
                 LEVEL_OF_LATENCY,
-                intervalEvents[i].x,
-                intervalEvents[i].y,
-                predictedEvents[i].x,
-                predictedEvents[i].y);
+                loggedEvents[i].timestamp,
+                loggedEvents[i].intervalX,
+                loggedEvents[i].intervalY,
+                loggedEvents[i].predictedX,
+                loggedEvents[i].predictedX);
     }
-    pthread_mutex_unlock(&intervalEventsMutex);
-    pthread_mutex_unlock(&predictedEventMutex);
+    pthread_mutex_unlock(&loggedEventsMutex);
 
     if (fclose(logFile) == EOF)
     {
@@ -167,4 +164,59 @@ void logEvents()
 
     logsInitialized = 1;
     roundCounter++;
+}
+
+// ------------------------------
+//
+// Mouse positions
+//
+// ------------------------------
+
+/* Function writing all mouse positions to CSV  */
+
+void logMousePositions()
+{
+    // Constructing the path for the log file based on participant ID and trial
+    char path[256];
+    sprintf(path, "%s/mouse_positions_participant_%d_trial_%d.csv", LOG_PATH, PARTICIPANT_ID, TRIAL);
+
+    struct stat st_directory = {0};
+
+    // Checking if the log directory exists, and creating it if not
+    if (stat(LOG_PATH, &st_directory) == -1)
+    {
+        mkdir(LOG_PATH, 0777);
+    }
+
+    // Opening the log file for writing and checking if the file opening was successful
+    FILE *logFile = fopen(path, "a");
+
+    if (logFile == NULL)
+    {
+        printf("Error opening log file\n");
+        return;
+    }
+
+    // Writing the header of the CSV file
+    fprintf(logFile, "id,participant_id,trial,level_of_latency,timestamp_ms,abs_x,abs_y\n");
+
+    // Iterating through each recorded click and writing data to the log file
+    for (int i = 0; i < positionsLogged; i++)
+    {
+        fprintf(logFile,
+                "%d,%d,%d,%d,%ld,%d,%d\n",
+                positions[i].id,
+                PARTICIPANT_ID,
+                TRIAL,
+                LEVEL_OF_LATENCY,
+                positions[i].timestamp,
+                positions[i].x,
+                positions[i].y);
+    }
+
+    // Closing the log file and checking for errors
+    if (fclose(logFile) == EOF)
+    {
+        printf("Error closing log file\n");
+    }
 }

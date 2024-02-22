@@ -11,11 +11,15 @@ long intervalStop = 0;
 int intervalX = 0;
 int intervalY = 0;
 
-CircularBuffer resampledEventsBuffer;
+CircularBuffer eventsBuffer;
 
 // ANN stuff
 TF_Graph *Graph;
 TF_Status *Status;
+
+// use attributes to create threads in a detached state
+// source: https://github.com/PDA-UR/DelayDaemon
+pthread_attr_t invoked_event_thread_attr;
 
 // ------------------------------
 //
@@ -29,7 +33,7 @@ TF_Status *Status;
  *  - initCircularBuffer()
  */
 
-void addEvent(CircularBuffer *buffer, ResampledEvent event)
+void addEvent(CircularBuffer *buffer, NormalizedEvent event)
 {
     buffer->front = (buffer->front + 1) % BUFFER_LENGTH;
     buffer->events[buffer->front] = event;
@@ -40,7 +44,7 @@ void initCircularBuffer(CircularBuffer *buffer)
     /* init buffer and fill with all zeroes */
     buffer->front = -1;
 
-    ResampledEvent eventZero;
+    NormalizedEvent eventZero;
     eventZero.x = normalize(0.0f, 'x');
     eventZero.y = normalize(0.0f, 'y');
 
@@ -48,7 +52,6 @@ void initCircularBuffer(CircularBuffer *buffer)
     for (int i = 0; i < BUFFER_LENGTH; i++)
     {
         addEvent(buffer, eventZero);
-        // printf("Filling buffer -> %d\n", i);
     }
 }
 
@@ -90,13 +93,24 @@ void emitKlick(int value)
     emit(EV_SYN, SYN_REPORT, 0);
 }
 
-void emitRel(int x, int y)
+void *emitRel(void *args)
 {
+    // Source: https://github.com/PDA-UR/DelayDaemon
+    DelayedEvent *event = args;
+    int x = event->x;
+    int y = event->y;
+    int delay_ms = event->delay_ms;
+    free(event);
+
+    usleep(delay_ms * 1000);
+
     emit(EV_REL, REL_X, x);
     emit(EV_REL, REL_Y, y);
     emit(EV_SYN, SYN_REPORT, 0); // Syn-event
     // TODO: Print for debugging purposes
     printf("Emitted events:     x->%d, y->%d\n", x, y);
+
+    pthread_exit(NULL);
 }
 
 int getEvent(struct input_event *event)
@@ -200,10 +214,10 @@ TF_Session *createSession()
     TF_SessionOptions *SessionOpts = TF_NewSessionOptions();
     TF_Buffer *RunOpts = NULL;
 
-    const char *tags = "serve";                    // default model serving tag
+    const char *tags = "serve"; // default model serving tag
     int ntags = 1;
 
-    TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, MODEL_DIR, &tags, ntags, Graph, NULL, Status);
+    TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, settings[currentSetting].model_path, &tags, ntags, Graph, NULL, Status);
     if (TF_GetCode(Status) != TF_OK)
     {
         printf("%s", TF_Message(Status));
@@ -280,12 +294,12 @@ void *manipulateMouseEvents(void *arg)
     if (!init_virtual_input())
         return NULL;
 
-    initCircularBuffer(&resampledEventsBuffer);
+    initCircularBuffer(&eventsBuffer);
 
     int err = -1;
     struct input_event currentEvent;
 
-    ResampledEvent resampledEvent;
+    NormalizedEvent normalizedEvent;
 
     int ndims = 2;
     int64_t dims[] = {1, BUFFER_LENGTH};
@@ -343,17 +357,17 @@ void *manipulateMouseEvents(void *arg)
         long long start = micros();
 
         /* normalize the resampled event and add to buffer */
-        resampledEvent.x = normalize((float)intervalX, 'x');
-        resampledEvent.y = normalize((float)intervalY, 'y');
-        addEvent(&resampledEventsBuffer, resampledEvent);
+        normalizedEvent.x = normalize((float)intervalX, 'x');
+        normalizedEvent.y = normalize((float)intervalY, 'y');
+        addEvent(&eventsBuffer, normalizedEvent);
 
         /* get prediction from buffer */
         // filling datax and y in the correct sequence
         for (int i = BUFFER_LENGTH - 1; i >= 0; i--)
         {
-            int index = (resampledEventsBuffer.front - i + BUFFER_LENGTH - 1) % BUFFER_LENGTH;
-            dataX[i] = resampledEventsBuffer.events[index].x;
-            dataY[i] = resampledEventsBuffer.events[index].y;
+            int index = (eventsBuffer.front - i + BUFFER_LENGTH - 1) % BUFFER_LENGTH;
+            dataX[i] = eventsBuffer.events[index].x;
+            dataY[i] = eventsBuffer.events[index].y;
         }
 
         // Create input tensors
@@ -374,16 +388,31 @@ void *manipulateMouseEvents(void *arg)
         /* process predictions */
         if (dataX[BUFFER_LENGTH - 1] != normalize(0.0f, 'x') && dataY[BUFFER_LENGTH - 1] != normalize(0.0f, 'y'))
         {
+
+            DelayedEvent *event = malloc(sizeof(DelayedEvent));
+            if (settings[currentSetting].prediction_active)
+            {
+                event->x = (int)roundf(predX);
+                event->y = (int)roundf(predY);
+            }
+            else
+            {
+                event->x = intervalX;
+                event->y = intervalY;
+            }
+            event->delay_ms = settings[currentSetting].delay_ms;
+
             // emit predicted events
-            emitRel((int)roundf(predX), (int)roundf(predY));
+            pthread_t delayed_event_thread;
+            pthread_create(&delayed_event_thread, &invoked_event_thread_attr, emitRel, event);
 
             // Write to logging array
-            appendEvents((float)intervalX, (float)intervalY, predX, predY);
+            appendEvents(intervalX, intervalY, settings[currentSetting].prediction_active ? predX : 0.0f, settings[currentSetting].prediction_active ? predY : 0.0f);
         }
 
         // TODO: for debugging
         printf("Resampled events:   x->%d, y->%d\n", intervalX, intervalY);
-        printf("Buffer front value: x %f, y %f\n", resampledEventsBuffer.events[resampledEventsBuffer.front].x, resampledEventsBuffer.events[resampledEventsBuffer.front].y);
+        printf("Buffer front value: x %f, y %f\n", eventsBuffer.events[eventsBuffer.front].x, eventsBuffer.events[eventsBuffer.front].y);
         totalTime += micros() - start;
         intervals++;
         printf("Inference time %lld\n", totalTime / intervals);

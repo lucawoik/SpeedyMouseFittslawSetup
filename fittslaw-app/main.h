@@ -27,7 +27,6 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
-
 #define NUM_RADIUS 3
 #define NUM_DISTANCE 3
 
@@ -36,7 +35,9 @@
 /* number of circles in the circle */
 #define NUM_CIRCLES 9
 
-#define NUM_ITERATIONS_PER_ID  2
+#define NUM_ITERATIONS_PER_ID 2
+
+#define CONDITIONS 7
 
 #define MAX_CLICKS 10000
 #define MAX_EVENTS 1000000
@@ -45,27 +46,27 @@
 
 #define TARGET_COLOR 0xFF000000
 
-#define TOTAL_NUM_CIRCLES NUM_CIRCLES * NUM_ITERATIONS_PER_ID
+#define TOTAL_NUM_CIRCLES NUM_CIRCLES *NUM_ITERATIONS_PER_ID
 
-#define NUM_ITERATIONS NUM_RADIUS * NUM_DISTANCE * TOTAL_NUM_CIRCLES
+#define NUM_ITERATIONS NUM_RADIUS *NUM_DISTANCE *TOTAL_NUM_CIRCLES
 
 /* TODO: hier könnte man noch nach static und mooving unterscheiden */
 #define LOG_PATH "log"
 
-
-#define centerX WIDTH/2
-#define centerY HEIGHT/2 + 13
+#define centerX WIDTH / 2
+#define centerY HEIGHT / 2 + 13
 
 #define MAX_PATH_LENGTH 256
 
 // Predict.c
 #define INTERVAL_LENGTH 5
-#define BUFFER_LENGTH 10
+#define BUFFER_LENGTH 5
 #define X_RANGE 73.0f
 #define X_MIN -31.0f
 #define Y_RANGE 59.0f
 #define Y_MIN -28.0f
-
+#define PREDICTION_ACTIVE 0
+#define DELAY_MS 500
 
 extern char EVENT_PATH[MAX_PATH_LENGTH];
 extern char MODEL_DIR[MAX_PATH_LENGTH];
@@ -79,6 +80,7 @@ extern int TARGET_DISTANCE[NUM_DISTANCE];
 
 extern int isSetupTarget;
 extern int click_count_total;
+extern int positionsLogged;
 extern void *manipulateMouseEvents(void *arg);
 
 extern long intervalCounter;
@@ -90,8 +92,15 @@ extern int isLogging;
     "towards", "towards_diagonal", "perpendicular", "away_diagonal", "away", "none",
 }; */
 
+typedef struct
+{
+    char *model_path;
+    int prediction_active;
+    int delay_ms;
+} Setting;
 
-typedef struct {
+typedef struct
+{
     double x;
     double y;
     int r;
@@ -101,7 +110,8 @@ typedef struct {
 /* TODO: Anpassen! */
 /*     int a; */
 /*     int v; */
-typedef struct {
+typedef struct
+{
     int id;
     long timestamp;
     int w;
@@ -119,7 +129,8 @@ typedef struct {
 
 /*   int a;*/
 // int v;
-typedef struct {
+typedef struct
+{
     int id;
     long timestamp;
     int w;
@@ -133,8 +144,15 @@ typedef struct {
     double completion_time; // in ms
 } Click;
 
+typedef struct
+{
+    int id;
+    long timestamp;
+    int x;
+    int y;
+} MousePosition;
 
-typedef struct 
+typedef struct
 {
     int radius;
     int distance;
@@ -143,18 +161,33 @@ typedef struct
 // for saving a resampled event
 typedef struct
 {
+    long timestamp;
+    int intervalX;
+    int intervalY;
+    float predictedX;
+    float predictedY;
+} LogEvent;
+
+typedef struct
+{
     float x;
     float y;
-} ResampledEvent;
+} NormalizedEvent;
+
+typedef struct
+{
+    int x;
+    int y;
+    int delay_ms;
+} DelayedEvent;
+
 
 // Circular buffer to save all past resampled events
 typedef struct
 {
-    ResampledEvent events[BUFFER_LENGTH];
+    NormalizedEvent events[BUFFER_LENGTH];
     int front;
 } CircularBuffer;
-
-
 
 Target targetArray[NUM_ITERATIONS];
 
@@ -164,16 +197,18 @@ int eventLogHeadWritten;
 
 Trial trials[NUM_ITERATIONS];
 Click clicks[MAX_CLICKS];
-ResampledEvent intervalEvents[MAX_EVENTS];
-pthread_mutex_t intervalEventsMutex;
-ResampledEvent predictedEvents[MAX_EVENTS];
-pthread_mutex_t predictedEventMutex;
+LogEvent loggedEvents[MAX_EVENTS];
+pthread_mutex_t loggedEventsMutex;
+MousePosition positions[MAX_CLICKS];
+int positionsLogged;
 
 int eventCount;
 
+Setting settings[CONDITIONS];
+int currentSetting;
+
 /* TODO: macht das so noch Sinn odr kann man einfach die Targets direkt aus dem Array nehmen?! */
 Target createTarget(Target t);
-
 
 // utils
 void swap(Tupel *a, Tupel *b);
@@ -199,23 +234,24 @@ float denormalize(float value, char axis);
 // log
 void logClicks();
 
-void appendEvents(float intervalX, float intervalY, float predX, float predY);
+void appendEvents(int intervalX, int intervalY, float predX, float predY);
 
 void logEvents();
+
+void logMousePositions();
 
 // main
 void finish();
 
 void handleInput();
 
-void render(SDL_Renderer* renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedback);
+void render(SDL_Renderer *renderer, TTF_Font *fontNumbers, TTF_Font *fontFeedback);
 
 void update(double deltaTime);
 
 void renderText(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font);
 
-int main(int argc, char** argv);
-
+int main(int argc, char **argv);
 
 // Circle
 
