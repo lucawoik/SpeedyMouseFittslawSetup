@@ -194,14 +194,30 @@ void update(double deltaTime)
     lastY = mouseY;
 }
 
+void initSettings()
+{
+    int delays[] = {0, 0, 0, 0, 20, 40, 60};
+    int predictions[] = {1, 1, 1, 0, 0, 0, 0};
+    char* model_paths[] = {"models/ANN_60ms_5/", "models/ANN_40ms_5", "models/ANN_20ms_5", "models/ANN_60ms_5", "models/ANN_60ms_5", "models/ANN_60ms_5", "models/ANN_60ms_5"};
+    for (int i = 0; i < CONDITIONS; i++)
+    {
+        Setting currentSetting;
+        currentSetting.delay_ms = delays[i];
+        currentSetting.prediction_active = predictions[i];
+        currentSetting.model_path = model_paths[i];
+        settings[i] = currentSetting;
+    }
+    
+}
+
 int main(int argc, char **argv)
 {
     if (strlen(argv[1]) <= MAX_PATH_LENGTH)
         if (sscanf(argv[1], "%255s", EVENT_PATH) == EOF)
             printf("incorrect event handle");
     if (strlen(argv[2]) <= MAX_PATH_LENGTH)
-        if (sscanf(argv[2], "%255s", MODEL_DIR) == EOF)
-            printf("incorrect model directory");
+        if (sscanf(argv[2], "%d", &currentSetting) == EOF)
+            printf("incorrect current setting");
     if (sscanf(argv[3], "%d", &PARTICIPANT_ID) == EOF)
         printf("incorrect partcipant id");
     if (sscanf(argv[4], "%d", &TRIAL) == EOF)
@@ -210,6 +226,10 @@ int main(int argc, char **argv)
         printf("incorrect level of latency");
     if (sscanf(argv[6], "%d", &IS_TEST_MODE) == EOF)
         printf("incorrect test mode flag");
+
+    initSettings();
+
+    printf("\n\n\nCurrent Settings\nmodel-dir:%s\ndelay:%d\nprediction_active:%d\n", settings[currentSetting].model_path, settings[currentSetting].delay_ms, settings[currentSetting].prediction_active);
 
     double timer;
     double deltaTime;

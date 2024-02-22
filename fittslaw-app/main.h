@@ -37,6 +37,8 @@
 
 #define NUM_ITERATIONS_PER_ID 4
 
+#define CONDITIONS 7
+
 #define MAX_CLICKS 10000
 #define MAX_EVENTS 1000000
 
@@ -89,6 +91,13 @@ extern int isLogging;
 /* static const char *ANGLE_STRING[] = {
     "towards", "towards_diagonal", "perpendicular", "away_diagonal", "away", "none",
 }; */
+
+typedef struct
+{
+    char *model_path;
+    int prediction_active;
+    int delay_ms;
+} Setting;
 
 typedef struct
 {
@@ -194,6 +203,9 @@ MousePosition positions[MAX_CLICKS];
 int positionsLogged;
 
 int eventCount;
+
+Setting settings[CONDITIONS];
+int currentSetting;
 
 /* TODO: macht das so noch Sinn odr kann man einfach die Targets direkt aus dem Array nehmen?! */
 Target createTarget(Target t);

@@ -217,7 +217,7 @@ TF_Session *createSession()
     const char *tags = "serve"; // default model serving tag
     int ntags = 1;
 
-    TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, MODEL_DIR, &tags, ntags, Graph, NULL, Status);
+    TF_Session *Session = TF_LoadSessionFromSavedModel(SessionOpts, RunOpts, settings[currentSetting].model_path, &tags, ntags, Graph, NULL, Status);
     if (TF_GetCode(Status) != TF_OK)
     {
         printf("%s", TF_Message(Status));
@@ -390,7 +390,7 @@ void *manipulateMouseEvents(void *arg)
         {
 
             DelayedEvent *event = malloc(sizeof(DelayedEvent));
-            if (PREDICTION_ACTIVE)
+            if (settings[currentSetting].prediction_active)
             {
                 event->x = (int)roundf(predX);
                 event->y = (int)roundf(predY);
@@ -400,14 +400,14 @@ void *manipulateMouseEvents(void *arg)
                 event->x = intervalX;
                 event->y = intervalY;
             }
-            event->delay_ms = DELAY_MS;
+            event->delay_ms = settings[currentSetting].delay_ms;
 
             // emit predicted events
             pthread_t delayed_event_thread;
             pthread_create(&delayed_event_thread, &invoked_event_thread_attr, emitRel, event);
 
             // Write to logging array
-            // appendEvents(intervalX, intervalY, PREDICTION_ACTIVE ? predX : 0.0f, PREDICTION_ACTIVE ? predY : 0.0f);
+            appendEvents(intervalX, intervalY, settings[currentSetting].prediction_active ? predX : 0.0f, settings[currentSetting].prediction_active ? predY : 0.0f);
         }
 
         // TODO: for debugging
