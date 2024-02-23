@@ -153,7 +153,7 @@ void logEvents()
                 loggedEvents[i].intervalX,
                 loggedEvents[i].intervalY,
                 loggedEvents[i].predictedX,
-                loggedEvents[i].predictedX);
+                loggedEvents[i].predictedY);
     }
     pthread_mutex_unlock(&loggedEventsMutex);
 
