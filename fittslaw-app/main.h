@@ -60,7 +60,7 @@
 
 // Predict.c
 #define INTERVAL_LENGTH 5
-#define BUFFER_LENGTH 5
+#define BUFFER_LENGTH 20
 #define X_RANGE 73.0f
 #define X_MIN -31.0f
 #define Y_RANGE 59.0f
