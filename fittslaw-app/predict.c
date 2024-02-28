@@ -27,6 +27,20 @@ pthread_attr_t invoked_event_thread_attr;
 //
 // ------------------------------
 
+int compare(const void *a, const void *b)
+{
+	float fa = *((float *)a);
+	float fb = *((float *)b);
+	return (fa > fb) - (fa < fb);
+}
+
+float calculateMedian(float arr[], int size)
+{
+	qsort(arr, size, sizeof(float), compare);
+
+	return arr[size/2];
+}
+
 /**
  * Circular Buffer
  *  - addEvent()
@@ -383,8 +397,8 @@ void *manipulateMouseEvents(void *arg)
         DelayedEvent *event = malloc(sizeof(DelayedEvent));
         if (settings[currentSetting].prediction_active)
         {
-            event->x = (int)roundf(predX);
-            event->y = (int)roundf(predY);
+            event->x = (int)roundf(predX) + (int)denormalize(calculateMedian(dataX, BUFFER_LENGTH), 'x');
+            event->y = (int)roundf(predY) + (int)denormalize(calculateMedian(dataY, BUFFER_LENGTH), 'y');
         }
         else
         {
