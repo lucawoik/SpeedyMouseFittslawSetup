@@ -397,8 +397,8 @@ void *manipulateMouseEvents(void *arg)
         DelayedEvent *event = malloc(sizeof(DelayedEvent));
         if (settings[currentSetting].prediction_active)
         {
-            event->x = (int)roundf(predX) + (int)denormalize(calculateMedian(dataX, BUFFER_LENGTH), 'x');
-            event->y = (int)roundf(predY) + (int)denormalize(calculateMedian(dataY, BUFFER_LENGTH), 'y');
+            event->x = (int)roundf(predX) + intervalX;
+            event->y = (int)roundf(predY) + intervalY;
         }
         else
         {
