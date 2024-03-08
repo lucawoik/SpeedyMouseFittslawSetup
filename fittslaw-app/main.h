@@ -37,7 +37,7 @@
 
 #define NUM_ITERATIONS_PER_ID 2
 
-#define CONDITIONS 7
+#define CONDITIONS 5
 
 #define MAX_CLICKS 10000
 #define MAX_EVENTS 1000000

@@ -197,9 +197,9 @@ void update(double deltaTime)
 
 void initSettings()
 {
-    int delays[] = {0, 0, 0, 0, 20, 40, 60};
-    int predictions[] = {1, 1, 1, 0, 0, 0, 0};
-    char* model_paths[] = {"models/ANN_60ms_10/", "models/ANN_40ms_5", "models/ANN_20ms_10", "models/ANN_60ms_5", "models/ANN_60ms_5", "models/ANN_60ms_5", "models/ANN_60ms_5"};
+    int delays[] = {0, 0, 0, 0, 20};
+    int predictions[] = {1, 1, 1, 0, 0};
+    char* model_paths[] = {"models/ANN_60ms_10/", "models/ANN_40ms_5", "models/ANN_20ms_10", "models/ANN_60ms_5", "models/ANN_60ms_5"};
     for (int i = 0; i < CONDITIONS; i++)
     {
         Setting currentSetting;
