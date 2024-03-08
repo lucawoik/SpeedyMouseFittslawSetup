@@ -323,6 +323,9 @@ void *manipulateMouseEvents(void *arg)
     long long totalTime = 0;
     long intervals = 0;
 
+    int x_last = 0;
+    int y_last = 0;
+
     /* Entering interval-loop */
     while (true)
     {
@@ -397,8 +400,8 @@ void *manipulateMouseEvents(void *arg)
         DelayedEvent *event = malloc(sizeof(DelayedEvent));
         if (settings[currentSetting].prediction_active)
         {
-            event->x = (int)roundf(predX) + intervalX;
-            event->y = (int)roundf(predY) + intervalY;
+            event->x = (int)roundf(predX) + intervalX - x_last; 
+            event->y = (int)roundf(predY) + intervalY - y_last;
         }
         else
         {
@@ -420,6 +423,10 @@ void *manipulateMouseEvents(void *arg)
         totalTime += micros() - start;
         intervals++;
         printf("Inference time %lld\n", totalTime / intervals);
+
+
+        x_last = intervalX;
+        y_last = intervalY;
 
         /* reset for next interval */
         intervalX = 0;
