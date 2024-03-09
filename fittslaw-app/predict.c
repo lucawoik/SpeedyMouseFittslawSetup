@@ -11,6 +11,9 @@ long intervalStop = 0;
 int intervalX = 0;
 int intervalY = 0;
 
+int xLastPred = 0;
+int yLastPred = 0;
+
 CircularBuffer eventsBuffer;
 
 // ANN stuff
@@ -29,16 +32,16 @@ pthread_attr_t invoked_event_thread_attr;
 
 int compare(const void *a, const void *b)
 {
-	float fa = *((float *)a);
-	float fb = *((float *)b);
-	return (fa > fb) - (fa < fb);
+    float fa = *((float *)a);
+    float fb = *((float *)b);
+    return (fa > fb) - (fa < fb);
 }
 
 float calculateMedian(float arr[], int size)
 {
-	qsort(arr, size, sizeof(float), compare);
+    qsort(arr, size, sizeof(float), compare);
 
-	return arr[size/2];
+    return arr[size / 2];
 }
 
 /**
@@ -323,9 +326,6 @@ void *manipulateMouseEvents(void *arg)
     long long totalTime = 0;
     long intervals = 0;
 
-    int x_last = 0;
-    int y_last = 0;
-
     /* Entering interval-loop */
     while (true)
     {
@@ -396,12 +396,15 @@ void *manipulateMouseEvents(void *arg)
         float predX = denormalize(getOutputValues(0, OutputValues), 'x');
         float predY = denormalize(getOutputValues(1, OutputValues), 'y');
 
+        int predX_int = (int)roundf(predX);
+        int predY_int = (int)roundf(predY);
+
         /* process predictions */
         DelayedEvent *event = malloc(sizeof(DelayedEvent));
         if (settings[currentSetting].prediction_active)
         {
-            event->x = (int)roundf(predX) + intervalX - x_last; 
-            event->y = (int)roundf(predY) + intervalY - y_last;
+            event->x = predX_int + intervalX - xLastPred;
+            event->y = predY_int + intervalY - yLastPred;
         }
         else
         {
@@ -424,9 +427,8 @@ void *manipulateMouseEvents(void *arg)
         intervals++;
         printf("Inference time %lld\n", totalTime / intervals);
 
-
-        x_last = intervalX;
-        y_last = intervalY;
+        xLastPred = predX_int;
+        yLastPred = predY_int;
 
         /* reset for next interval */
         intervalX = 0;
