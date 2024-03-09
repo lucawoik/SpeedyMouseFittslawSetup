@@ -324,6 +324,7 @@ void *manipulateMouseEvents(void *arg)
 
     /* TODO: better inference-time measurement */
     long long totalTime = 0;
+    long long start = 0;
     long intervals = 0;
 
     /* Entering interval-loop */
@@ -364,9 +365,6 @@ void *manipulateMouseEvents(void *arg)
             }
         }
 
-        // TODO: finalize and log time measurement
-        long long start = micros();
-
         /* normalize the resampled event and add to buffer */
         normalizedEvent.x = normalize((float)intervalX, 'x');
         normalizedEvent.y = normalize((float)intervalY, 'y');
@@ -385,11 +383,22 @@ void *manipulateMouseEvents(void *arg)
         InputValues[0] = getTensor(ndims, dims, dataX, ndata);
         InputValues[1] = getTensor(ndims, dims, dataY, ndata);
 
+        if (intervals < 1000)
+        {
+            start = micros();
+        }
+
         // Run the Session
         TF_SessionRun(Session, NULL, Input, InputValues, NumInputs, Output, OutputValues, NumOutputs, NULL, 0, NULL, Status);
         if (TF_GetCode(Status) != TF_OK)
         {
             printf("%s", TF_Message(Status));
+        }
+
+        if (intervals < 1000)
+        {
+            totalTime += micros() - start;
+            intervals++;
         }
 
         // get and de-normalize the output values
@@ -423,8 +432,6 @@ void *manipulateMouseEvents(void *arg)
 
         // TODO: for debugging
         printf("Resampled events:   x->%d, y->%d\n", intervalX, intervalY);
-        totalTime += micros() - start;
-        intervals++;
         printf("Inference time %lld\n", totalTime / intervals);
 
         xLastPred = predX_int;
