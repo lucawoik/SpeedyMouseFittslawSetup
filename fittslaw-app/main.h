@@ -35,7 +35,7 @@
 /* number of circles in the circle */
 #define NUM_CIRCLES 9
 
-#define NUM_ITERATIONS_PER_ID 2
+#define NUM_ITERATIONS_PER_ID 4
 
 #define CONDITIONS 5
 
@@ -60,7 +60,7 @@
 
 // Predict.c
 #define INTERVAL_LENGTH 5
-#define BUFFER_LENGTH 10
+#define BUFFER_LENGTH 7
 #define X_RANGE 73.0f
 #define X_MIN -31.0f
 #define Y_RANGE 59.0f
