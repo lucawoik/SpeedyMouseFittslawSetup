@@ -164,6 +164,7 @@ void logEvents()
 
     logsInitialized = 1;
     roundCounter++;
+    currentInterval = 0;
 }
 
 // ------------------------------
